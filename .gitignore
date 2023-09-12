@@ -2,3 +2,4 @@
 go.mod
 go.sum
 .gitignore
+data/sqlite/storage.db
