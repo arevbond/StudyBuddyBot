@@ -14,9 +14,14 @@ type Storage interface {
 	PickRandom(ctx context.Context, userName string) (*Page, error)
 	Remove(ctx context.Context, p *Page) error
 	IsExists(ctx context.Context, p *Page) (bool, error)
+
+	Pick(ctx context.Context)
 }
 
 var ErrNoSavedPages = errors.New("no saved pages")
+
+type User struct {
+}
 
 type Page struct {
 	URL      string

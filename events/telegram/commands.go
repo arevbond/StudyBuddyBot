@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	DickCmd  = "/dick"
 	RndCmd   = "/rnd"
 	HelpCmd  = "/help"
 	StartCmd = "/start"
@@ -32,6 +33,8 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 		return p.sendHelp(chatID)
 	case StartCmd:
 		return p.sendHello(chatID)
+	case DickCmd:
+		return
 	default:
 		return p.tg.SendMessage(chatID, msgUnknownCommand)
 	}
