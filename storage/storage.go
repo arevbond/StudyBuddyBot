@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"tg_ics_useful_bot/lib/e"
+	"time"
 )
 
 type Storage interface {
@@ -15,12 +16,24 @@ type Storage interface {
 	Remove(ctx context.Context, p *Page) error
 	IsExists(ctx context.Context, p *Page) (bool, error)
 
-	Pick(ctx context.Context)
+	User(ctx context.Context, tgID, chatID int) (*User, error)
+	CreateUser(ctx context.Context, u *User) error
+	UpdateUserDickSize(ctx context.Context, u *User, dickSize int) error
 }
 
 var ErrNoSavedPages = errors.New("no saved pages")
+var ErrUserNotExist = errors.New("user not exists")
 
 type User struct {
+	TgID              int
+	ChatID            int
+	IsBot             bool   `json:"is_bot"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	Username          string `json:"username"`
+	IsPremium         bool   `json:"is_premium"`
+	DickSize          int
+	LastTryChangeDick time.Time
 }
 
 type Page struct {
