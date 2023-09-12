@@ -7,6 +7,7 @@ import (
 )
 
 func RandomValue() int {
+	rand.Seed(time.Now().UnixNano())
 	sign := rand.Intn(5)
 	value := rand.Intn(10)
 	if sign > 0 {

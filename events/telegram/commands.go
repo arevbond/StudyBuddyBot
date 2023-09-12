@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/game"
@@ -52,7 +51,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User) (err erro
 			LastName:          user.LastName,
 			Username:          user.Username,
 			IsPremium:         user.IsPremium,
-			DickSize:          rand.Intn(25),
+			DickSize:          game.RandomValue(),
 			LastTryChangeDick: time.Now(),
 		}
 		err = p.storage.CreateUser(context.Background(), dbUser)
