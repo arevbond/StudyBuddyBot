@@ -50,7 +50,7 @@ func (s *Storage) CreateUser(ctx context.Context, u *storage.DBUser) error {
 	q := `INSERT INTO users (tg_id, chat_id, is_bot, first_name, last_name, username, is_premium, dick_size, last_try_change_dick) 
 							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	log.Printf("create user %d %s %s %s, chat_id = %d, dick size = %d", u.TgID, u.Username, u.FirstName,
+	log.Printf("create user #%d '%s' '%s' '%s', chat_id = %d, dick size = %d", u.TgID, u.Username, u.FirstName,
 		u.LastName, u.ChatID, u.DickSize)
 
 	if _, err := s.db.ExecContext(ctx, q, u.TgID, u.ChatID, u.IsBot, u.FirstName,
@@ -107,51 +107,4 @@ func (s *Storage) UpdateUserDickSize(ctx context.Context, u *storage.DBUser, dic
 	u.DickSize = dickSize
 	log.Printf("user %d change his dick from %d to %d", u.TgID, oldDickSize, u.DickSize)
 	return nil
-}
-
-// Save saves page to storage.
-func (s *Storage) Save(ctx context.Context, p *storage.Page) error {
-	q := `INSERT INTO pages (url, user_name) VALUES (?, ?)`
-
-	if _, err := s.db.ExecContext(ctx, q, p.URL, p.UserName); err != nil {
-		return e.Wrap("can't save page:", err)
-	}
-	return nil
-}
-
-// PickRandom picks random page from storage.
-func (s *Storage) PickRandom(ctx context.Context, userName string) (*storage.Page, error) {
-	q := `SELECT url FROM pages WHERE user_name = ? ORDER BY RANDOM() LIMIT 1`
-
-	var url string
-
-	err := s.db.QueryRowContext(ctx, q, userName).Scan(&url)
-	if err == sql.ErrNoRows {
-		return nil, storage.ErrNoSavedPages
-	}
-	if err != nil {
-		return nil, e.Wrap("can't pick random page", err)
-	}
-	return &storage.Page{URL: url, UserName: userName}, nil
-}
-
-// Remove removes page from storage.
-func (s *Storage) Remove(ctx context.Context, p *storage.Page) error {
-	q := `DELETE FROM pages WHERE url = ? AND user_name = ?`
-	if _, err := s.db.ExecContext(ctx, q, p.URL, p.UserName); err != nil {
-		return e.Wrap("can't remove page", err)
-	}
-	return nil
-}
-
-// IsExists checks if page exists in storage.
-func (s *Storage) IsExists(ctx context.Context, p *storage.Page) (bool, error) {
-	q := `SELECT COUNT(*) FROM pages WHERE url = ? AND user_name = ?`
-
-	var count int
-
-	if err := s.db.QueryRowContext(ctx, q, p.URL, p.UserName).Scan(&count); err != nil {
-		return false, e.Wrap("can't check page is exist", err)
-	}
-	return count > 0, nil
 }

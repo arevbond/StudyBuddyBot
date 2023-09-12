@@ -2,11 +2,9 @@ package telegram
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"math/rand"
-	"net/url"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
@@ -15,9 +13,7 @@ import (
 )
 
 const (
-	DickCmd = "/dick"
-
-	RndCmd   = "/rnd"
+	DickCmd  = "/dick"
 	HelpCmd  = "/help"
 	StartCmd = "/start"
 )
@@ -25,19 +21,15 @@ const (
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User) error {
 	text = strings.TrimSpace(text)
 
-	log.Printf("got new command '%s' from '%s", text, user.Username)
-
-	if isAddCmd(text) {
-		return p.savePage(chat.ID, text, user.Username)
-	}
-	switch text {
-	case DickCmd:
-		return p.dick(chat, user)
-	case RndCmd:
-		return p.sendRandom(chat.ID, user.Username)
-	case HelpCmd:
+	switch {
+	case strings.HasPrefix(text, DickCmd):
+		log.Printf("got new command '%s' from '%s", text, user.Username)
+		return p.gameDick(chat, user)
+	case strings.HasPrefix(text, HelpCmd):
+		log.Printf("got new command '%s' from '%s", text, user.Username)
 		return p.sendHelp(chat.ID)
-	case StartCmd:
+	case strings.HasPrefix(text, StartCmd):
+		log.Printf("got new command '%s' from '%s", text, user.Username)
 		return p.sendHello(chat.ID)
 	default:
 		return nil
@@ -45,34 +37,11 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User)
 
 }
 
-//func (p *Processor) doCmd(text string, chatID int, userID int, username string, firstName, lastName string,
-//	isBot, isPremium bool) error {
-//	text = strings.TrimSpace(text)
-//
-//	log.Printf("got new command '%s' from '%s", text, username)
-//
-//	if isAddCmd(text) {
-//		return p.savePage(chatID, text, username)
-//	}
-//	switch text {
-//	case DickCmd:
-//		return p.dick(chatID, userID, username, firstName, lastName, isBot, isPremium)
-//	case RndCmd:
-//		return p.sendRandom(chatID, username)
-//	case HelpCmd:
-//		return p.sendHelp(chatID)
-//	case StartCmd:
-//		return p.sendHello(chatID)
-//	default:
-//		return nil
-//	}
-//
-//}
-
-func (p *Processor) dick(chat *telegram.Chat, user *telegram.User) (err error) {
+func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User) (err error) {
 	defer func() { err = e.WrapIfErr("can't change dick size: ", err) }()
 
 	dbUser, err := p.storage.User(context.Background(), user.ID, chat.ID)
+
 	if err == storage.ErrUserNotExist {
 		dbUser = &storage.DBUser{
 			TgID:              user.ID,
@@ -89,69 +58,23 @@ func (p *Processor) dick(chat *telegram.Chat, user *telegram.User) (err error) {
 		if err != nil {
 			return err
 		}
-		return p.tg.SendMessage(chat.ID,
-			fmt.Sprintf(msgCreateUser+msgDickSize, dbUser.Username, dbUser.DickSize))
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgCreateUser, dbUser.Username)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
 	} else if err != nil {
 		return err
 	}
+
+	// TODO: if canChangeDickSize()
 	isPlus, value, err := p.changeDickSize(dbUser)
 	if err != nil {
 		return err
 	}
 	if isPlus {
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickIncrease, dbUser.Username, value)+
-			fmt.Sprintf(msgDickSize, dbUser.DickSize))
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickIncrease, dbUser.Username, value)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
 	} else {
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickDecrease, dbUser.Username, value)+
-			fmt.Sprintf(msgDickSize, dbUser.DickSize))
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickDecrease, dbUser.Username, value)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
 	}
-
-	// if userCanChangeDick -> change his dick size -> sendMessage his dickSize success change
-	// else -> sendMessage your dick can't change
 }
 
-// func (p *Processor) dick(chatID int, userID int, username string, firstName, LastName string,
-//
-//		isBot, isPremium bool) (err error) {
-//		defer func() { err = e.WrapIfErr("can't change dick size: ", err) }()
-//
-//		user, err := p.storage.User(context.Background(), userID, chatID)
-//		if err == storage.ErrUserNotExist {
-//			user = &storage.User{
-//				TgID:              userID,
-//				ChatID:            chatID,
-//				IsBot:             isBot,
-//				FirstName:         firstName,
-//				LastName:          LastName,
-//				Username:          username,
-//				IsPremium:         isPremium,
-//				DickSize:          rand.Intn(25),
-//				LastTryChangeDick: time.Now(),
-//			}
-//			err = p.storage.CreateUser(context.Background(), user)
-//			if err != nil {
-//				return err
-//			}
-//			return p.tg.SendMessage(chatID,
-//				fmt.Sprintf(msgCreateUser+msgDickSize, username, user.DickSize))
-//		} else if err != nil {
-//			return err
-//		}
-//		isPlus, value, err := p.changeDickSize(user)
-//		if err != nil {
-//			return err
-//		}
-//		if isPlus {
-//			return p.tg.SendMessage(chatID, fmt.Sprintf(msgDickIncrease, username, value)+
-//				fmt.Sprintf(msgDickSize, user.DickSize))
-//		} else {
-//			return p.tg.SendMessage(chatID, fmt.Sprintf(msgDickDecrease, username, value)+
-//				fmt.Sprintf(msgDickSize, user.DickSize))
-//		}
-//
-//		// if userCanChangeDick -> change his dick size -> sendMessage his dickSize success change
-//		// else -> sendMessage your dick can't change
-//	}
 func (p *Processor) changeDickSize(user *storage.DBUser) (bool, int, error) {
 	value := randomValue()
 
@@ -179,59 +102,4 @@ func (p *Processor) sendHelp(chatID int) error {
 
 func (p *Processor) sendHello(chatID int) error {
 	return p.tg.SendMessage(chatID, msgHello)
-}
-
-func (p *Processor) savePage(chatID int, pageURL string, username string) (err error) {
-	defer func() { err = e.WrapIfErr("can't do command: save page", err) }()
-
-	page := &storage.Page{
-		URL:      pageURL,
-		UserName: username,
-	}
-
-	isExists, err := p.storage.IsExists(context.Background(), page)
-	if err != nil {
-		return err
-	}
-	if isExists {
-		return p.tg.SendMessage(chatID, msgAlreadyExists)
-	}
-
-	if err := p.storage.Save(context.Background(), page); err != nil {
-		return err
-	}
-
-	if err := p.tg.SendMessage(chatID, msgSaved); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (p *Processor) sendRandom(chatID int, username string) (err error) {
-	defer func() { err = e.WrapIfErr("can't do command: can't send random", err) }()
-
-	page, err := p.storage.PickRandom(context.Background(), username)
-	if err != nil && !errors.Is(err, storage.ErrNoSavedPages) {
-		return err
-	}
-	if errors.Is(err, storage.ErrNoSavedPages) {
-		return p.tg.SendMessage(chatID, msgNoSavedPages)
-	}
-
-	if err := p.tg.SendMessage(chatID, page.URL); err != nil {
-		return err
-	}
-
-	return p.storage.Remove(context.Background(), page)
-}
-
-func isAddCmd(text string) bool {
-	return isURL(text)
-}
-
-func isURL(text string) bool {
-	u, err := url.Parse(text)
-
-	return err == nil && u.Host != ""
 }

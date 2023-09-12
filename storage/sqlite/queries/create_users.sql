@@ -1,2 +1,0 @@
-CREATE TABLE IF NOT EXISTS users (id int NOT NULL AUTO_INCREMENT, tg_id int, chat_id int, is_bot BIT, first_name TEXT, last_name TEXT,
-                                  username TEXT, is_premium BIT, dick_size INT, last_try_change_dick DATE, PRIMARY KEY (id))
