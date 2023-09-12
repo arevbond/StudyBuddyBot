@@ -7,13 +7,18 @@ import (
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/game"
+	"tg_ics_useful_bot/lessons"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 	"time"
 )
 
 const (
-	DickCmd  = "/dick"
+	DickCmd            = "/dick"
+	TodayLessonsCmd    = "/today"
+	LessonsCmd         = "/lessons"
+	TomorrowLessonsCmd = "/tomorrow"
+
 	HelpCmd  = "/help"
 	StartCmd = "/start"
 )
@@ -22,9 +27,15 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User)
 	text = strings.TrimSpace(text)
 
 	switch {
+	case strings.HasPrefix(text, TomorrowLessonsCmd):
+		return p.tomorrowLessons(chat.ID)
+	case strings.HasPrefix(text, LessonsCmd):
+		return p.allLessons(chat.ID)
 	case strings.HasPrefix(text, DickCmd):
 		log.Printf("got new command '%s' from '%s", text, user.Username)
 		return p.gameDick(chat, user)
+	case strings.HasPrefix(text, TodayLessonsCmd):
+		return p.lessonsToday(chat.ID)
 	case strings.HasPrefix(text, HelpCmd):
 		log.Printf("got new command '%s' from '%s", text, user.Username)
 		return p.sendHelp(chat.ID)
@@ -35,6 +46,24 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User)
 		return nil
 	}
 
+}
+
+func (p *Processor) tomorrowLessons(chatID int) error {
+	result := "Расписание на завтра:\n\n"
+	result += lessons.StringTomorrowLessons(time.Now().Weekday())
+	return p.tg.SendMessage(chatID, result)
+}
+
+func (p *Processor) allLessons(chatID int) error {
+	result := "Расписание на неделю:\n\n"
+	result += lessons.StringAllLessons()
+	return p.tg.SendMessage(chatID, result)
+}
+
+func (p *Processor) lessonsToday(chatID int) error {
+	result := "Расписание на сегодня:\n\n"
+	result += lessons.StringLessonsByDay(time.Now().Weekday())
+	return p.tg.SendMessage(chatID, result)
 }
 
 func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User) (err error) {
