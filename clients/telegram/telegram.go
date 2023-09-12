@@ -19,7 +19,6 @@ type Client struct {
 const (
 	getUpdatesMethod  = "getUpdates"
 	sendMessageMethod = "sendMessage"
-	getChatMethod     = "getChat"
 )
 
 func New(host string, token string) *Client {
@@ -32,24 +31,6 @@ func New(host string, token string) *Client {
 
 func newBasePath(token string) string {
 	return "bot" + token
-}
-
-func (c *Client) Chat(chatID int) (Chat, error) {
-	q := url.Values{}
-	q.Add("chat_id", strconv.Itoa(chatID))
-
-	data, err := c.doRequest(getChatMethod, q)
-	if err != nil {
-		return Chat{}, e.Wrap("can't get chat information: ", err)
-	}
-
-	var chat Chat
-
-	if err := json.Unmarshal(data, &chat); err != nil {
-		return Chat{}, e.Wrap("can't convert json with chat infrotmation: ", err)
-	}
-
-	return chat, nil
 }
 
 func (c *Client) Updates(offset int, limit int) (updates []Update, err error) {
@@ -88,7 +69,6 @@ func (c *Client) SendMessage(chatID int, text string) error {
 
 func (c *Client) doRequest(method string, query url.Values) (data []byte, err error) {
 	defer func() { err = e.WrapIfErr("can't do request", err) }()
-
 	u := url.URL{
 		Scheme: "https",
 		Host:   c.host,
@@ -101,7 +81,6 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 	}
 
 	req.URL.RawQuery = query.Encode()
-
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -112,6 +91,5 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 	if err != nil {
 		return nil, err
 	}
-
 	return body, nil
 }

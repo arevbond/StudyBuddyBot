@@ -64,25 +64,30 @@ func (s *Storage) CreateUser(ctx context.Context, u *storage.DBUser) error {
 func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE tg_id = ? AND chat_id = ?`
 
-	var id, cID, dickSize int
-	var isBot, isPremium bool
-	var firstName, lastName, username string
-	var lastTryChangeDickStr time.Time
+	//var id, cID, dickSize int
+	//var isBot, isPremium bool
+	//var firstName, lastName, username string
+	//var lastTryChangeDickStr time.Time
 
-	err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&id, &cID, &isBot, &firstName, &lastName,
-		&username, &isPremium, &dickSize, &lastTryChangeDickStr)
+	//err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&id, &cID, &isBot, &firstName, &lastName,
+	//	&username, &isPremium, &dickSize, &lastTryChangeDickStr)
 
-	user := &storage.DBUser{
-		TgID:              id,
-		ChatID:            cID,
-		IsBot:             isBot,
-		FirstName:         firstName,
-		LastName:          lastName,
-		Username:          username,
-		IsPremium:         isPremium,
-		DickSize:          dickSize,
-		LastTryChangeDick: lastTryChangeDickStr,
-	}
+	user := &storage.DBUser{}
+
+	err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
+		&user.Username, &user.IsPremium, &user.DickSize, &user.LastTryChangeDick)
+
+	//user := &storage.DBUser{
+	//	TgID:              id,
+	//	ChatID:            cID,
+	//	IsBot:             isBot,
+	//	FirstName:         firstName,
+	//	LastName:          lastName,
+	//	Username:          username,
+	//	IsPremium:         isPremium,
+	//	DickSize:          dickSize,
+	//	LastTryChangeDick: lastTryChangeDickStr,
+	//}
 
 	if err == sql.ErrNoRows {
 		return nil, storage.ErrUserNotExist
@@ -107,4 +112,28 @@ func (s *Storage) UpdateUserDickSize(ctx context.Context, u *storage.DBUser, dic
 	u.DickSize = dickSize
 	log.Printf("user %d change his dick from %d to %d", u.TgID, oldDickSize, u.DickSize)
 	return nil
+}
+
+func (s *Storage) UsersByChat(ctx context.Context, chatID int) ([]*storage.DBUser, error) {
+	q := `SELECT * FROM users WHERE chat_id = ? ORDER BY -dick_size`
+	rows, err := s.db.QueryContext(ctx, q, chatID)
+	if err != nil {
+		return nil, e.Wrap(fmt.Sprintf("can't get users by chat id: %s", chatID), err)
+	}
+	defer rows.Close()
+
+	var users []*storage.DBUser
+
+	for rows.Next() {
+		user := &storage.DBUser{}
+		if err := rows.Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
+			&user.Username, &user.IsPremium, &user.DickSize, &user.LastTryChangeDick); err != nil {
+			return users, e.Wrap(fmt.Sprintf("can't get users by chat id: %s", chatID), err)
+		}
+		users = append(users, user)
+	}
+	if err = rows.Err(); err != nil {
+		return users, err
+	}
+	return users, nil
 }

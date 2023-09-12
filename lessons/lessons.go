@@ -37,7 +37,6 @@ func Lessons() map[time.Weekday][]lesson {
 		{Name: "Защита информации", Teacher: "Овцинникова Т.М.", Time: "9:45"},
 		{Name: "Основы теории передачи информации", Teacher: "Гутерман Н.Е.", Time: "13:25"},
 	}
-
 	return lessons
 }
 

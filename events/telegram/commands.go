@@ -14,7 +14,12 @@ import (
 )
 
 const (
-	DickCmd            = "/dick"
+	GayStartCmd = "/gay"
+	GayTopCmd   = "/gay_top"
+
+	DicStartCmd = "/dick"
+	DickTopCmd  = "/top_dick"
+
 	TodayLessonsCmd    = "/today"
 	LessonsCmd         = "/lessons"
 	TomorrowLessonsCmd = "/tomorrow"
@@ -31,9 +36,11 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User)
 		return p.tomorrowLessons(chat.ID)
 	case strings.HasPrefix(text, LessonsCmd):
 		return p.allLessons(chat.ID)
-	case strings.HasPrefix(text, DickCmd):
+	case strings.HasPrefix(text, DicStartCmd):
 		log.Printf("got new command '%s' from '%s", text, user.Username)
 		return p.gameDick(chat, user)
+	case strings.HasPrefix(text, DickTopCmd):
+		return p.topDick(chat)
 	case strings.HasPrefix(text, TodayLessonsCmd):
 		return p.lessonsToday(chat.ID)
 	case strings.HasPrefix(text, HelpCmd):
@@ -64,6 +71,18 @@ func (p *Processor) lessonsToday(chatID int) error {
 	result := "Расписание на сегодня:\n\n"
 	result += lessons.StringLessonsByDay(time.Now().Weekday())
 	return p.tg.SendMessage(chatID, result)
+}
+
+func (p *Processor) topDick(chat *telegram.Chat) (err error) {
+	users, err := p.storage.UsersByChat(context.Background(), chat.ID)
+	if err != nil {
+		return err
+	}
+	result := ""
+	for i, u := range users {
+		result += fmt.Sprintf("%d. %s — %d см\n", i+1, u.FirstName+" "+u.LastName, u.DickSize)
+	}
+	return p.tg.SendMessage(chat.ID, result)
 }
 
 func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User) (err error) {
