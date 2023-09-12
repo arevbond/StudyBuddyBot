@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/url"
 	"strings"
+	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 	"time"
@@ -21,72 +22,137 @@ const (
 	StartCmd = "/start"
 )
 
-func (p *Processor) doCmd(text string, chatID int, userID int, username string, firstName, lastName string,
-	isBot, isPremium bool) error {
+func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User) error {
 	text = strings.TrimSpace(text)
 
-	log.Printf("got new command '%s' from '%s", text, username)
+	log.Printf("got new command '%s' from '%s", text, user.Username)
 
 	if isAddCmd(text) {
-		return p.savePage(chatID, text, username)
+		return p.savePage(chat.ID, text, user.Username)
 	}
 	switch text {
 	case DickCmd:
-		return p.dick(chatID, userID, username, firstName, lastName, isBot, isPremium)
+		return p.dick(chat, user)
 	case RndCmd:
-		return p.sendRandom(chatID, username)
+		return p.sendRandom(chat.ID, user.Username)
 	case HelpCmd:
-		return p.sendHelp(chatID)
+		return p.sendHelp(chat.ID)
 	case StartCmd:
-		return p.sendHello(chatID)
+		return p.sendHello(chat.ID)
 	default:
 		return nil
 	}
 
 }
 
-func (p *Processor) dick(chatID int, userID int, username string, firstName, LastName string,
-	isBot, isPremium bool) (err error) {
+//func (p *Processor) doCmd(text string, chatID int, userID int, username string, firstName, lastName string,
+//	isBot, isPremium bool) error {
+//	text = strings.TrimSpace(text)
+//
+//	log.Printf("got new command '%s' from '%s", text, username)
+//
+//	if isAddCmd(text) {
+//		return p.savePage(chatID, text, username)
+//	}
+//	switch text {
+//	case DickCmd:
+//		return p.dick(chatID, userID, username, firstName, lastName, isBot, isPremium)
+//	case RndCmd:
+//		return p.sendRandom(chatID, username)
+//	case HelpCmd:
+//		return p.sendHelp(chatID)
+//	case StartCmd:
+//		return p.sendHello(chatID)
+//	default:
+//		return nil
+//	}
+//
+//}
+
+func (p *Processor) dick(chat *telegram.Chat, user *telegram.User) (err error) {
 	defer func() { err = e.WrapIfErr("can't change dick size: ", err) }()
 
-	user, err := p.storage.User(context.Background(), userID, chatID)
+	dbUser, err := p.storage.User(context.Background(), user.ID, chat.ID)
 	if err == storage.ErrUserNotExist {
-		user = &storage.User{
-			TgID:              userID,
-			ChatID:            chatID,
-			IsBot:             isBot,
-			FirstName:         firstName,
-			LastName:          LastName,
-			Username:          username,
-			IsPremium:         isPremium,
+		dbUser = &storage.DBUser{
+			TgID:              user.ID,
+			ChatID:            chat.ID,
+			IsBot:             user.IsBot,
+			FirstName:         user.FirstName,
+			LastName:          user.LastName,
+			Username:          user.Username,
+			IsPremium:         user.IsPremium,
 			DickSize:          rand.Intn(25),
 			LastTryChangeDick: time.Now(),
 		}
-		err = p.storage.CreateUser(context.Background(), user)
+		err = p.storage.CreateUser(context.Background(), dbUser)
 		if err != nil {
 			return err
 		}
-		return p.tg.SendMessage(chatID,
-			fmt.Sprintf(msgCreateUser+msgDickSize, username, user.DickSize))
+		return p.tg.SendMessage(chat.ID,
+			fmt.Sprintf(msgCreateUser+msgDickSize, dbUser.Username, dbUser.DickSize))
 	} else if err != nil {
 		return err
 	}
-	isPlus, value, err := p.changeDickSize(user)
+	isPlus, value, err := p.changeDickSize(dbUser)
 	if err != nil {
 		return err
 	}
 	if isPlus {
-		return p.tg.SendMessage(chatID, fmt.Sprintf(msgDickIncrease, username, value)+
-			fmt.Sprintf(msgDickSize, user.DickSize))
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickIncrease, dbUser.Username, value)+
+			fmt.Sprintf(msgDickSize, dbUser.DickSize))
 	} else {
-		return p.tg.SendMessage(chatID, fmt.Sprintf(msgDickDecrease, username, value)+
-			fmt.Sprintf(msgDickSize, user.DickSize))
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickDecrease, dbUser.Username, value)+
+			fmt.Sprintf(msgDickSize, dbUser.DickSize))
 	}
 
 	// if userCanChangeDick -> change his dick size -> sendMessage his dickSize success change
 	// else -> sendMessage your dick can't change
 }
-func (p *Processor) changeDickSize(user *storage.User) (bool, int, error) {
+
+// func (p *Processor) dick(chatID int, userID int, username string, firstName, LastName string,
+//
+//		isBot, isPremium bool) (err error) {
+//		defer func() { err = e.WrapIfErr("can't change dick size: ", err) }()
+//
+//		user, err := p.storage.User(context.Background(), userID, chatID)
+//		if err == storage.ErrUserNotExist {
+//			user = &storage.User{
+//				TgID:              userID,
+//				ChatID:            chatID,
+//				IsBot:             isBot,
+//				FirstName:         firstName,
+//				LastName:          LastName,
+//				Username:          username,
+//				IsPremium:         isPremium,
+//				DickSize:          rand.Intn(25),
+//				LastTryChangeDick: time.Now(),
+//			}
+//			err = p.storage.CreateUser(context.Background(), user)
+//			if err != nil {
+//				return err
+//			}
+//			return p.tg.SendMessage(chatID,
+//				fmt.Sprintf(msgCreateUser+msgDickSize, username, user.DickSize))
+//		} else if err != nil {
+//			return err
+//		}
+//		isPlus, value, err := p.changeDickSize(user)
+//		if err != nil {
+//			return err
+//		}
+//		if isPlus {
+//			return p.tg.SendMessage(chatID, fmt.Sprintf(msgDickIncrease, username, value)+
+//				fmt.Sprintf(msgDickSize, user.DickSize))
+//		} else {
+//			return p.tg.SendMessage(chatID, fmt.Sprintf(msgDickDecrease, username, value)+
+//				fmt.Sprintf(msgDickSize, user.DickSize))
+//		}
+//
+//		// if userCanChangeDick -> change his dick size -> sendMessage his dickSize success change
+//		// else -> sendMessage your dick can't change
+//	}
+func (p *Processor) changeDickSize(user *storage.DBUser) (bool, int, error) {
 	value := randomValue()
 
 	log.Printf("%d user old dick size = %d, new dick size = %d", user.TgID, user.DickSize, user.DickSize+value)

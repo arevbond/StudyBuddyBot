@@ -16,15 +16,15 @@ type Storage interface {
 	Remove(ctx context.Context, p *Page) error
 	IsExists(ctx context.Context, p *Page) (bool, error)
 
-	User(ctx context.Context, tgID, chatID int) (*User, error)
-	CreateUser(ctx context.Context, u *User) error
-	UpdateUserDickSize(ctx context.Context, u *User, dickSize int) error
+	User(ctx context.Context, tgID, chatID int) (*DBUser, error)
+	CreateUser(ctx context.Context, u *DBUser) error
+	UpdateUserDickSize(ctx context.Context, u *DBUser, dickSize int) error
 }
 
 var ErrNoSavedPages = errors.New("no saved pages")
 var ErrUserNotExist = errors.New("user not exists")
 
-type User struct {
+type DBUser struct {
 	TgID              int
 	ChatID            int
 	IsBot             bool   `json:"is_bot"`

@@ -46,7 +46,7 @@ func (s *Storage) Init(ctx context.Context) error {
 }
 
 // CreateUser new user by chatID and telegramID.
-func (s *Storage) CreateUser(ctx context.Context, u *storage.User) error {
+func (s *Storage) CreateUser(ctx context.Context, u *storage.DBUser) error {
 	q := `INSERT INTO users (tg_id, chat_id, is_bot, first_name, last_name, username, is_premium, dick_size, last_try_change_dick) 
 							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
@@ -61,7 +61,7 @@ func (s *Storage) CreateUser(ctx context.Context, u *storage.User) error {
 }
 
 // User got user by chatID and telegram ID.
-func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.User, error) {
+func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE tg_id = ? AND chat_id = ?`
 
 	var id, cID, dickSize int
@@ -72,7 +72,7 @@ func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.User, er
 	err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&id, &cID, &isBot, &firstName, &lastName,
 		&username, &isPremium, &dickSize, &lastTryChangeDickStr)
 
-	user := &storage.User{
+	user := &storage.DBUser{
 		TgID:              id,
 		ChatID:            cID,
 		IsBot:             isBot,
@@ -97,7 +97,7 @@ func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.User, er
 	return user, nil
 }
 
-func (s *Storage) UpdateUserDickSize(ctx context.Context, u *storage.User, dickSize int) error {
+func (s *Storage) UpdateUserDickSize(ctx context.Context, u *storage.DBUser, dickSize int) error {
 	q := `UPDATE users SET dick_size = ?, last_try_change_dick = ? WHERE tg_id = ? AND chat_id = ?`
 	oldDickSize := u.DickSize
 	if _, err := s.db.ExecContext(ctx, q, dickSize, time.Now(), u.TgID, u.ChatID); err != nil {
