@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
+	"tg_ics_useful_bot/game"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 	"time"
@@ -63,20 +64,22 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User) (err erro
 		return err
 	}
 
-	// TODO: if canChangeDickSize()
-	isPlus, value, err := p.changeDickSize(dbUser)
-	if err != nil {
-		return err
+	if game.CanChangeDickSize(dbUser) {
+		isPlus, value, err := p.changeDickSize(dbUser)
+		if err != nil {
+			return err
+		}
+		if isPlus {
+			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickIncrease, dbUser.Username, value)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
+		} else {
+			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickDecrease, dbUser.Username, value)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
+		}
 	}
-	if isPlus {
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickIncrease, dbUser.Username, value)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
-	} else {
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickDecrease, dbUser.Username, value)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
-	}
+	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAlreadyPlays, dbUser.Username))
 }
 
 func (p *Processor) changeDickSize(user *storage.DBUser) (bool, int, error) {
-	value := randomValue()
+	value := game.RandomValue()
 
 	log.Printf("%d user old dick size = %d, new dick size = %d", user.TgID, user.DickSize, user.DickSize+value)
 
@@ -85,15 +88,6 @@ func (p *Processor) changeDickSize(user *storage.DBUser) (bool, int, error) {
 		return false, 0, e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size: ", user.ChatID, user.Username), err)
 	}
 	return value >= 0, value, nil
-}
-
-func randomValue() int {
-	sign := rand.Intn(5)
-	value := rand.Intn(10)
-	if sign > 0 {
-		return value
-	}
-	return -1 * value
 }
 
 func (p *Processor) sendHelp(chatID int) error {
