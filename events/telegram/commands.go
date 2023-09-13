@@ -49,7 +49,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 			log.Printf("@%s вызывает на дуель @%s", user.Username, target)
 			return p.duelDick(chat, user, target)
 		}
-		return nil
+		return p.duelDick(chat, user, user.Username)
 
 	case strings.HasPrefix(text, TodayLessonsCmd):
 		return p.lessonsToday(chat.ID)
