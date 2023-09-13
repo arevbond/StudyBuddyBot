@@ -117,22 +117,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, message *
 	dbUser, err := p.storage.User(context.Background(), user.ID, chat.ID)
 
 	if err == storage.ErrUserNotExist {
-		dbUser = &storage.DBUser{
-			TgID:              user.ID,
-			ChatID:            chat.ID,
-			IsBot:             user.IsBot,
-			FirstName:         user.FirstName,
-			LastName:          user.LastName,
-			Username:          user.Username,
-			IsPremium:         user.IsPremium,
-			DickSize:          game.PositiveRandomValue(),
-			LastTryChangeDick: time.Now(),
-		}
-		err = p.storage.CreateUser(context.Background(), dbUser)
-		if err != nil {
-			return err
-		}
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgCreateUser, dbUser.Username)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
+		return p.createNewPlayer(chat, user)
 	} else if err != nil {
 		return err
 	}
@@ -145,6 +130,25 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, message *
 		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChangeDickSize, dbUser.Username, oldDickSize, dbUser.DickSize))
 	}
 	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAlreadyPlays, dbUser.Username))
+}
+
+func (p *Processor) createNewPlayer(chat *telegram.Chat, user *telegram.User) error {
+	dbUser := &storage.DBUser{
+		TgID:              user.ID,
+		ChatID:            chat.ID,
+		IsBot:             user.IsBot,
+		FirstName:         user.FirstName,
+		LastName:          user.LastName,
+		Username:          user.Username,
+		IsPremium:         user.IsPremium,
+		DickSize:          game.PositiveRandomValue(),
+		LastTryChangeDick: time.Now(),
+	}
+	err := p.storage.CreateUser(context.Background(), dbUser)
+	if err != nil {
+		return err
+	}
+	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgCreateUser, dbUser.Username)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
 }
 
 func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUsername string) error {
