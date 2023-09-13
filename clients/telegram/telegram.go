@@ -17,9 +17,10 @@ type Client struct {
 }
 
 const (
-	getUpdatesMethod  = "getUpdates"
-	sendMessageMethod = "sendMessage"
-	sendPhotoMethod   = "sendPhoto"
+	getUpdatesMethod    = "getUpdates"
+	sendMessageMethod   = "sendMessage"
+	sendPhotoMethod     = "sendPhoto"
+	deleteMessageMethod = "deleteMessage"
 )
 
 func New(host string, token string) *Client {
@@ -74,6 +75,19 @@ func (c *Client) SendPhoto(chatID int, urlPhoto string) error {
 	q.Add("photo", urlPhoto)
 
 	_, err := c.doRequest(sendPhotoMethod, q)
+	if err != nil {
+		return e.Wrap("can't send message", err)
+	}
+
+	return nil
+}
+
+func (c *Client) DeleteMessage(chatID int, messageID int) error {
+	q := url.Values{}
+	q.Add("chat_id", strconv.Itoa(chatID))
+	q.Add("message_id", strconv.Itoa(messageID))
+
+	_, err := c.doRequest(deleteMessageMethod, q)
 	if err != nil {
 		return e.Wrap("can't send message", err)
 	}

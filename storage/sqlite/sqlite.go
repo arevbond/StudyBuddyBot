@@ -30,15 +30,10 @@ func New(path string) (storage *Storage, err error) {
 
 // Init creates tables to storage.
 func (s *Storage) Init(ctx context.Context) error {
-	q1 := `CREATE TABLE IF NOT EXISTS pages (url TEXT, user_name TEXT)`
 	q2 := `CREATE TABLE IF NOT EXISTS users (tg_id int, chat_id int, is_bot BIT, first_name TEXT, last_name TEXT, 
 			username TEXT, is_premium BIT, dick_size INT, last_try_change_dick DATE)`
-	_, err := s.db.ExecContext(ctx, q1)
-	if err != nil {
-		return e.Wrap("can't create table pages", err)
-	}
 
-	_, err = s.db.ExecContext(ctx, q2)
+	_, err := s.db.ExecContext(ctx, q2)
 	if err != nil {
 		return e.Wrap("can't create table users", err)
 	}

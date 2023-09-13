@@ -22,38 +22,37 @@ const (
 
 	DicStartCmd = "/dick"
 	DickTopCmd  = "/top_dick"
+	DickDuelCmd = "/duel"
 
 	TodayLessonsCmd    = "/today"
 	LessonsCmd         = "/lessons"
 	TomorrowLessonsCmd = "/tomorrow"
-
-	HelpCmd  = "/help"
-	StartCmd = "/start"
 )
 
-func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User) error {
+func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, message *telegram.IncomingMessage) error {
 	text = strings.TrimSpace(text)
+	if strings.HasPrefix(text, "/") {
+		log.Printf("got new command '%s' from '%s", text, user.Username)
+	}
 
 	switch {
+
+	case strings.HasPrefix(text, DicStartCmd):
+		return p.gameDick(chat, user, message)
+	case strings.HasPrefix(text, DickTopCmd):
+		return p.topDick(chat)
+	//case strings.HasPrefix(text, DickDuelCmd):
+	//	return p.duelDick(chat, user)
+
+	case strings.HasPrefix(text, TodayLessonsCmd):
+		return p.lessonsToday(chat.ID)
 	case strings.HasPrefix(text, TomorrowLessonsCmd):
 		return p.tomorrowLessons(chat.ID)
 	case strings.HasPrefix(text, LessonsCmd):
 		return p.allLessons(chat.ID)
-	case strings.HasPrefix(text, DicStartCmd):
-		log.Printf("got new command '%s' from '%s", text, user.Username)
-		return p.gameDick(chat, user)
-	case strings.HasPrefix(text, DickTopCmd):
-		return p.topDick(chat)
-	case strings.HasPrefix(text, TodayLessonsCmd):
-		return p.lessonsToday(chat.ID)
+
 	case strings.HasPrefix(text, XkcdCmd):
 		return p.sendXkcd(chat.ID)
-	//case strings.HasPrefix(text, HelpCmd):
-	//	log.Printf("got new command '%s' from '%s", text, user.Username)
-	//	return p.sendHelp(chat.ID)
-	//case strings.HasPrefix(text, StartCmd):
-	//	log.Printf("got new command '%s' from '%s", text, user.Username)
-	//	return p.sendHello(chat.ID)
 	default:
 		return nil
 	}
@@ -87,6 +86,9 @@ func (p *Processor) lessonsToday(chatID int) error {
 }
 
 func (p *Processor) topDick(chat *telegram.Chat) (err error) {
+	if err != nil {
+		return err
+	}
 	users, err := p.storage.UsersByChat(context.Background(), chat.ID)
 	if err != nil {
 		return err
@@ -98,8 +100,13 @@ func (p *Processor) topDick(chat *telegram.Chat) (err error) {
 	return p.tg.SendMessage(chat.ID, result)
 }
 
-func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User) (err error) {
+func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, message *telegram.IncomingMessage) (err error) {
 	defer func() { err = e.WrapIfErr("can't change dick size: ", err) }()
+
+	err = p.tg.DeleteMessage(chat.ID, message.ID)
+	if err != nil {
+		return err
+	}
 
 	dbUser, err := p.storage.User(context.Background(), user.ID, chat.ID)
 
@@ -125,29 +132,25 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User) (err erro
 	}
 
 	if game.CanChangeDickSize(dbUser) {
-		isPlus, value, err := p.changeDickSize(dbUser)
+		_, oldDickSize, err := p.changeDickSize(dbUser)
 		if err != nil {
 			return err
 		}
-		if isPlus {
-			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickIncrease, dbUser.Username, value)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
-		} else {
-			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDickDecrease, dbUser.Username, value)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
-		}
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChangeDickSize, dbUser.Username, oldDickSize, dbUser.DickSize))
 	}
 	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAlreadyPlays, dbUser.Username))
 }
 
 func (p *Processor) changeDickSize(user *storage.DBUser) (bool, int, error) {
 	value := game.RandomValue()
-
-	log.Printf("%d user old dick size = %d, new dick size = %d", user.TgID, user.DickSize, user.DickSize+value)
+	oldDickSize := user.DickSize
+	//log.Printf("%d user old dick size = %d, new dick size = %d", user.TgID, oldDickSize, user.DickSize+value)
 
 	err := p.storage.UpdateUserDickSize(context.Background(), user, user.DickSize+value)
 	if err != nil {
 		return false, 0, e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size: ", user.ChatID, user.Username), err)
 	}
-	return value >= 0, value, nil
+	return value >= 0, oldDickSize, nil
 }
 
 func (p *Processor) sendHelp(chatID int) error {

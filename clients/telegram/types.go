@@ -11,6 +11,7 @@ type Update struct {
 }
 
 type IncomingMessage struct {
+	ID   int    `json:"message_id"`
 	Text string `json:"text"`
 	From User   `json:"from"`
 	Date int    `json:"date"` // Date the message was sent in Unix time
