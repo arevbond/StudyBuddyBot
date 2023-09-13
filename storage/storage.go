@@ -14,6 +14,7 @@ type Storage interface {
 	UsersByChat(ctx context.Context, chatID int) ([]*DBUser, error)
 
 	GayOfDay(ctx context.Context, chatID int) (*DBGayOfDay, error)
+	RemoveGayOfDay(ctx context.Context, chatID int) error
 	CreateGayOfDay(ctx context.Context, gay *DBGayOfDay) error
 	IncreaseCountOfGay(ctx context.Context, u *DBUser) error
 }

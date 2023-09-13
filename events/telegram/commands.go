@@ -17,7 +17,7 @@ import (
 
 const (
 	GayStartCmd = "/gay"
-	//GayTopCmd   = "/gay_top"
+	GayTopCmd   = "/gay_top"
 
 	XkcdCmd = "/xkcd"
 
@@ -35,42 +35,68 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	if strings.HasPrefix(text, "/") {
 		log.Printf("got new command '%s' from '%s", text, user.Username)
 	}
-
-	switch {
-	case strings.HasPrefix(text, GayStartCmd):
-		log.Print(chat.Type)
-		if chat.Type == "group" || chat.Type == "supergroup" {
+	if chat.Type == "group" || chat.Type == "supergroup" {
+		switch {
+		//case strings.HasPrefix(text, GayTopCmd):
+		//	return p.gameGayTop(chat.ID)
+		case strings.HasPrefix(text, GayStartCmd):
 			return p.gameGay(chat.ID)
+
+		case strings.HasPrefix(text, DicStartCmd):
+			return p.gameDick(chat, user, messageID)
+		case strings.HasPrefix(text, DickTopCmd):
+			return p.topDick(chat)
+		case strings.HasPrefix(text, DickDuelCmd):
+			if lib.Contains("@", text) {
+				textSplited := strings.Split(text, "@")
+				target := textSplited[len(textSplited)-1]
+				log.Printf("@%s вызывает на дуель @%s", user.Username, target)
+				return p.duelDick(chat, user, target)
+			}
+			return p.duelDick(chat, user, user.Username)
+
+		case strings.HasPrefix(text, TodayLessonsCmd):
+			return p.lessonsToday(chat.ID)
+		case strings.HasPrefix(text, TomorrowLessonsCmd):
+			return p.tomorrowLessons(chat.ID)
+		case strings.HasPrefix(text, LessonsCmd):
+			return p.allLessons(chat.ID)
+
+		case strings.HasPrefix(text, XkcdCmd):
+			return p.sendXkcd(chat.ID)
+		default:
+			return nil
 		}
-		return nil
-
-	case strings.HasPrefix(text, DicStartCmd):
-		return p.gameDick(chat, user, messageID)
-	case strings.HasPrefix(text, DickTopCmd):
-		return p.topDick(chat)
-	case strings.HasPrefix(text, DickDuelCmd):
-		if lib.Contains("@", text) {
-			textSplited := strings.Split(text, "@")
-			target := textSplited[len(textSplited)-1]
-			log.Printf("@%s вызывает на дуель @%s", user.Username, target)
-			return p.duelDick(chat, user, target)
-		}
-		return p.duelDick(chat, user, user.Username)
-
-	case strings.HasPrefix(text, TodayLessonsCmd):
-		return p.lessonsToday(chat.ID)
-	case strings.HasPrefix(text, TomorrowLessonsCmd):
-		return p.tomorrowLessons(chat.ID)
-	case strings.HasPrefix(text, LessonsCmd):
-		return p.allLessons(chat.ID)
-
-	case strings.HasPrefix(text, XkcdCmd):
-		return p.sendXkcd(chat.ID)
-	default:
-		return nil
 	}
-
+	return nil
 }
+
+//func (p *Processor) gameGayTop(chatID int) (err error) {
+//	admins, err := p.tg.ChatAdministrators(chatID)
+//	if err != nil {
+//		return e.Wrap("can't get chat administrators: ", err)
+//	}
+//	dbUsers := []*storage.DBUser{}
+//	for _, u := range admins {
+//		dbUser, err := p.storage.User(context.Background(), u.ID, chatID)
+//		if err == storage.ErrUserNotExist {
+//			dbUser, err = p.createNewPlayer(chatID, &u)
+//			if err != nil {
+//				return err
+//			}
+//		}
+//		dbUsers = append(dbUsers, dbUser)
+//	}
+//	sort.Slice(dbUsers, func(i, j int) bool {
+//		return dbUsers[i].CountGayOfDay <= dbUsers[j].CountGayOfDay
+//	})
+//	result := "Рейтинг пидоров: \n\n"
+//
+//	for i, dbU := range dbUsers {
+//		result += fmt.Sprintf("%d. %s %s - %d раз \n", i+1, dbU.FirstName, dbU.LastName, dbU.CountGayOfDay)
+//	}
+//	return p.tg.SendMessage(chatID, result)
+//}
 
 func (p *Processor) gameGay(chatID int) error {
 	admins, err := p.tg.ChatAdministrators(chatID)
@@ -86,6 +112,10 @@ func (p *Processor) gameGay(chatID int) error {
 		return e.Wrap("can't get gay of day: ", err)
 	}
 	if gay.DateLastUsed.Month() >= time.Now().Month() && gay.DateLastUsed.Day() < time.Now().Day() {
+		err = p.storage.RemoveGayOfDay(context.Background(), chatID)
+		if err != nil {
+			return err
+		}
 		gay, err = p.createNewGayOfDay(chatID, admins)
 		return p.tg.SendMessage(chatID, fmt.Sprintf(msgNewGayOfDay, gay.Username))
 	}

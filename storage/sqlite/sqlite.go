@@ -68,7 +68,7 @@ func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.DBUser, 
 	user := &storage.DBUser{}
 
 	err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
-		&user.Username, &user.IsPremium, &user.DickSize, &user.LastTryChangeDick)
+		&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.LastTryChangeDick)
 
 	if err == sql.ErrNoRows {
 		return nil, storage.ErrUserNotExist
@@ -129,7 +129,7 @@ func (s *Storage) UsersByChat(ctx context.Context, chatID int) ([]*storage.DBUse
 	for rows.Next() {
 		user := &storage.DBUser{}
 		if err := rows.Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
-			&user.Username, &user.IsPremium, &user.DickSize, &user.LastTryChangeDick); err != nil {
+			&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.LastTryChangeDick); err != nil {
 			return users, e.Wrap(fmt.Sprintf("can't get users by chat id: %s", chatID), err)
 		}
 		users = append(users, user)
@@ -172,6 +172,15 @@ func (s *Storage) CreateGayOfDay(ctx context.Context, gay *storage.DBGayOfDay) e
 	return nil
 }
 
+func (s *Storage) RemoveGayOfDay(ctx context.Context, chatID int) error {
+	q := `DELETE FROM gays WHERE chat_id = ?`
+
+	if _, err := s.db.ExecContext(ctx, q, chatID); err != nil {
+		return e.Wrap(fmt.Sprintf("can't remove gay %d %s: ", chatID), err)
+	}
+	return nil
+}
+
 func (s *Storage) IncreaseCountOfGay(ctx context.Context, u *storage.DBUser) error {
 	q := `UPDATE users SET count_gay_of_day = ? WHERE tg_id = ? AND chat_id = ?`
 	oldCount := u.CountGayOfDay
@@ -180,6 +189,5 @@ func (s *Storage) IncreaseCountOfGay(ctx context.Context, u *storage.DBUser) err
 			u.TgID, u.ChatID), err)
 	}
 	u.CountGayOfDay += 1
-
 	return nil
 }

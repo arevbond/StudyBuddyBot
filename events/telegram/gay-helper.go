@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"context"
+	"log"
 	"math/rand"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/storage"
@@ -35,5 +36,6 @@ func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*stor
 	if err != nil {
 		return nil, err
 	}
+	log.Print("LOOL")
 	return gay, nil
 }
