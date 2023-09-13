@@ -10,10 +10,10 @@ import (
 	"time"
 )
 
-func (p *Processor) createNewPlayer(chat *telegram.Chat, user *telegram.User) error {
+func (p *Processor) createNewPlayer(chatID int, user *telegram.User) (*storage.DBUser, error) {
 	dbUser := &storage.DBUser{
 		TgID:              user.ID,
-		ChatID:            chat.ID,
+		ChatID:            chatID,
 		IsBot:             user.IsBot,
 		FirstName:         user.FirstName,
 		LastName:          user.LastName,
@@ -24,9 +24,9 @@ func (p *Processor) createNewPlayer(chat *telegram.Chat, user *telegram.User) er
 	}
 	err := p.storage.CreateUser(context.Background(), dbUser)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgCreateUser, dbUser.Username)+fmt.Sprintf(msgDickSize, dbUser.DickSize))
+	return dbUser, err
 }
 
 func (p *Processor) changeDickSize(user *storage.DBUser, value int) (int, error) {

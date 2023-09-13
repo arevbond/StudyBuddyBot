@@ -38,7 +38,11 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 
 	switch {
 	case strings.HasPrefix(text, GayStartCmd):
-		return p.gameGay(chat.ID)
+		log.Print(chat.Type)
+		if chat.Type == "group" || chat.Type == "supergroup" {
+			return p.gameGay(chat.ID)
+		}
+		return nil
 
 	case strings.HasPrefix(text, DicStartCmd):
 		return p.gameDick(chat, user, messageID)
@@ -76,12 +80,14 @@ func (p *Processor) gameGay(chatID int) error {
 
 	gay, err := p.storage.GayOfDay(context.Background(), chatID)
 	if err == storage.ErrUserNotExist {
-		return p.createNewGayOfDay(chatID, admins)
+		gay, err = p.createNewGayOfDay(chatID, admins)
+		return p.tg.SendMessage(chatID, fmt.Sprintf(msgNewGayOfDay, gay.Username))
 	} else if err != nil {
 		return e.Wrap("can't get gay of day: ", err)
 	}
 	if gay.DateLastUsed.Month() >= time.Now().Month() && gay.DateLastUsed.Day() < time.Now().Day() {
-		return p.createNewGayOfDay(chatID, admins)
+		gay, err = p.createNewGayOfDay(chatID, admins)
+		return p.tg.SendMessage(chatID, fmt.Sprintf(msgNewGayOfDay, gay.Username))
 	}
 	return p.tg.SendMessage(chatID, fmt.Sprintf(msgCurrentGayOfDay, gay.Username))
 }
@@ -112,7 +118,11 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 	dbUser, err := p.storage.User(context.Background(), user.ID, chat.ID)
 
 	if err == storage.ErrUserNotExist {
-		return p.createNewPlayer(chat, user)
+		u, err := p.createNewPlayer(chat.ID, user)
+		if err != nil {
+			return err
+		}
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgCreateUser, u.Username)+fmt.Sprintf(msgDickSize, u.DickSize))
 	} else if err != nil {
 		return err
 	}

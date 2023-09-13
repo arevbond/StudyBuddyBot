@@ -32,7 +32,7 @@ func New(path string) (storage *Storage, err error) {
 func (s *Storage) Init(ctx context.Context) error {
 	q1 := `CREATE TABLE IF NOT EXISTS gays (chat_id int, tg_id int, username TEXT, date_last_used DATE)`
 	q2 := `CREATE TABLE IF NOT EXISTS users (tg_id int, chat_id int, is_bot BIT, first_name TEXT, last_name TEXT, 
-			username TEXT, is_premium BIT, dick_size INT, last_try_change_dick DATE)`
+			username TEXT, is_premium BIT, dick_size INT, count_gay_of_day int, last_try_change_dick DATE)`
 
 	_, err := s.db.ExecContext(ctx, q1)
 	if err != nil {
@@ -169,5 +169,17 @@ func (s *Storage) CreateGayOfDay(ctx context.Context, gay *storage.DBGayOfDay) e
 	if _, err := s.db.ExecContext(ctx, q, gay.ChatID, gay.TgID, gay.Username, gay.DateLastUsed); err != nil {
 		return e.Wrap(fmt.Sprintf("can't create gay %d %s: ", gay.TgID, gay.Username), err)
 	}
+	return nil
+}
+
+func (s *Storage) IncreaseCountOfGay(ctx context.Context, u *storage.DBUser) error {
+	q := `UPDATE users SET count_gay_of_day = ? WHERE tg_id = ? AND chat_id = ?`
+	oldCount := u.CountGayOfDay
+	if _, err := s.db.ExecContext(ctx, q, oldCount+1, u.TgID, u.ChatID); err != nil {
+		return e.Wrap(fmt.Sprintf("can't update count gay of day user %d chat id %d",
+			u.TgID, u.ChatID), err)
+	}
+	u.CountGayOfDay += 1
+
 	return nil
 }
