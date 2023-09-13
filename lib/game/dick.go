@@ -40,3 +40,12 @@ func maxFloat(a, b float64) float64 {
 	}
 	return b
 }
+
+func PositiveRandomValue() int {
+	rand.Seed(time.Now().UnixNano())
+	value := rand.Intn(20)
+	if value < 10 {
+		value = 12
+	}
+	return value
+}

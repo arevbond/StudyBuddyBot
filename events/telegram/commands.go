@@ -125,7 +125,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, message *
 			LastName:          user.LastName,
 			Username:          user.Username,
 			IsPremium:         user.IsPremium,
-			DickSize:          game.RandomValue(),
+			DickSize:          game.PositiveRandomValue(),
 			LastTryChangeDick: time.Now(),
 		}
 		err = p.storage.CreateUser(context.Background(), dbUser)
