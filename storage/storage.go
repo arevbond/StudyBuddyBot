@@ -8,6 +8,7 @@ import (
 
 type Storage interface {
 	User(ctx context.Context, tgID, chatID int) (*DBUser, error)
+	UserByUsername(ctx context.Context, username string, chatID int) (*DBUser, error)
 	CreateUser(ctx context.Context, u *DBUser) error
 	UpdateUserDickSize(ctx context.Context, u *DBUser, dickSize int) error
 	UsersByChat(ctx context.Context, chatID int) ([]*DBUser, error)

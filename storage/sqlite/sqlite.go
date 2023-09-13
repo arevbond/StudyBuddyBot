@@ -59,30 +59,10 @@ func (s *Storage) CreateUser(ctx context.Context, u *storage.DBUser) error {
 func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE tg_id = ? AND chat_id = ?`
 
-	//var id, cID, dickSize int
-	//var isBot, isPremium bool
-	//var firstName, lastName, username string
-	//var lastTryChangeDickStr time.Time
-
-	//err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&id, &cID, &isBot, &firstName, &lastName,
-	//	&username, &isPremium, &dickSize, &lastTryChangeDickStr)
-
 	user := &storage.DBUser{}
 
 	err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
 		&user.Username, &user.IsPremium, &user.DickSize, &user.LastTryChangeDick)
-
-	//user := &storage.DBUser{
-	//	TgID:              id,
-	//	ChatID:            cID,
-	//	IsBot:             isBot,
-	//	FirstName:         firstName,
-	//	LastName:          lastName,
-	//	Username:          username,
-	//	IsPremium:         isPremium,
-	//	DickSize:          dickSize,
-	//	LastTryChangeDick: lastTryChangeDickStr,
-	//}
 
 	if err == sql.ErrNoRows {
 		return nil, storage.ErrUserNotExist
@@ -90,6 +70,27 @@ func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.DBUser, 
 
 	if err != nil {
 		return nil, e.Wrap(fmt.Sprintf("can't get user from storage tg id: %d, chat id: %d", tgID, chatID), err)
+	}
+
+	// log.Printf("from storage get user: tg id = %d, chat id = %d, dick size = %d", user.TgID, user.ChatID, user.DickSize)
+
+	return user, nil
+}
+
+func (s *Storage) UserByUsername(ctx context.Context, username string, chatID int) (*storage.DBUser, error) {
+	q := `SELECT * FROM users WHERE username = ? AND chat_id = ?`
+	log.Printf(username)
+	user := &storage.DBUser{}
+
+	err := s.db.QueryRowContext(ctx, q, username, chatID).Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
+		&user.Username, &user.IsPremium, &user.DickSize, &user.LastTryChangeDick)
+
+	if err == sql.ErrNoRows {
+		return nil, storage.ErrUserNotExist
+	}
+
+	if err != nil {
+		return nil, e.Wrap(fmt.Sprintf("can't get user from storage username: %s, chat id: %d", username, chatID), err)
 	}
 
 	// log.Printf("from storage get user: tg id = %d, chat id = %d, dick size = %d", user.TgID, user.ChatID, user.DickSize)

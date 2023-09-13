@@ -10,6 +10,7 @@ import (
 	"tg_ics_useful_bot/lessons"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/lib/game"
+	"tg_ics_useful_bot/lib/lib"
 	"tg_ics_useful_bot/storage"
 	"time"
 )
@@ -41,8 +42,13 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return p.gameDick(chat, user, message)
 	case strings.HasPrefix(text, DickTopCmd):
 		return p.topDick(chat)
-	//case strings.HasPrefix(text, DickDuelCmd):
-	//	return p.duelDick(chat, user)
+	case strings.HasPrefix(text, DickDuelCmd):
+		if lib.Contains("@", text) {
+			target := strings.Split(text, "@")[1]
+			log.Printf("@%s вызывает на дуель @%s", user.Username, target)
+			return p.duelDick(chat, user, target)
+		}
+		return nil
 
 	case strings.HasPrefix(text, TodayLessonsCmd):
 		return p.lessonsToday(chat.ID)
@@ -139,6 +145,25 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, message *
 		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChangeDickSize, dbUser.Username, oldDickSize, dbUser.DickSize))
 	}
 	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAlreadyPlays, dbUser.Username))
+}
+
+func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUsername string) error {
+	u1, err := p.storage.User(context.Background(), user.ID, chat.ID)
+	if err != nil {
+		return err
+	}
+	u2, err := p.storage.UserByUsername(context.Background(), targetUsername, chat.ID)
+	if err == storage.ErrUserNotExist {
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgTargetNotFound, targetUsername))
+	}
+
+	isUser1Win := game.Duel(u1.DickSize, u2.DickSize)
+	if isUser1Win {
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgVictoryInDuel, u1.Username, u2.Username))
+	} else {
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgVictoryInDuel, u2.Username, u1.Username))
+	}
+
 }
 
 func (p *Processor) changeDickSize(user *storage.DBUser) (bool, int, error) {
