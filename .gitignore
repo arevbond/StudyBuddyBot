@@ -3,3 +3,4 @@ go.mod
 go.sum
 .gitignore
 data/sqlite/storage.db
+tg_ics_useful_bot
