@@ -8,6 +8,7 @@ import (
 	"path"
 	"strconv"
 	"tg_ics_useful_bot/lib/e"
+	"time"
 )
 
 type Client struct {
@@ -21,6 +22,7 @@ const (
 	sendMessageMethod   = "sendMessage"
 	sendPhotoMethod     = "sendPhoto"
 	deleteMessageMethod = "deleteMessage"
+	banChatMemberMethod = "banChatMember"
 )
 
 func New(host string, token string) *Client {
@@ -88,6 +90,20 @@ func (c *Client) DeleteMessage(chatID int, messageID int) error {
 	q.Add("message_id", strconv.Itoa(messageID))
 
 	_, err := c.doRequest(deleteMessageMethod, q)
+	if err != nil {
+		return e.Wrap("can't send message", err)
+	}
+
+	return nil
+}
+
+func (c *Client) BanChatMember(chatID int, userID int, timeout int) error {
+	q := url.Values{}
+	q.Add("chat_id", strconv.Itoa(chatID))
+	q.Add("user_id", strconv.Itoa(userID))
+	q.Add("until_date", strconv.Itoa(int(time.Now().Unix())+120))
+
+	_, err := c.doRequest(banChatMemberMethod, q)
 	if err != nil {
 		return e.Wrap("can't send message", err)
 	}
