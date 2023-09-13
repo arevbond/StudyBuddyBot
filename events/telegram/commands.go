@@ -44,7 +44,8 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return p.topDick(chat)
 	case strings.HasPrefix(text, DickDuelCmd):
 		if lib.Contains("@", text) {
-			target := strings.Split(text, "@")[1]
+			textSplited := strings.Split(text, "@")
+			target := textSplited[len(textSplited)-1]
 			log.Printf("@%s вызывает на дуель @%s", user.Username, target)
 			return p.duelDick(chat, user, target)
 		}
