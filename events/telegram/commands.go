@@ -157,11 +157,11 @@ func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUse
 		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgTargetNotFound, targetUsername))
 	}
 
-	isUser1Win := game.Duel(u1.DickSize, u2.DickSize)
+	isUser1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
 	if isUser1Win {
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgVictoryInDuel, u1.Username, u2.Username))
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChanceDuel, u1.Username, u1.DickSize, ch1, targetUsername, u2.DickSize, ch2)+fmt.Sprintf(msgVictoryInDuel, u1.Username, u2.Username))
 	} else {
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgVictoryInDuel, u2.Username, u1.Username))
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChanceDuel, u1.Username, u1.DickSize, ch1, targetUsername, u2.DickSize, ch2)+fmt.Sprintf(msgVictoryInDuel, u2.Username, u1.Username))
 	}
 
 }
