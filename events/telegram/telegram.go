@@ -78,7 +78,7 @@ func (p *Processor) processMessage(event events.Event) error {
 		return e.Wrap("can't process message", err)
 	}
 
-	message := &telegram.IncomingMessage{ID: meta.MessageID}
+	messageID := meta.MessageID
 
 	user := &telegram.User{
 		ID:        meta.TgID,
@@ -96,7 +96,7 @@ func (p *Processor) processMessage(event events.Event) error {
 		ActiveUsernames: meta.ChatActiveUsernames,
 	}
 
-	if err := p.doCmd(event.Text, chat, user, message); err != nil {
+	if err := p.doCmd(event.Text, chat, user, messageID); err != nil {
 		return e.Wrap("can't process message", err)
 	}
 

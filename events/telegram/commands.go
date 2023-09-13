@@ -30,7 +30,7 @@ const (
 	TomorrowLessonsCmd = "/tomorrow"
 )
 
-func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, message *telegram.IncomingMessage) error {
+func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
 	text = strings.TrimSpace(text)
 	if strings.HasPrefix(text, "/") {
 		log.Printf("got new command '%s' from '%s", text, user.Username)
@@ -38,7 +38,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 
 	switch {
 	case strings.HasPrefix(text, DicStartCmd):
-		return p.gameDick(chat, user, message)
+		return p.gameDick(chat, user, messageID)
 	case strings.HasPrefix(text, DickTopCmd):
 		return p.topDick(chat)
 	case strings.HasPrefix(text, DickDuelCmd):
@@ -80,10 +80,10 @@ func (p *Processor) topDick(chat *telegram.Chat) (err error) {
 	return p.tg.SendMessage(chat.ID, result)
 }
 
-func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, message *telegram.IncomingMessage) (err error) {
+func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID int) (err error) {
 	defer func() { err = e.WrapIfErr("can't change dick size: ", err) }()
 
-	err = p.tg.DeleteMessage(chat.ID, message.ID)
+	err = p.tg.DeleteMessage(chat.ID, messageID)
 	if err != nil {
 		return err
 	}
