@@ -169,7 +169,6 @@ func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUse
 func (p *Processor) changeDickSize(user *storage.DBUser) (bool, int, error) {
 	value := game.RandomValue()
 	oldDickSize := user.DickSize
-	//log.Printf("%d user old dick size = %d, new dick size = %d", user.TgID, oldDickSize, user.DickSize+value)
 
 	err := p.storage.UpdateUserDickSize(context.Background(), user, user.DickSize+value)
 	if err != nil {
