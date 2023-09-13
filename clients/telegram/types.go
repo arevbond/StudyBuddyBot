@@ -1,5 +1,14 @@
 package telegram
 
+type ChatMemberAdministratorResponse struct {
+	Ok     bool                      `json:"ok"`
+	Result []ChatMemberAdministrator `json:"result"`
+}
+
+type ChatMemberAdministrator struct {
+	User User `json:"user"`
+}
+
 type UpdatesResponse struct {
 	Ok     bool     `json:"ok"`
 	Result []Update `json:"result"`

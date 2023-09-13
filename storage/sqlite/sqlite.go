@@ -30,10 +30,16 @@ func New(path string) (storage *Storage, err error) {
 
 // Init creates tables to storage.
 func (s *Storage) Init(ctx context.Context) error {
+	q1 := `CREATE TABLE IF NOT EXISTS gays (chat_id int, tg_id int, username TEXT, date_last_used DATE)`
 	q2 := `CREATE TABLE IF NOT EXISTS users (tg_id int, chat_id int, is_bot BIT, first_name TEXT, last_name TEXT, 
 			username TEXT, is_premium BIT, dick_size INT, last_try_change_dick DATE)`
 
-	_, err := s.db.ExecContext(ctx, q2)
+	_, err := s.db.ExecContext(ctx, q1)
+	if err != nil {
+		return e.Wrap("can't create table gays", err)
+	}
+
+	_, err = s.db.ExecContext(ctx, q2)
 	if err != nil {
 		return e.Wrap("can't create table users", err)
 	}
@@ -132,4 +138,36 @@ func (s *Storage) UsersByChat(ctx context.Context, chatID int) ([]*storage.DBUse
 		return users, err
 	}
 	return users, nil
+}
+
+func (s *Storage) GayOfDay(ctx context.Context, chatID int) (*storage.DBGayOfDay, error) {
+	q := `SELECT * FROM gays WHERE chat_id = ?`
+
+	gay := &storage.DBGayOfDay{}
+
+	err := s.db.QueryRowContext(ctx, q, chatID).Scan(&gay.ChatID, &gay.TgID, &gay.Username, &gay.DateLastUsed)
+
+	if err == sql.ErrNoRows {
+		return nil, storage.ErrUserNotExist
+	}
+
+	if err != nil {
+		return nil, e.Wrap(fmt.Sprintf("can't get gay from table gays chat id: %d", chatID), err)
+	}
+
+	// log.Printf("from storage get user: tg id = %d, chat id = %d, dick size = %d", user.TgID, user.ChatID, user.DickSize)
+
+	return gay, nil
+}
+
+func (s *Storage) CreateGayOfDay(ctx context.Context, gay *storage.DBGayOfDay) error {
+	q := `INSERT INTO gays (chat_id, tg_id, username, date_last_used) 
+							VALUES (?, ?, ?, ?)`
+
+	log.Printf("create gay of day #%d '%s', chat_id = %d", gay.TgID, gay.Username, gay.ChatID)
+
+	if _, err := s.db.ExecContext(ctx, q, gay.ChatID, gay.TgID, gay.Username, gay.DateLastUsed); err != nil {
+		return e.Wrap(fmt.Sprintf("can't create gay %d %s: ", gay.TgID, gay.Username), err)
+	}
+	return nil
 }

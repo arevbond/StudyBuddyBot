@@ -17,12 +17,15 @@ type Client struct {
 	client   http.Client
 }
 
+const timeToBan = 120
+
 const (
-	getUpdatesMethod    = "getUpdates"
-	sendMessageMethod   = "sendMessage"
-	sendPhotoMethod     = "sendPhoto"
-	deleteMessageMethod = "deleteMessage"
-	banChatMemberMethod = "banChatMember"
+	getUpdatesMethod            = "getUpdates"
+	sendMessageMethod           = "sendMessage"
+	sendPhotoMethod             = "sendPhoto"
+	deleteMessageMethod         = "deleteMessage"
+	banChatMemberMethod         = "banChatMember"
+	getChatAdministratorsMethod = "getChatAdministrators"
 )
 
 func New(host string, token string) *Client {
@@ -56,6 +59,28 @@ func (c *Client) Updates(offset int, limit int) (updates []Update, err error) {
 	}
 
 	return res.Result, nil
+}
+
+func (c *Client) ChatAdministrators(chatID int) ([]User, error) {
+	q := url.Values{}
+	q.Add("chat_id", strconv.Itoa(chatID))
+
+	data, err := c.doRequest(getChatAdministratorsMethod, q)
+	if err != nil {
+		return nil, e.Wrap("can't get chat administrators: ", err)
+	}
+	var dataResponse ChatMemberAdministratorResponse
+
+	if err := json.Unmarshal(data, &dataResponse); err != nil {
+		return nil, err
+	}
+
+	var result []User
+	for _, admin := range dataResponse.Result {
+		result = append(result, admin.User)
+	}
+
+	return result, nil
 }
 
 func (c *Client) SendMessage(chatID int, text string) error {
@@ -101,8 +126,7 @@ func (c *Client) BanChatMember(chatID int, userID int, timeout int) error {
 	q := url.Values{}
 	q.Add("chat_id", strconv.Itoa(chatID))
 	q.Add("user_id", strconv.Itoa(userID))
-	q.Add("until_date", strconv.Itoa(int(time.Now().Unix())+120))
-	//q.Add("until_date", strconv.Itoa(120))
+	q.Add("until_date", strconv.Itoa(int(time.Now().Unix())+timeToBan))
 
 	_, err := c.doRequest(banChatMemberMethod, q)
 	if err != nil {

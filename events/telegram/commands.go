@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	//GayStartCmd = "/gay"
+	GayStartCmd = "/gay"
 	//GayTopCmd   = "/gay_top"
 
 	XkcdCmd = "/xkcd"
@@ -37,6 +37,9 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	}
 
 	switch {
+	case strings.HasPrefix(text, GayStartCmd):
+		return p.gameGay(chat.ID)
+
 	case strings.HasPrefix(text, DicStartCmd):
 		return p.gameDick(chat, user, messageID)
 	case strings.HasPrefix(text, DickTopCmd):
@@ -63,6 +66,24 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return nil
 	}
 
+}
+
+func (p *Processor) gameGay(chatID int) error {
+	admins, err := p.tg.ChatAdministrators(chatID)
+	if err != nil {
+		return e.Wrap("can't get chat administrators: ", err)
+	}
+
+	gay, err := p.storage.GayOfDay(context.Background(), chatID)
+	if err == storage.ErrUserNotExist {
+		return p.createNewGayOfDay(chatID, admins)
+	} else if err != nil {
+		return e.Wrap("can't get gay of day: ", err)
+	}
+	if gay.DateLastUsed.Month() >= time.Now().Month() && gay.DateLastUsed.Day() < time.Now().Day() {
+		return p.createNewGayOfDay(chatID, admins)
+	}
+	return p.tg.SendMessage(chatID, fmt.Sprintf(msgCurrentGayOfDay, gay.Username))
 }
 
 func (p *Processor) topDick(chat *telegram.Chat) (err error) {
