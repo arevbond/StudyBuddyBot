@@ -6,9 +6,10 @@ import (
 	"log"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
-	"tg_ics_useful_bot/game"
+	"tg_ics_useful_bot/clients/xkcd"
 	"tg_ics_useful_bot/lessons"
 	"tg_ics_useful_bot/lib/e"
+	"tg_ics_useful_bot/lib/game"
 	"tg_ics_useful_bot/storage"
 	"time"
 )
@@ -16,6 +17,8 @@ import (
 const (
 	GayStartCmd = "/gay"
 	GayTopCmd   = "/gay_top"
+
+	XkcdCmd = "/xkcd"
 
 	DicStartCmd = "/dick"
 	DickTopCmd  = "/top_dick"
@@ -43,16 +46,26 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User)
 		return p.topDick(chat)
 	case strings.HasPrefix(text, TodayLessonsCmd):
 		return p.lessonsToday(chat.ID)
-	case strings.HasPrefix(text, HelpCmd):
-		log.Printf("got new command '%s' from '%s", text, user.Username)
-		return p.sendHelp(chat.ID)
-	case strings.HasPrefix(text, StartCmd):
-		log.Printf("got new command '%s' from '%s", text, user.Username)
-		return p.sendHello(chat.ID)
+	case strings.HasPrefix(text, XkcdCmd):
+		return p.sendXkcd(chat.ID)
+	//case strings.HasPrefix(text, HelpCmd):
+	//	log.Printf("got new command '%s' from '%s", text, user.Username)
+	//	return p.sendHelp(chat.ID)
+	//case strings.HasPrefix(text, StartCmd):
+	//	log.Printf("got new command '%s' from '%s", text, user.Username)
+	//	return p.sendHello(chat.ID)
 	default:
 		return nil
 	}
 
+}
+
+func (p *Processor) sendXkcd(chatID int) error {
+	comics, err := xkcd.RandomComics()
+	if err != nil {
+		return err
+	}
+	return p.tg.SendPhoto(chatID, comics.Img)
 }
 
 func (p *Processor) tomorrowLessons(chatID int) error {

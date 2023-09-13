@@ -19,6 +19,7 @@ type Client struct {
 const (
 	getUpdatesMethod  = "getUpdates"
 	sendMessageMethod = "sendMessage"
+	sendPhotoMethod   = "sendPhoto"
 )
 
 func New(host string, token string) *Client {
@@ -67,6 +68,19 @@ func (c *Client) SendMessage(chatID int, text string) error {
 	return nil
 }
 
+func (c *Client) SendPhoto(chatID int, urlPhoto string) error {
+	q := url.Values{}
+	q.Add("chat_id", strconv.Itoa(chatID))
+	q.Add("photo", urlPhoto)
+
+	_, err := c.doRequest(sendPhotoMethod, q)
+	if err != nil {
+		return e.Wrap("can't send message", err)
+	}
+
+	return nil
+}
+
 func (c *Client) doRequest(method string, query url.Values) (data []byte, err error) {
 	defer func() { err = e.WrapIfErr("can't do request", err) }()
 	u := url.URL{
@@ -79,7 +93,6 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 	if err != nil {
 		return nil, err
 	}
-
 	req.URL.RawQuery = query.Encode()
 	resp, err := c.client.Do(req)
 	if err != nil {
