@@ -37,7 +37,6 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	}
 
 	switch {
-
 	case strings.HasPrefix(text, DicStartCmd):
 		return p.gameDick(chat, user, message)
 	case strings.HasPrefix(text, DickTopCmd):
@@ -139,7 +138,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, message *
 	}
 
 	if game.CanChangeDickSize(dbUser) {
-		_, oldDickSize, err := p.changeDickSize(dbUser)
+		_, oldDickSize, err := p.changeRandomDickSize(dbUser)
 		if err != nil {
 			return err
 		}
@@ -160,7 +159,7 @@ func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUse
 
 	isUser1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
 	if isUser1Win {
-		_, oldDickSize, err := p.changeDickSize(u1)
+		oldDickSize, err := p.changeDickSize(u1, game.PositiveRandomValue())
 		if err != nil {
 			return err
 		}
@@ -169,19 +168,28 @@ func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUse
 				fmt.Sprintf(msgVictoryInDuel, u1.Username, u2.Username)+
 				fmt.Sprintf(msgDickSize, u1.DickSize))
 	} else {
-		err = p.tg.BanChatMember(chat.ID, u1.TgID, 120)
+		_, err := p.changeDickSize(u1, -1*game.PositiveRandomValue())
 		if err != nil {
 			return err
 		}
 		return p.tg.SendMessage(chat.ID,
 			fmt.Sprintf(msgChanceDuel, u1.Username, u1.DickSize, ch1, targetUsername, u2.DickSize, ch2)+
-				fmt.Sprintf(msgVictoryInDuel, u2.Username, u1.Username)+
-				fmt.Sprintf(msgUserHasBanned, u1.Username, 120))
+				fmt.Sprintf(msgVictoryInDuel, u2.Username, u1.Username))
 	}
 
 }
 
-func (p *Processor) changeDickSize(user *storage.DBUser) (bool, int, error) {
+func (p *Processor) changeDickSize(user *storage.DBUser, value int) (int, error) {
+	oldDickSize := user.DickSize
+
+	err := p.storage.UpdateUserDickSize(context.Background(), user, user.DickSize+value)
+	if err != nil {
+		return 0, e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size: ", user.ChatID, user.Username), err)
+	}
+	return oldDickSize, nil
+}
+
+func (p *Processor) changeRandomDickSize(user *storage.DBUser) (bool, int, error) {
 	value := game.RandomValue()
 	oldDickSize := user.DickSize
 

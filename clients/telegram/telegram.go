@@ -102,10 +102,11 @@ func (c *Client) BanChatMember(chatID int, userID int, timeout int) error {
 	q.Add("chat_id", strconv.Itoa(chatID))
 	q.Add("user_id", strconv.Itoa(userID))
 	q.Add("until_date", strconv.Itoa(int(time.Now().Unix())+120))
+	//q.Add("until_date", strconv.Itoa(120))
 
 	_, err := c.doRequest(banChatMemberMethod, q)
 	if err != nil {
-		return e.Wrap("can't send message", err)
+		return e.Wrap("can't ban user: ", err)
 	}
 
 	return nil
