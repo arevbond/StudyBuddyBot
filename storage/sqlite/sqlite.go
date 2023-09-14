@@ -89,7 +89,7 @@ func (s *Storage) UserByUsername(ctx context.Context, username string, chatID in
 	user := &storage.DBUser{}
 
 	err := s.db.QueryRowContext(ctx, q, username, chatID).Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
-		&user.Username, &user.IsPremium, &user.DickSize, &user.LastTryChangeDick)
+		&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.LastTryChangeDick)
 
 	if err == sql.ErrNoRows {
 		return nil, storage.ErrUserNotExist
@@ -105,14 +105,25 @@ func (s *Storage) UserByUsername(ctx context.Context, username string, chatID in
 }
 
 func (s *Storage) UpdateUserDickSize(ctx context.Context, u *storage.DBUser, dickSize int) error {
-	q := `UPDATE users SET dick_size = ?, last_try_change_dick = ? WHERE tg_id = ? AND chat_id = ?`
+	q := `UPDATE users SET dick_size = ? WHERE tg_id = ? AND chat_id = ?`
 	oldDickSize := u.DickSize
-	if _, err := s.db.ExecContext(ctx, q, dickSize, time.Now(), u.TgID, u.ChatID); err != nil {
+	if _, err := s.db.ExecContext(ctx, q, dickSize, u.TgID, u.ChatID); err != nil {
 		return e.Wrap(fmt.Sprintf("can't update dick size user %d chat id %d from %d to %d",
 			u.TgID, u.ChatID, u.DickSize, dickSize), err)
 	}
 	u.DickSize = dickSize
 	log.Printf("user %d change his dick from %d to %d", u.TgID, oldDickSize, u.DickSize)
+	return nil
+}
+
+func (s *Storage) UpdateDateLastTryChangeDickToNow(ctx context.Context, u *storage.DBUser) error {
+	q := `UPDATE users SET last_try_change_dick = ? WHERE tg_id = ? AND chat_id = ?`
+	currentTime := time.Now()
+	if _, err := s.db.ExecContext(ctx, q, currentTime, u.TgID, u.ChatID); err != nil {
+		return e.Wrap(fmt.Sprintf("can't update date last try change dick to now user %d chat id",
+			u.TgID, u.ChatID), err)
+	}
+	log.Printf("user %d change his date last try change dick to %s", u.TgID, currentTime)
 	return nil
 }
 

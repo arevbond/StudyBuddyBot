@@ -36,16 +36,18 @@ func (p *Processor) changeDickSize(user *storage.DBUser, value int) (int, error)
 	if err != nil {
 		return 0, e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size: ", user.ChatID, user.Username), err)
 	}
+	err = p.storage.UpdateDateLastTryChangeDickToNow(context.Background(), user)
+	if err != nil {
+		return 0, err
+	}
 	return oldDickSize, nil
 }
 
 func (p *Processor) changeRandomDickSize(user *storage.DBUser) (bool, int, error) {
 	value := game.RandomValue()
-	oldDickSize := user.DickSize
-
-	err := p.storage.UpdateUserDickSize(context.Background(), user, user.DickSize+value)
+	oldDickSize, err := p.changeDickSize(user, value)
 	if err != nil {
-		return false, 0, e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size: ", user.ChatID, user.Username), err)
+		return false, 0, e.Wrap(fmt.Sprintf("chat id %d, user %s can't change random dick size: ", user.ChatID, user.Username), err)
 	}
 	return value >= 0, oldDickSize, nil
 }

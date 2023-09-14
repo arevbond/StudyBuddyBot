@@ -11,6 +11,7 @@ type Storage interface {
 	UserByUsername(ctx context.Context, username string, chatID int) (*DBUser, error)
 	CreateUser(ctx context.Context, u *DBUser) error
 	UpdateUserDickSize(ctx context.Context, u *DBUser, dickSize int) error
+	UpdateDateLastTryChangeDickToNow(ctx context.Context, u *DBUser) error
 	UsersByChat(ctx context.Context, chatID int) ([]*DBUser, error)
 
 	GayOfDay(ctx context.Context, chatID int) (*DBGayOfDay, error)
