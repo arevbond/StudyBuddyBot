@@ -61,7 +61,7 @@ func (s *Storage) CreateUser(ctx context.Context, u *storage.DBUser) error {
 	return nil
 }
 
-// User got user by chatID and telegram ID.
+// User get user by chatID and telegram ID.
 func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE tg_id = ? AND chat_id = ?`
 

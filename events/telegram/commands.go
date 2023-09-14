@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sort"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/clients/xkcd"
@@ -37,8 +38,8 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	}
 	if chat.Type == "group" || chat.Type == "supergroup" {
 		switch {
-		//case strings.HasPrefix(text, GayTopCmd):
-		//	return p.gameGayTop(chat.ID)
+		case strings.HasPrefix(text, GayTopCmd):
+			return p.gameGayTop(chat.ID)
 		case strings.HasPrefix(text, GayStartCmd):
 			return p.gameGay(chat.ID)
 
@@ -71,32 +72,40 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	return nil
 }
 
-//func (p *Processor) gameGayTop(chatID int) (err error) {
-//	admins, err := p.tg.ChatAdministrators(chatID)
-//	if err != nil {
-//		return e.Wrap("can't get chat administrators: ", err)
-//	}
-//	dbUsers := []*storage.DBUser{}
-//	for _, u := range admins {
-//		dbUser, err := p.storage.User(context.Background(), u.ID, chatID)
-//		if err == storage.ErrUserNotExist {
-//			dbUser, err = p.createNewPlayer(chatID, &u)
-//			if err != nil {
-//				return err
-//			}
-//		}
-//		dbUsers = append(dbUsers, dbUser)
-//	}
-//	sort.Slice(dbUsers, func(i, j int) bool {
-//		return dbUsers[i].CountGayOfDay <= dbUsers[j].CountGayOfDay
-//	})
-//	result := "Рейтинг пидоров: \n\n"
-//
-//	for i, dbU := range dbUsers {
-//		result += fmt.Sprintf("%d. %s %s - %d раз \n", i+1, dbU.FirstName, dbU.LastName, dbU.CountGayOfDay)
-//	}
-//	return p.tg.SendMessage(chatID, result)
-//}
+func (p *Processor) gameGayTop(chatID int) (err error) {
+	admins, err := p.tg.ChatAdministrators(chatID)
+	if err != nil {
+		return e.Wrap("can't get chat administrators: ", err)
+	}
+	dbUsers := []*storage.DBUser{}
+	for _, u := range admins {
+		dbUser, err := p.storage.User(context.Background(), u.ID, chatID)
+		if err == storage.ErrUserNotExist {
+			dbUser = &storage.DBUser{
+				TgID:      u.ID,
+				ChatID:    chatID,
+				IsBot:     u.IsBot,
+				FirstName: u.FirstName,
+				LastName:  u.LastName,
+				Username:  u.Username,
+			}
+			err = p.storage.CreateUser(context.Background(), dbUser)
+			if err != nil {
+				return err
+			}
+		}
+		dbUsers = append(dbUsers, dbUser)
+	}
+	sort.Slice(dbUsers, func(i, j int) bool {
+		return dbUsers[i].CountGayOfDay >= dbUsers[j].CountGayOfDay
+	})
+	result := "Рейтинг пидоров: \n\n"
+
+	for i, dbU := range dbUsers {
+		result += fmt.Sprintf("%d. %s %s - %d раз \n", i+1, dbU.FirstName, dbU.LastName, dbU.CountGayOfDay)
+	}
+	return p.tg.SendMessage(chatID, result)
+}
 
 func (p *Processor) gameGay(chatID int) error {
 	admins, err := p.tg.ChatAdministrators(chatID)
