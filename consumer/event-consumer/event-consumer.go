@@ -2,6 +2,7 @@ package event_consumer
 
 import (
 	"log"
+	"strings"
 	"tg_ics_useful_bot/events"
 	"time"
 )
@@ -45,12 +46,13 @@ func (c Consumer) Start() error {
 
 func (c *Consumer) handleEvents(events []events.Event) error {
 	for _, event := range events {
-		log.Printf("got new event: %s", event.Text)
+		if strings.HasPrefix(event.Text, "/") {
+			log.Printf("got new event: %s", event.Text)
+			if err := c.processor.Process(event); err != nil {
+				log.Printf("can't handle event: %s", err.Error())
 
-		if err := c.processor.Process(event); err != nil {
-			log.Printf("can't handle event: %s", err.Error())
-
-			continue
+				continue
+			}
 		}
 	}
 
