@@ -32,7 +32,7 @@ func New(path string) (storage *Storage, err error) {
 func (s *Storage) Init(ctx context.Context) error {
 	q1 := `CREATE TABLE IF NOT EXISTS gays (chat_id int, tg_id int, username TEXT, date_last_used DATE)`
 	q2 := `CREATE TABLE IF NOT EXISTS users (tg_id int, chat_id int, is_bot BIT, first_name TEXT, last_name TEXT, 
-			username TEXT, is_premium BIT, dick_size INT, count_gay_of_day int, last_try_change_dick DATE)`
+			username TEXT, is_premium BIT, dick_size INT DEFAULT 0, count_gay_of_day int DEFAULT 0 , last_try_change_dick DATE)`
 
 	_, err := s.db.ExecContext(ctx, q1)
 	if err != nil {

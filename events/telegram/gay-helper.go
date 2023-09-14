@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"context"
-	"log"
 	"math/rand"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/storage"
@@ -15,7 +14,15 @@ func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*stor
 	u := admins[n]
 	dbUser, err := p.storage.User(context.Background(), u.ID, chatID)
 	if err == storage.ErrUserNotExist {
-		dbUser, err = p.createNewPlayer(chatID, &u)
+		dbUser = &storage.DBUser{
+			TgID:      u.ID,
+			ChatID:    chatID,
+			IsBot:     u.IsBot,
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Username:  u.Username,
+		}
+		err = p.storage.CreateUser(context.Background(), dbUser)
 		if err != nil {
 			return nil, err
 		}
@@ -36,6 +43,5 @@ func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*stor
 	if err != nil {
 		return nil, err
 	}
-	log.Print("LOOL")
 	return gay, nil
 }

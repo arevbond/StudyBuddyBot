@@ -17,7 +17,7 @@ import (
 
 const (
 	GayStartCmd = "/gay"
-	GayTopCmd   = "/gay_top"
+	GayTopCmd   = "/top_gay"
 
 	XkcdCmd = "/xkcd"
 
@@ -42,10 +42,10 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		case strings.HasPrefix(text, GayStartCmd):
 			return p.gameGay(chat.ID)
 
-		case strings.HasPrefix(text, DicStartCmd):
-			return p.gameDick(chat, user, messageID)
 		case strings.HasPrefix(text, DickTopCmd):
 			return p.topDick(chat)
+		case strings.HasPrefix(text, DicStartCmd):
+			return p.gameDick(chat, user, messageID)
 		case strings.HasPrefix(text, DickDuelCmd):
 			if lib.Contains("@", text) {
 				textSplited := strings.Split(text, "@")
