@@ -18,7 +18,7 @@ func RandomValue() int {
 }
 
 func CanChangeDickSize(user *storage.DBUser) bool {
-	_, monthLastTry, dayLastTry := user.LastTryChangeDick.Date()
+	_, monthLastTry, dayLastTry := user.DateChangeDick.Date()
 	_, month, today := time.Now().Date()
 	return month >= monthLastTry && today > dayLastTry
 }
@@ -29,6 +29,15 @@ func Duel(dick1 int, dick2 int) (bool, float64, float64) {
 	allChance := dick1 + dick2
 	chance1 := float64(dick1) / float64(allChance) * 100
 	chance2 := float64(dick2) / float64(allChance) * 100
+
+	if chance1 == 0 {
+		chance1 = 5
+		chance2 = 95
+	} else if chance2 == 0 {
+		chance1 = 95
+		chance2 = 5
+	}
+
 	result := float64(rand.Intn(100))
 	log.Printf("duel between dick1 = %d and dick2 = %d. chance1 = %f and chance2 = %f", dick1, dick2, chance1, chance2)
 	return result <= chance1, chance1, chance2

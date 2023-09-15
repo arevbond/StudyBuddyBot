@@ -18,7 +18,7 @@ func (p *Processor) gameGayTop(chatID int) (err error) {
 	}
 	dbUsers := []*storage.DBUser{}
 	for _, u := range admins {
-		dbUser, err := p.storage.User(context.Background(), u.ID, chatID)
+		dbUser, err := p.storage.UserByTelegramID(context.Background(), u.ID, chatID)
 		if err == storage.ErrUserNotExist {
 			dbUser = &storage.DBUser{
 				TgID:      u.ID,
@@ -74,7 +74,7 @@ func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*stor
 	rand.Seed(time.Now().Unix())
 	n := rand.Intn(len(admins))
 	u := admins[n]
-	dbUser, err := p.storage.User(context.Background(), u.ID, chatID)
+	dbUser, err := p.storage.UserByTelegramID(context.Background(), u.ID, chatID)
 	if err == storage.ErrUserNotExist {
 		dbUser = &storage.DBUser{
 			TgID:      u.ID,

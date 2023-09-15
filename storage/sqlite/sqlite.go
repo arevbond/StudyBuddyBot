@@ -55,20 +55,20 @@ func (s *Storage) CreateUser(ctx context.Context, u *storage.DBUser) error {
 		u.LastName, u.ChatID, u.DickSize)
 
 	if _, err := s.db.ExecContext(ctx, q, u.TgID, u.ChatID, u.IsBot, u.FirstName,
-		u.LastName, u.Username, u.IsPremium, u.DickSize, u.LastTryChangeDick); err != nil {
+		u.LastName, u.Username, u.IsPremium, u.DickSize, u.DateChangeDick); err != nil {
 		return e.Wrap(fmt.Sprintf("can't create user %d %s: ", u.TgID, u.Username), err)
 	}
 	return nil
 }
 
 // User get user by chatID and telegram ID.
-func (s *Storage) User(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
+func (s *Storage) UserByTelegramID(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE tg_id = ? AND chat_id = ?`
 
 	user := &storage.DBUser{}
 
 	err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
-		&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.LastTryChangeDick)
+		&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.DateChangeDick)
 
 	if err == sql.ErrNoRows {
 		return nil, storage.ErrUserNotExist
@@ -89,7 +89,7 @@ func (s *Storage) UserByUsername(ctx context.Context, username string, chatID in
 	user := &storage.DBUser{}
 
 	err := s.db.QueryRowContext(ctx, q, username, chatID).Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
-		&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.LastTryChangeDick)
+		&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.DateChangeDick)
 
 	if err == sql.ErrNoRows {
 		return nil, storage.ErrUserNotExist
@@ -140,7 +140,7 @@ func (s *Storage) UsersByChat(ctx context.Context, chatID int) ([]*storage.DBUse
 	for rows.Next() {
 		user := &storage.DBUser{}
 		if err := rows.Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,
-			&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.LastTryChangeDick); err != nil {
+			&user.Username, &user.IsPremium, &user.DickSize, &user.CountGayOfDay, &user.DateChangeDick); err != nil {
 			return users, e.Wrap(fmt.Sprintf("can't get users by chat id: %s", chatID), err)
 		}
 		users = append(users, user)

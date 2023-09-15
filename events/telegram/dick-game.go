@@ -30,7 +30,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 		return e.Wrap(fmt.Sprintf("[ERROR] can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
 	}
 
-	dbUser, err := p.storage.User(context.Background(), user.ID, chat.ID)
+	dbUser, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
 
 	if err == storage.ErrUserNotExist {
 		u, err2 := p.createNewPlayer(chat.ID, user)
@@ -53,7 +53,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 }
 
 func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUsername string) error {
-	u1, err := p.storage.User(context.Background(), user.ID, chat.ID)
+	u1, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
 	if err != nil {
 		return err
 	}
@@ -88,15 +88,15 @@ func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUse
 
 func (p *Processor) createNewPlayer(chatID int, user *telegram.User) (*storage.DBUser, error) {
 	dbUser := &storage.DBUser{
-		TgID:              user.ID,
-		ChatID:            chatID,
-		IsBot:             user.IsBot,
-		FirstName:         user.FirstName,
-		LastName:          user.LastName,
-		Username:          user.Username,
-		IsPremium:         user.IsPremium,
-		DickSize:          game.PositiveRandomValue(),
-		LastTryChangeDick: time.Now(),
+		TgID:           user.ID,
+		ChatID:         chatID,
+		IsBot:          user.IsBot,
+		FirstName:      user.FirstName,
+		LastName:       user.LastName,
+		Username:       user.Username,
+		IsPremium:      user.IsPremium,
+		DickSize:       game.PositiveRandomValue(),
+		DateChangeDick: time.Now(),
 	}
 	err := p.storage.CreateUser(context.Background(), dbUser)
 	if err != nil {

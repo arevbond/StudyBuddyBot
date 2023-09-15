@@ -7,32 +7,32 @@ import (
 )
 
 type Storage interface {
-	User(ctx context.Context, tgID, chatID int) (*DBUser, error)
-	UserByUsername(ctx context.Context, username string, chatID int) (*DBUser, error)
 	CreateUser(ctx context.Context, u *DBUser) error
+	UserByTelegramID(ctx context.Context, tgID, chatID int) (*DBUser, error)
+	UserByUsername(ctx context.Context, username string, chatID int) (*DBUser, error)
 	UpdateUserDickSize(ctx context.Context, u *DBUser, dickSize int) error
 	UpdateDateLastTryChangeDickToNow(ctx context.Context, u *DBUser) error
 	UsersByChat(ctx context.Context, chatID int) ([]*DBUser, error)
+	IncreaseCountOfGay(ctx context.Context, u *DBUser) error
 
 	GayOfDay(ctx context.Context, chatID int) (*DBGayOfDay, error)
 	RemoveGayOfDay(ctx context.Context, chatID int) error
 	CreateGayOfDay(ctx context.Context, gay *DBGayOfDay) error
-	IncreaseCountOfGay(ctx context.Context, u *DBUser) error
 }
 
 var ErrUserNotExist = errors.New("user not exists")
 
 type DBUser struct {
-	TgID              int
-	ChatID            int
-	IsBot             bool
-	FirstName         string
-	LastName          string
-	Username          string
-	IsPremium         bool
-	DickSize          int
-	CountGayOfDay     int
-	LastTryChangeDick time.Time
+	TgID           int
+	ChatID         int
+	IsBot          bool
+	FirstName      string
+	LastName       string
+	Username       string
+	IsPremium      bool
+	DickSize       int
+	CountGayOfDay  int
+	DateChangeDick time.Time
 }
 
 type DBGayOfDay struct {
