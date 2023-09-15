@@ -23,16 +23,16 @@ const (
 )
 
 type Client struct {
-	host    string
-	baseEnd string
-	client  http.Client
+	Host    string
+	BaseEnd string
+	Client  http.Client
 }
 
 func New() *Client {
 	return &Client{
-		host:    baseHost,
-		baseEnd: baseEnd,
-		client:  http.Client{},
+		Host:    baseHost,
+		BaseEnd: baseEnd,
+		Client:  http.Client{},
 	}
 }
 
@@ -81,7 +81,7 @@ func (c *Client) doRequest(num int) ([]byte, error) {
 	if err != nil {
 		return nil, e.Wrap("can't do request: ", err)
 	}
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return nil, e.Wrap("can't do request: ", err)
 	}

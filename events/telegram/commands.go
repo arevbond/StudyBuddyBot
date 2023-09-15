@@ -3,14 +3,18 @@ package telegram
 import (
 	"log"
 	"strings"
+	"tg_ics_useful_bot/clients/jokesrv"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/clients/xkcd"
 	"tg_ics_useful_bot/lessons"
+	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/lib/lib"
 	"time"
 )
 
 const (
+	AnecdotCmd = "/joke"
+
 	GayStartCmd = "/gay"
 	GayTopCmd   = "/top_gay"
 
@@ -59,6 +63,13 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 
 		case strings.HasPrefix(text, XkcdCmd):
 			return p.sendXkcd(chat.ID)
+
+		case strings.HasPrefix(text, AnecdotCmd):
+			anecdot, err := jokesrv.Anecdot()
+			if err != nil {
+				return e.Wrap("can't get anecdot: ", err)
+			}
+			return p.tg.SendMessage(chat.ID, anecdot)
 		default:
 			return nil
 		}

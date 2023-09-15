@@ -103,7 +103,7 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 				return err3
 			}
 			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2)+
-				fmt.Sprintf(msgUser1Lost, u2.Username, u1.DickSize, u1.Username, u2.DickSize))
+				fmt.Sprintf(msgUser1Lost, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
 		}
 	} else {
 		duels[targetUsername] = u1
