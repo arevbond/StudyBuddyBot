@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var duels = make(map[string]*storage.DBUser)
+
 func (p *Processor) topDick(chat *telegram.Chat) (err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chat.ID)
 	if err != nil {
@@ -52,7 +54,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAlreadyPlays, dbUser.Username))
 }
 
-func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUsername string) error {
+func (p *Processor) gameDuelDick(chat *telegram.Chat, user *telegram.User, targetUsername string) error {
 	u1, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
 	if err != nil {
 		return err
@@ -68,24 +70,34 @@ func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUse
 		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDuelWithYourself, u1.Username))
 	}
 
-	User1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
-	if User1Win {
-		oldDickSize, err := p.changeDickSize(u1, game.PositiveRandomValue())
-		if err != nil {
-			return err
+	if enemy, ok := duels[u1.Username]; ok && enemy.TgID == u2.TgID {
+		User1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
+		if User1Win {
+			_, err2 := p.changeDickSize(u1, game.PositiveRandomValue())
+			if err2 != nil {
+				return err
+			}
+			_, err3 := p.changeDickSize(u2, -1*game.PositiveRandomValue())
+			if err3 != nil {
+				return err3
+			}
+			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, u1.DickSize, ch1, u2.Username, u2.DickSize, ch2)+
+				fmt.Sprintf(msgUser1Wins, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
+		} else {
+			_, err2 := p.changeDickSize(u1, -1*game.PositiveRandomValue())
+			if err2 != nil {
+				return err
+			}
+			_, err3 := p.changeDickSize(u2, 1*game.PositiveRandomValue())
+			if err3 != nil {
+				return err3
+			}
+			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, u1.DickSize, ch1, u2.Username, u2.DickSize, ch2)+
+				fmt.Sprintf(msgUser1Lost, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
 		}
-		return p.tg.SendMessage(chat.ID,
-			fmt.Sprintf(msgChanceDuel, u1.Username, oldDickSize, ch1, targetUsername, u2.DickSize, ch2)+
-				fmt.Sprintf(msgVictoryInDuel, u1.Username, u2.Username)+
-				fmt.Sprintf(msgDickSize, u1.DickSize))
 	} else {
-		oldDickSize, err := p.changeDickSize(u1, -1*game.PositiveRandomValue())
-		if err != nil {
-			return err
-		}
-		return p.tg.SendMessage(chat.ID,
-			fmt.Sprintf(msgChanceDuel, u1.Username, oldDickSize, ch1, targetUsername, u2.DickSize, ch2)+
-				fmt.Sprintf(msgVictoryInDuel, u2.Username, u1.Username))
+		duels[targetUsername] = u1
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChallengeToDuel, u1.Username, targetUsername))
 	}
 
 }
