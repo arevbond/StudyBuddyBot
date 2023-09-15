@@ -31,11 +31,11 @@ func Duel(dick1 int, dick2 int) (bool, float64, float64) {
 	chance2 := float64(dick2) / float64(allChance) * 100
 
 	if chance1 == 0 {
-		chance1 = 5
-		chance2 = 95
+		chance1 = 2
+		chance2 = 98
 	} else if chance2 == 0 {
-		chance1 = 95
-		chance2 = 5
+		chance1 = 98
+		chance2 = 2
 	}
 
 	result := float64(rand.Intn(100))
