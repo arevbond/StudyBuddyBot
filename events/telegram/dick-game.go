@@ -12,6 +12,8 @@ import (
 
 var duels = make(map[string]*storage.DBUser)
 
+const reward = 5
+
 func (p *Processor) topDick(chat *telegram.Chat) (err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chat.ID)
 	if err != nil {
@@ -73,22 +75,22 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, user *telegram.User, targe
 	if enemy, ok := duels[u1.Username]; ok && enemy.TgID == u2.TgID {
 		User1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
 		if User1Win {
-			_, err2 := p.changeDickSize(u1, game.PositiveRandomValue())
+			_, err2 := p.changeDickSize(u1, reward)
 			if err2 != nil {
 				return err
 			}
-			_, err3 := p.changeDickSize(u2, -1*game.PositiveRandomValue())
+			_, err3 := p.changeDickSize(u2, -1*reward)
 			if err3 != nil {
 				return err3
 			}
 			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, u1.DickSize, ch1, u2.Username, u2.DickSize, ch2)+
 				fmt.Sprintf(msgUser1Wins, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
 		} else {
-			_, err2 := p.changeDickSize(u1, -1*game.PositiveRandomValue())
+			_, err2 := p.changeDickSize(u1, -1*reward)
 			if err2 != nil {
 				return err
 			}
-			_, err3 := p.changeDickSize(u2, 1*game.PositiveRandomValue())
+			_, err3 := p.changeDickSize(u2, reward)
 			if err3 != nil {
 				return err3
 			}
