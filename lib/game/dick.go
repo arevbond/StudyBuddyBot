@@ -30,10 +30,10 @@ func Duel(dick1 int, dick2 int) (bool, float64, float64) {
 	chance1 := float64(dick1) / float64(allChance) * 100
 	chance2 := float64(dick2) / float64(allChance) * 100
 
-	if chance1 == 0 {
+	if chance1 <= 0 {
 		chance1 = 2
 		chance2 = 98
-	} else if chance2 == 0 {
+	} else if chance2 <= 0 {
 		chance1 = 98
 		chance2 = 2
 	}
