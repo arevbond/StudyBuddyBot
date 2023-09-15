@@ -20,4 +20,6 @@ const (
 
 	msgNewGayOfDay     = "Новый пидор дня - @%s"
 	msgCurrentGayOfDay = "Текущий пидор дня - @%s"
+
+	msgDuelWithYourself = "@%s засунул пенис себе в рот"
 )

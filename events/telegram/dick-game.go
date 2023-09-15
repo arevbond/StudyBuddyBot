@@ -64,6 +64,10 @@ func (p *Processor) duelDick(chat *telegram.Chat, user *telegram.User, targetUse
 		return err
 	}
 
+	if u1.TgID == u2.TgID {
+		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDuelWithYourself, u1.Username))
+	}
+
 	User1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
 	if User1Win {
 		oldDickSize, err := p.changeDickSize(u1, game.PositiveRandomValue())
