@@ -46,9 +46,9 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 				textSplited := strings.Split(text, "@")
 				target := textSplited[len(textSplited)-1]
 				log.Printf("[INFO] @%s вызывает на дуель @%s", user.Username, target)
-				return p.gameDuelDick(chat, user, target)
+				return p.gameDuelDick(chat, messageID, user, target)
 			}
-			return p.gameDuelDick(chat, user, user.Username)
+			return p.gameDuelDick(chat, messageID, user, user.Username)
 
 		case strings.HasPrefix(text, TodayLessonsCmd):
 			return p.lessonsToday(chat.ID)

@@ -56,7 +56,12 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAlreadyPlays, dbUser.Username))
 }
 
-func (p *Processor) gameDuelDick(chat *telegram.Chat, user *telegram.User, targetUsername string) error {
+func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *telegram.User, targetUsername string) error {
+	err := p.tg.DeleteMessage(chat.ID, messageID)
+	if err != nil {
+		return e.Wrap(fmt.Sprintf("[ERROR] can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
+	}
+
 	u1, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
 	if err != nil {
 		return err
