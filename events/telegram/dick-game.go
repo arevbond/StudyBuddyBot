@@ -12,7 +12,7 @@ import (
 
 var duels = make(map[string]*storage.DBUser)
 
-const reward = 5
+var reward = 15
 
 func (p *Processor) topDick(chat *telegram.Chat) (err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chat.ID)
@@ -75,6 +75,9 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, user *telegram.User, targe
 	if enemy, ok := duels[u1.Username]; ok && enemy.TgID == u2.TgID {
 		User1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
 		if User1Win {
+			if ch1 > 65 {
+				reward = 5
+			}
 			_, err2 := p.changeDickSize(u1, reward)
 			if err2 != nil {
 				return err
@@ -101,7 +104,6 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, user *telegram.User, targe
 		duels[targetUsername] = u1
 		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChallengeToDuel, u1.Username, targetUsername))
 	}
-
 }
 
 func (p *Processor) createNewPlayer(chatID int, user *telegram.User) (*storage.DBUser, error) {
