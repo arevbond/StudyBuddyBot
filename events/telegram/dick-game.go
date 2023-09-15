@@ -78,27 +78,27 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, user *telegram.User, targe
 			if ch1 > 65 {
 				reward = 5
 			}
-			_, err2 := p.changeDickSize(u1, reward)
+			oldDickSize1, err2 := p.changeDickSize(u1, reward)
 			if err2 != nil {
 				return err
 			}
-			_, err3 := p.changeDickSize(u2, -1*reward)
+			oldDickSize2, err3 := p.changeDickSize(u2, -1*reward)
 			if err3 != nil {
 				return err3
 			}
-			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, u1.DickSize, ch1, u2.Username, u2.DickSize, ch2)+
+			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2)+
 				fmt.Sprintf(msgUser1Wins, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
 		} else {
-			_, err2 := p.changeDickSize(u1, -1*reward)
+			oldDickSize1, err2 := p.changeDickSize(u1, -1*reward)
 			if err2 != nil {
 				return err
 			}
-			_, err3 := p.changeDickSize(u2, reward)
+			oldDickSize2, err3 := p.changeDickSize(u2, reward)
 			if err3 != nil {
 				return err3
 			}
-			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, u1.DickSize, ch1, u2.Username, u2.DickSize, ch2)+
-				fmt.Sprintf(msgUser1Lost, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
+			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2)+
+				fmt.Sprintf(msgUser1Lost, u2.Username, u1.DickSize, u1.Username, u2.DickSize))
 		}
 	} else {
 		duels[targetUsername] = u1
