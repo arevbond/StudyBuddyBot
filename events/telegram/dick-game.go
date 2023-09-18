@@ -78,6 +78,7 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 	}
 
 	if enemy, ok := duels[u1.Username]; ok && enemy.TgID == u2.TgID {
+		delete(duels, u1.Username)
 		User1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
 		if User1Win {
 			if ch1 > 65 {
@@ -94,6 +95,9 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2)+
 				fmt.Sprintf(msgUser1Wins, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
 		} else {
+			if ch1 <= 35 {
+				reward = 5
+			}
 			oldDickSize1, err2 := p.changeDickSize(u1, -1*reward)
 			if err2 != nil {
 				return err
