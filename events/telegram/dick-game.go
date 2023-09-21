@@ -12,7 +12,7 @@ import (
 
 var duels = make(map[string]*storage.DBUser)
 
-var reward = 15
+var reward = 0
 
 func (p *Processor) topDick(chat *telegram.Chat) (err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chat.ID)

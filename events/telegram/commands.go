@@ -15,6 +15,8 @@ import (
 const (
 	AnecdotCmd = "/joke"
 
+	FlipCmd = "/flip"
+
 	GayStartCmd = "/gay"
 	GayTopCmd   = "/top_gay"
 
@@ -70,6 +72,10 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 				return e.Wrap("can't get anecdot: ", err)
 			}
 			return p.tg.SendMessage(chat.ID, anecdot)
+
+		case strings.HasPrefix(text, FlipCmd):
+			return p.tg.SendPhoto(chat.ID, RandomPhotoHinkOrRoom())
+
 		default:
 			return nil
 		}

@@ -13,4 +13,5 @@
 | `/gay`, `/top_gay`                | игра: узнать кто gay дня                           |
 
 ## Tasks:
+- Добавить игру Blackjack
 
