@@ -11,7 +11,7 @@ const (
 )
 
 func RandomPhotoHinkOrRoom() string {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().UnixNano())
 	n := rand.Intn(2)
 	if n == 1 {
 		return urlImgHink

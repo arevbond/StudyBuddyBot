@@ -59,7 +59,7 @@ func (p *Processor) gameGay(chatID int) error {
 	} else if err != nil {
 		return e.Wrap("can't get gay of day: ", err)
 	}
-	if gay.DateLastUsed.Month() >= time.Now().Month() && gay.DateLastUsed.Day() < time.Now().Day() {
+	if (gay.DateLastUsed.Month() == time.Now().Month() && gay.DateLastUsed.Day() < time.Now().Day()) || gay.DateLastUsed.Month() < time.Now().Month() {
 		err = p.storage.RemoveGayOfDay(context.Background(), chatID)
 		if err != nil {
 			return err
