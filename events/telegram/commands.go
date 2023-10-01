@@ -33,6 +33,10 @@ const (
 
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
 	text = strings.TrimSpace(text)
+	if strings.HasPrefix(strings.ToLower(text), "да") {
+		return p.tg.SendMessage(chat.ID, "Пизда")
+	}
+
 	if strings.HasPrefix(text, "/") {
 		log.Printf("[INFO] got new command '%s' from '%s", text, user.Username)
 	}
