@@ -20,7 +20,6 @@ func RandomValue() int {
 func CanChangeDickSize(user *storage.DBUser) bool {
 	_, monthLastTry, dayLastTry := user.DateChangeDick.Date()
 	_, month, today := time.Now().Date()
-	log.Print(monthLastTry, month)
 	return (month == monthLastTry && today > dayLastTry) || month > monthLastTry
 }
 
