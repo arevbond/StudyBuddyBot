@@ -14,24 +14,24 @@ var duels = make(map[string]*storage.DBUser)
 
 var reward = 0
 
-func (p *Processor) topDick(chat *telegram.Chat) (err error) {
-	users, err := p.storage.UsersByChat(context.Background(), chat.ID)
+func (p *Processor) topDick(chatID int) (msg string, err error) {
+	users, err := p.storage.UsersByChat(context.Background(), chatID)
 	if err != nil {
-		return e.Wrap("[ERROR] can't get users: ", err)
+		return "", e.Wrap("[ERROR] can't get users: ", err)
 	}
 	result := ""
 	for i, u := range users {
 		result += fmt.Sprintf("%d. %s — %d см\n", i+1, u.FirstName+" "+u.LastName, u.DickSize)
 	}
-	return p.tg.SendMessage(chat.ID, result)
+	return result, nil
 }
 
-func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID int) (err error) {
+func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID int) (msg string, err error) {
 	defer func() { err = e.WrapIfErr("[ERROR] can't change dick size: ", err) }()
 
 	err = p.tg.DeleteMessage(chat.ID, messageID)
 	if err != nil {
-		return e.Wrap(fmt.Sprintf("[ERROR] can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
+		return "", e.Wrap(fmt.Sprintf("[ERROR] can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
 	}
 
 	dbUser, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
@@ -39,42 +39,42 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 	if err == storage.ErrUserNotExist {
 		u, err2 := p.createNewPlayer(chat.ID, user)
 		if err2 != nil {
-			return e.Wrap(fmt.Sprintf("[ERROR] can't create new player telegram id = #%d", user.ID), err)
+			return "", e.Wrap(fmt.Sprintf("[ERROR] can't create new player telegram id = #%d", user.ID), err)
 		}
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgCreateUser, u.Username)+fmt.Sprintf(msgDickSize, u.DickSize))
+		return fmt.Sprintf(msgCreateUser, u.Username) + fmt.Sprintf(msgDickSize, u.DickSize), nil
 	} else if err != nil {
-		return err
+		return "", err
 	}
 
 	if game.CanChangeDickSize(dbUser) {
 		_, oldDickSize, err := p.changeRandomDickSize(dbUser)
 		if err != nil {
-			return err
+			return "", err
 		}
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChangeDickSize, dbUser.Username, oldDickSize, dbUser.DickSize))
+		return fmt.Sprintf(msgChangeDickSize, dbUser.Username, oldDickSize, dbUser.DickSize), nil
 	}
-	return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAlreadyPlays, dbUser.Username))
+	return fmt.Sprintf(msgAlreadyPlays, dbUser.Username), nil
 }
 
-func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *telegram.User, targetUsername string) error {
+func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *telegram.User, targetUsername string) (string, error) {
 	err := p.tg.DeleteMessage(chat.ID, messageID)
 	if err != nil {
-		return e.Wrap(fmt.Sprintf("[ERROR] can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
+		return "", e.Wrap(fmt.Sprintf("[ERROR] can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
 	}
 
 	u1, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
 	if err != nil {
-		return err
+		return "", err
 	}
 	u2, err := p.storage.UserByUsername(context.Background(), targetUsername, chat.ID)
 	if err == storage.ErrUserNotExist {
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgTargetNotFound, targetUsername))
+		return fmt.Sprintf(msgTargetNotFound, targetUsername), nil
 	} else if err != nil {
-		return err
+		return "", err
 	}
 
 	if u1.TgID == u2.TgID {
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgDuelWithYourself, u1.Username))
+		return fmt.Sprintf(msgDuelWithYourself, u1.Username), nil
 	}
 
 	if enemy, ok := duels[u1.Username]; ok && enemy.TgID == u2.TgID {
@@ -86,32 +86,32 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 			}
 			oldDickSize1, err2 := p.changeDickSize(u1, reward)
 			if err2 != nil {
-				return err
+				return "", err
 			}
 			oldDickSize2, err3 := p.changeDickSize(u2, -1*reward)
 			if err3 != nil {
-				return err3
+				return "", err3
 			}
-			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2)+
-				fmt.Sprintf(msgUser1Wins, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
+			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2) +
+				fmt.Sprintf(msgUser1Wins, u1.Username, u1.DickSize, u2.Username, u2.DickSize), nil
 		} else {
 			if ch1 <= 35 {
 				reward = 5
 			}
 			oldDickSize1, err2 := p.changeDickSize(u1, -1*reward)
 			if err2 != nil {
-				return err
+				return "", err
 			}
 			oldDickSize2, err3 := p.changeDickSize(u2, reward)
 			if err3 != nil {
-				return err3
+				return "", err3
 			}
-			return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2)+
-				fmt.Sprintf(msgUser1Lost, u1.Username, u1.DickSize, u2.Username, u2.DickSize))
+			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2) +
+				fmt.Sprintf(msgUser1Lost, u1.Username, u1.DickSize, u2.Username, u2.DickSize), nil
 		}
 	} else {
 		duels[targetUsername] = u1
-		return p.tg.SendMessage(chat.ID, fmt.Sprintf(msgChallengeToDuel, u1.Username, targetUsername))
+		return fmt.Sprintf(msgChallengeToDuel, u1.Username, targetUsername), nil
 	}
 }
 

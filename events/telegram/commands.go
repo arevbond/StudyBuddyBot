@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"fmt"
 	"log"
 	"strings"
 	"tg_ics_useful_bot/clients/jokesrv"
@@ -9,27 +10,17 @@ import (
 	"tg_ics_useful_bot/lessons"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/lib/lib"
-	"time"
 )
 
-const (
-	AnecdotCmd = "/joke"
-
-	FlipCmd = "/flip"
-
-	GayStartCmd = "/gay"
-	GayTopCmd   = "/top_gay"
-
-	XkcdCmd = "/xkcd"
-
-	DicStartCmd = "/dick"
-	DickTopCmd  = "/top_dick"
-	DickDuelCmd = "/duel"
-
-	TodayLessonsCmd    = "/today"
-	LessonsCmd         = "/lessons"
-	TomorrowLessonsCmd = "/tomorrow"
-)
+func (p *Processor) do(method method, chatID int, message string) error {
+	switch method {
+	case sendMessageMethod:
+		return p.tg.SendMessage(chatID, message)
+	case sendPhotoMethod:
+		return p.tg.SendPhoto(chatID, message)
+	}
+	return e.Wrap(fmt.Sprintf("usupported method: %q", message), nil)
+}
 
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
 	text = strings.TrimSpace(text)
@@ -37,82 +28,79 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	if lib.IsYes(text) {
 		return p.tg.SendMessage(chat.ID, "Пизда")
 	}
-	//if strings.HasPrefix(strings.ToLower(text), "да") && len(text) == 4 {
-	//	return p.tg.SendMessage(chat.ID, "Пизда")
-	//}
-
 	if strings.HasPrefix(text, "/") {
 		log.Printf("[INFO] got new command '%s' from '%s", text, user.Username)
 	}
 	if chat.Type == "group" || chat.Type == "supergroup" {
 		switch {
 		case strings.HasPrefix(text, GayTopCmd):
-			return p.gameGayTop(chat.ID)
+			message, err := p.gameGayTop(chat.ID)
+			if err != nil {
+				return e.Wrap("can't do GayTopCmd: ", err)
+			}
+			return p.do(sendMessageMethod, chat.ID, message)
 		case strings.HasPrefix(text, GayStartCmd):
-			return p.gameGay(chat.ID)
+			message, err := p.gameGay(chat.ID)
+			if err != nil {
+				return e.Wrap("can't get message from gameGay: ", err)
+			}
+			return p.do(sendMessageMethod, chat.ID, message)
 
 		case strings.HasPrefix(text, DickTopCmd):
-			return p.topDick(chat)
+			message, err := p.topDick(chat.ID)
+			if err != nil {
+				return e.Wrap(fmt.Sprintf("can't get top dics from chat %d: ", chat.ID), err)
+			}
+			return p.do(sendMessageMethod, chat.ID, message)
 		case strings.HasPrefix(text, DicStartCmd):
-			return p.gameDick(chat, user, messageID)
+			message, err := p.gameDick(chat, user, messageID)
+			if err != nil {
+				return e.Wrap("can't get message from gameDick: ", err)
+			}
+			return p.do(sendMessageMethod, chat.ID, message)
 		case strings.HasPrefix(text, DickDuelCmd):
+			message, err := p.gameDuelDick(chat, messageID, user, user.Username)
+			if err != nil {
+				return e.Wrap("can't do gameDuelDick: ", err)
+			}
 			if lib.Contains("@", text) {
 				textSplited := strings.Split(text, "@")
 				target := textSplited[len(textSplited)-1]
 				log.Printf("[INFO] @%s вызывает на дуель @%s", user.Username, target)
-				return p.gameDuelDick(chat, messageID, user, target)
+				message, err = p.gameDuelDick(chat, messageID, user, target)
+				if err != nil {
+					return e.Wrap("can't do gameDuelDick: ", err)
+				}
 			}
-			return p.gameDuelDick(chat, messageID, user, user.Username)
+			return p.do(sendMessageMethod, chat.ID, message)
 
 		case strings.HasPrefix(text, TodayLessonsCmd):
-			return p.lessonsToday(chat.ID)
+			message := lessons.LessonsToday()
+			return p.do(sendMessageMethod, chat.ID, message)
 		case strings.HasPrefix(text, TomorrowLessonsCmd):
-			return p.tomorrowLessons(chat.ID)
+			message := lessons.TomorrowLessons()
+			return p.do(sendMessageMethod, chat.ID, message)
 		case strings.HasPrefix(text, LessonsCmd):
-			return p.allLessons(chat.ID)
+			message := lessons.AllLessons()
+			return p.do(sendMessageMethod, chat.ID, message)
 
 		case strings.HasPrefix(text, XkcdCmd):
-			return p.sendXkcd(chat.ID)
-
+			comics, err := xkcd.RandomComics()
+			if err != nil {
+				return e.Wrap("can't get comics from xkcd: ", err)
+			}
+			return p.do(sendPhotoMethod, chat.ID, comics.Img)
 		case strings.HasPrefix(text, AnecdotCmd):
 			anecdot, err := jokesrv.Anecdot()
 			if err != nil {
 				return e.Wrap("can't get anecdot: ", err)
 			}
-			return p.tg.SendMessage(chat.ID, anecdot)
-
+			return p.do(sendMessageMethod, chat.ID, anecdot)
 		case strings.HasPrefix(text, FlipCmd):
-			return p.tg.SendPhoto(chat.ID, RandomPhotoHinkOrRoom())
-
+			return p.do(sendPhotoMethod, chat.ID, RandomPhotoHinkOrRoom())
 		default:
 			return nil
 		}
 	}
 	return nil
-}
-
-func (p *Processor) sendXkcd(chatID int) error {
-	comics, err := xkcd.RandomComics()
-	if err != nil {
-		return err
-	}
-	return p.tg.SendPhoto(chatID, comics.Img)
-}
-
-func (p *Processor) tomorrowLessons(chatID int) error {
-	result := "Расписание на завтра:\n\n"
-	result += lessons.StringTomorrowLessons(time.Now().Weekday())
-	return p.tg.SendMessage(chatID, result)
-}
-
-func (p *Processor) allLessons(chatID int) error {
-	result := "Расписание на неделю:\n\n"
-	result += lessons.StringAllLessons()
-	return p.tg.SendMessage(chatID, result)
-}
-
-func (p *Processor) lessonsToday(chatID int) error {
-	result := "Расписание на сегодня:\n\n"
-	result += lessons.StringLessonsByDay(time.Now().Weekday())
-	return p.tg.SendMessage(chatID, result)
 }

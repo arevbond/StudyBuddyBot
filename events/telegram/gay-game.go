@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-func (p *Processor) gameGayTop(chatID int) (err error) {
+func (p *Processor) gameGayTop(chatID int) (message string, err error) {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
-		return e.Wrap("[ERROR] can't get chat administrators: ", err)
+		return "", e.Wrap("[ERROR] can't get chat administrators: ", err)
 	}
 	dbUsers := []*storage.DBUser{}
 	for _, u := range admins {
@@ -30,7 +30,7 @@ func (p *Processor) gameGayTop(chatID int) (err error) {
 			}
 			err = p.storage.CreateUser(context.Background(), dbUser)
 			if err != nil {
-				return err
+				return "", err
 			}
 		}
 		dbUsers = append(dbUsers, dbUser)
@@ -43,31 +43,31 @@ func (p *Processor) gameGayTop(chatID int) (err error) {
 	for i, dbU := range dbUsers {
 		result += fmt.Sprintf("%d. %s %s - %d раз \n", i+1, dbU.FirstName, dbU.LastName, dbU.CountGayOfDay)
 	}
-	return p.tg.SendMessage(chatID, result)
+	return result, nil
 }
 
-func (p *Processor) gameGay(chatID int) error {
+func (p *Processor) gameGay(chatID int) (string, error) {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
-		return e.Wrap("can't get chat administrators: ", err)
+		return "", e.Wrap("can't get chat administrators: ", err)
 	}
 
 	gay, err := p.storage.GayOfDay(context.Background(), chatID)
 	if err == storage.ErrUserNotExist {
 		gay, err = p.createNewGayOfDay(chatID, admins)
-		return p.tg.SendMessage(chatID, fmt.Sprintf(msgNewGayOfDay, gay.Username))
+		return fmt.Sprintf(msgNewGayOfDay, gay.Username), nil
 	} else if err != nil {
-		return e.Wrap("can't get gay of day: ", err)
+		return "", e.Wrap("can't get gay of day: ", err)
 	}
 	if (gay.DateLastUsed.Month() == time.Now().Month() && gay.DateLastUsed.Day() < time.Now().Day()) || gay.DateLastUsed.Month() < time.Now().Month() {
 		err = p.storage.RemoveGayOfDay(context.Background(), chatID)
 		if err != nil {
-			return err
+			return "", err
 		}
 		gay, err = p.createNewGayOfDay(chatID, admins)
-		return p.tg.SendMessage(chatID, fmt.Sprintf(msgNewGayOfDay, gay.Username))
+		return fmt.Sprintf(msgNewGayOfDay, gay.Username), nil
 	}
-	return p.tg.SendMessage(chatID, fmt.Sprintf(msgCurrentGayOfDay, gay.Username))
+	return fmt.Sprintf(msgCurrentGayOfDay, gay.Username), nil
 }
 
 func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*storage.DBGayOfDay, error) {

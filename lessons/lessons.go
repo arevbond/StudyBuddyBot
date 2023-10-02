@@ -12,6 +12,24 @@ type lesson struct {
 	Time    string
 }
 
+func TomorrowLessons() string {
+	result := "Расписание на завтра:\n\n"
+	result += stringTomorrowLessons(time.Now().Weekday())
+	return result
+}
+
+func AllLessons() string {
+	result := "Расписание на неделю:\n\n"
+	result += stringAllLessons()
+	return result
+}
+
+func LessonsToday() string {
+	result := "Расписание на сегодня:\n\n"
+	result += stringLessonsByDay(time.Now().Weekday())
+	return result
+}
+
 func Lessons() map[time.Weekday][]lesson {
 	lessons := make(map[time.Weekday][]lesson)
 	lessons[time.Monday] = []lesson{
@@ -40,7 +58,7 @@ func Lessons() map[time.Weekday][]lesson {
 	return lessons
 }
 
-func StringLessonsByDay(day time.Weekday) string {
+func stringLessonsByDay(day time.Weekday) string {
 	ls := Lessons()
 	result := ""
 	today := ls[day]
@@ -53,7 +71,7 @@ func StringLessonsByDay(day time.Weekday) string {
 	return result
 }
 
-func StringAllLessons() string {
+func stringAllLessons() string {
 	result := ""
 	for d := time.Monday; d <= time.Saturday; d++ {
 		switch d {
@@ -70,16 +88,16 @@ func StringAllLessons() string {
 		case time.Saturday:
 			result += "Суббота:\n"
 		}
-		result += StringLessonsByDay(d)
+		result += stringLessonsByDay(d)
 		result += "\n"
 	}
 	return result
 }
 
-func StringTomorrowLessons(day time.Weekday) string {
+func stringTomorrowLessons(day time.Weekday) string {
 	day += 1
 	if day == 7 {
 		day = 0
 	}
-	return StringLessonsByDay(day)
+	return stringLessonsByDay(day)
 }

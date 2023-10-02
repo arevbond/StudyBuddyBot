@@ -25,6 +25,8 @@ func IsYes(text string) bool {
 				return false
 			}
 		}
+	} else {
+		return false
 	}
 	return true
 }
