@@ -33,6 +33,10 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	}
 	if chat.Type == "group" || chat.Type == "supergroup" {
 		switch {
+		case strings.HasPrefix(text, AllCmd):
+			message := p.AllUsernames(chat.ID)
+			return p.do(sendMessageMethod, chat.ID, message)
+
 		case strings.HasPrefix(text, GayTopCmd):
 			message, err := p.gameGayTop(chat.ID)
 			if err != nil {
@@ -103,4 +107,16 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		}
 	}
 	return nil
+}
+
+func (p *Processor) AllUsernames(chatID int) string {
+	admins, err := p.tg.ChatAdministrators(chatID)
+	if err != nil {
+		log.Printf("can't get admins in chat #%d: ", chatID, err)
+	}
+	result := ""
+	for _, a := range admins {
+		result += "@" + a.Username + " "
+	}
+	return result[:len(result)-1]
 }

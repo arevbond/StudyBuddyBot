@@ -8,6 +8,7 @@ const (
 )
 
 var (
+	AllCmd             = "/all"
 	AnecdotCmd         = "/joke"
 	FlipCmd            = "/flip"
 	GayStartCmd        = "/gay"
