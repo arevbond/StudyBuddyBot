@@ -19,7 +19,7 @@ func (p *Processor) do(method method, chatID int, message string) error {
 	case sendPhotoMethod:
 		return p.tg.SendPhoto(chatID, message)
 	}
-	return e.Wrap(fmt.Sprintf("usupported method: %q", message), nil)
+	return e.Wrap(fmt.Sprintf("unsupported method: %q", message), nil)
 }
 
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
