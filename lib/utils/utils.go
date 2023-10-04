@@ -11,7 +11,7 @@ func StringContains(x, str string) bool {
 	return false
 }
 
-func Contains(strs []string, text string) bool {
+func Contains(text string, strs []string) bool {
 	for _, str := range strs {
 		if str == text {
 			return true
