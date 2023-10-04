@@ -24,8 +24,8 @@ func (p *Processor) do(method method, chatID int, message string) error {
 
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
 	text = strings.TrimSpace(text)
-
-	if lib.IsYes(text) {
+	splitedText := strings.Split(text, " ")
+	if lib.IsYes(splitedText[len(splitedText)-1]) {
 		return p.tg.SendMessage(chat.ID, "Пизда")
 	}
 	if strings.HasPrefix(text, "/") {

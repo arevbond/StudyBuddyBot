@@ -46,8 +46,7 @@ func (c Consumer) Start() error {
 
 func (c *Consumer) handleEvents(events []events.Event) error {
 	for _, event := range events {
-		if strings.HasPrefix(event.Text, "/") || strings.HasPrefix(strings.ToLower(event.Text), "д") {
-			log.Printf("[INFO] got new event: %s", event.Text)
+		if strings.HasPrefix(event.Text, "/") || strings.HasPrefix(strings.ToLower(event.Text), "д") || strings.HasSuffix(strings.ToLower(event.Text), "а") {
 			if err := c.processor.Process(event); err != nil {
 				log.Printf("[ERROR] can't handle event: %s", err.Error())
 

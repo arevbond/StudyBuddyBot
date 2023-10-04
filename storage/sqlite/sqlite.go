@@ -85,7 +85,6 @@ func (s *Storage) UserByTelegramID(ctx context.Context, tgID, chatID int) (*stor
 
 func (s *Storage) UserByUsername(ctx context.Context, username string, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE username = ? AND chat_id = ?`
-	log.Printf(username)
 	user := &storage.DBUser{}
 
 	err := s.db.QueryRowContext(ctx, q, username, chatID).Scan(&user.TgID, &user.ChatID, &user.IsBot, &user.FirstName, &user.LastName,

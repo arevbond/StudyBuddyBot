@@ -2,14 +2,15 @@ package lib
 
 import (
 	"strings"
+	"unicode"
 )
 
 func IsYes(text string) bool {
 	var flag bool
 	text = strings.ToLower(text)
+	text = removeSpecSymbols(text)
 	if strings.HasPrefix(text, "д") {
 		for _, ch := range []rune(text) {
-			//log.Printf("%q\n", ch)
 			if ch != 'д' && ch != 'а' {
 				//log.Printf("char: %q != 'д' и 'а'\n")
 				return false
@@ -29,4 +30,14 @@ func IsYes(text string) bool {
 		return false
 	}
 	return true
+}
+
+func removeSpecSymbols(text string) string {
+	result := ""
+	for _, ch := range text {
+		if unicode.IsLetter(rune(ch)) {
+			result += string(ch)
+		}
+	}
+	return result
 }
