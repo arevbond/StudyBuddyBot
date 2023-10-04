@@ -96,7 +96,7 @@ func (p *Processor) processMessage(event events.Event) error {
 		ActiveUsernames: meta.ChatActiveUsernames,
 	}
 
-	if err := p.doCmd(event.Text, chat, user, messageID); err != nil {
+	if err = p.doCmd(event.Text, chat, user, messageID); err != nil {
 		return e.Wrap("[ERROR] can't process message", err)
 	}
 

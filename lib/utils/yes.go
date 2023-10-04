@@ -1,11 +1,11 @@
-package lib
+package utils
 
 import (
 	"strings"
 	"unicode"
 )
 
-func IsYes(text string) bool {
+func IsYesCommand(text string) bool {
 	var flag bool
 	text = strings.ToLower(text)
 	text = removeSpecSymbols(text)
