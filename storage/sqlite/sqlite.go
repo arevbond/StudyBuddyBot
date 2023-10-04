@@ -122,7 +122,7 @@ func (s *Storage) UpdateDateLastTryChangeDickToNow(ctx context.Context, u *stora
 		return e.Wrap(fmt.Sprintf("[ERROR] can't update date last try change dick to now user %d chat id",
 			u.TgID, u.ChatID), err)
 	}
-	log.Printf("[INFO] user #%d %s change his date last try change dick to %s", u.TgID, u.Username, currentTime.Format("2006-01-02"))
+	log.Printf("[INFO] user #%d %s change his date last try change dick to %s", u.TgID, u.Username, currentTime.Format("02-Jan-2006"))
 	return nil
 }
 
