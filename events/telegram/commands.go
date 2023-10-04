@@ -29,7 +29,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return p.tg.SendMessage(chat.ID, "Пизда")
 	}
 	if strings.HasPrefix(text, "/") {
-		log.Printf("[INFO] got new command '%s' from '%s", text, user.Username)
+		log.Printf("[INFO] got new command '%s' from '%s' in %s", text, user.Username, chat.Title)
 	}
 	if chat.Type == "group" || chat.Type == "supergroup" {
 		switch {
