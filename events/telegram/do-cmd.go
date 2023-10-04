@@ -10,10 +10,6 @@ import (
 )
 
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
-	if chat.Type != "group" && chat.Type != "supergroup" {
-		return nil
-	}
-
 	text = strings.TrimSpace(text)
 	splitedText := strings.Split(text, " ")
 
@@ -37,5 +33,6 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 			return p.tg.SendPhoto(chat.ID, msg)
 		}
 	}
+
 	return nil
 }

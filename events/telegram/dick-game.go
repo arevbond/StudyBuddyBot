@@ -73,7 +73,7 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 		return "", err
 	}
 
-	if u1.TgID == u2.TgID {
+	if u1.TgID == u2.TgID || u2.IsBot {
 		return fmt.Sprintf(msgDuelWithYourself, u1.Username), nil
 	}
 

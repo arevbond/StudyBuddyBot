@@ -96,6 +96,10 @@ func (p *Processor) processMessage(event events.Event) error {
 		ActiveUsernames: meta.ChatActiveUsernames,
 	}
 
+	if chat.Type != "group" && chat.Type != "supergroup" {
+		return nil
+	}
+
 	if err = p.doCmd(event.Text, chat, user, messageID); err != nil {
 		return e.Wrap("[ERROR] can't process message", err)
 	}
