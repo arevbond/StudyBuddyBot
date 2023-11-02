@@ -11,10 +11,11 @@ import (
 
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
 	text = strings.TrimSpace(text)
-	splitedText := strings.Split(text, " ")
 
-	if utils.IsYesCommand(splitedText[len(splitedText)-1]) {
+	if utils.IsYesCommand(text) {
 		return p.tg.SendMessage(chat.ID, "Пизда")
+	} else if utils.IsNoCommand(text) {
+		return p.tg.SendMessage(chat.ID, "Пидора ответ")
 	}
 
 	if utils.IsCommand(text) {
