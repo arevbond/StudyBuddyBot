@@ -16,12 +16,23 @@ const (
 	ScopeEvents   = "https://www.googleapis.com/auth/calendar.events"
 )
 
+func Lessons(calendarID string) map[time.Weekday][]Lesson {
+	lessons := make(map[time.Weekday][]Lesson)
+	events := allEvents(calendarID)
+	items := events.Items
+	for _, item := range items {
+		l := rewLesson(item.Summary, item.Start.DateTime)
+		lessons[l.DateTime.Weekday()] = append(lessons[l.DateTime.Weekday()], l)
+	}
+	return lessons
+}
+
 type Lesson struct {
 	Name     string
 	DateTime time.Time
 }
 
-func NewLesson(name string, stringTime string) Lesson {
+func rewLesson(name string, stringTime string) Lesson {
 	t, err := time.Parse(time.RFC3339, stringTime)
 	if err != nil {
 		log.Printf("can't convert time from string %v: %v", stringTime, err)
@@ -29,28 +40,9 @@ func NewLesson(name string, stringTime string) Lesson {
 	return Lesson{name, t}
 }
 
-type Manager struct {
-	CalendarID string
-	srv        *calendar.Service
-}
-
-func NewManager(calendarID string) Manager {
-	return Manager{calendarID, service()}
-}
-
-func (m Manager) Lessons() map[time.Weekday]Lesson {
-	lessons := make(map[time.Weekday]Lesson)
-	events := m.allEvents()
-	items := events.Items
-	for _, item := range items {
-		l := NewLesson(item.Summary, item.Start.DateTime)
-		lessons[l.DateTime.Weekday()] = l
-	}
-	return lessons
-}
-
-func (m Manager) allEvents() *calendar.Events {
-	events, err := m.srv.Events.List(m.CalendarID).Do()
+func allEvents(calendarID string) *calendar.Events {
+	srv := service()
+	events, err := srv.Events.List(calendarID).Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
 	}
@@ -60,7 +52,7 @@ func (m Manager) allEvents() *calendar.Events {
 func service() *calendar.Service {
 	ctx := context.Background()
 
-	data, err := os.ReadFile(KeyFile)
+	data, err := os.ReadFile("clients/google-calendar/" + KeyFile)
 	if err != nil {
 		log.Fatalf("Can't read credentials from file: %s", KeyFile)
 	}
