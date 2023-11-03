@@ -9,7 +9,6 @@ import (
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/clients/xkcd"
 	"tg_ics_useful_bot/events/schedule"
-	"tg_ics_useful_bot/lessons"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/lib/utils"
 )
@@ -23,21 +22,16 @@ const (
 )
 
 var (
-	AllCmd             = []string{"/all", "/all@ics_useful_bot"}
-	AnecdotCmd         = []string{"/joke", "/joke@ics_useful_bot"}
-	FlipCmd            = []string{"/flip", "/flip@ics_useful_bot"}
-	GayStartCmd        = []string{"/gay", "/gay@ics_useful_bot"}
-	GayTopCmd          = []string{"/top_gay", "/top_gay@ics_useful_bot"}
-	XkcdCmd            = []string{"/xkcd", "/xkcd@ics_useful_bot"}
-	DicStartCmd        = []string{"/dick", "/dick@ics_useful_bot"}
-	DickTopCmd         = []string{"/top_dick", "/top_dick@ics_useful_bot"}
-	DickDuelCmd        = []string{"/duel", "/duel@ics_useful_bot"}
-	TodayLessonsCmd    = []string{"/today", "/today@ics_useful_bot"}
-	LessonsCmd         = []string{"/lessons", "/lessons@ics_useful_bot"}
-	TomorrowLessonsCmd = []string{"/tomorrow", "/tomorrow@ics_useful_bot"}
-
-	// test
-	ScheduleCmd = []string{"/schedule"}
+	AllCmd      = []string{"/all", "/all@ics_useful_bot"}
+	AnecdotCmd  = []string{"/joke", "/joke@ics_useful_bot"}
+	FlipCmd     = []string{"/flip", "/flip@ics_useful_bot"}
+	GayStartCmd = []string{"/gay", "/gay@ics_useful_bot"}
+	GayTopCmd   = []string{"/top_gay", "/top_gay@ics_useful_bot"}
+	XkcdCmd     = []string{"/xkcd", "/xkcd@ics_useful_bot"}
+	DicStartCmd = []string{"/dick", "/dick@ics_useful_bot"}
+	DickTopCmd  = []string{"/top_dick", "/top_dick@ics_useful_bot"}
+	DickDuelCmd = []string{"/duel", "/duel@ics_useful_bot"}
+	ScheduleCmd = []string{"/schedule", "/schedule@ics_useful_bot"}
 )
 
 // selectCommand select one of available commands.
@@ -47,32 +41,32 @@ func (p *Processor) selectCommand(text string, chat *telegram.Chat, user *telegr
 	var err error
 	switch {
 
-	case utils.Contains(text, AllCmd):
+	case utils.Equal(text, AllCmd):
 		message = p.allUsernames(chat.ID)
 		mthd = sendMessageMethod
 
-	case utils.Contains(text, GayTopCmd):
+	case utils.Equal(text, GayTopCmd):
 		message, err = p.gameGayTop(chat.ID)
 		if err != nil {
 			return "", UnsupportedMethod, e.Wrap("can't do GayTopCmd: ", err)
 		}
 		mthd = sendMessageMethod
 
-	case utils.Contains(text, GayStartCmd):
+	case utils.Equal(text, GayStartCmd):
 		message, err = p.gameGay(chat.ID)
 		if err != nil {
 			return "", UnsupportedMethod, e.Wrap("can't get message from gameGay: ", err)
 		}
 		mthd = sendMessageMethod
 
-	case utils.Contains(text, DickTopCmd):
+	case utils.Equal(text, DickTopCmd):
 		message, err = p.topDick(chat.ID)
 		if err != nil {
 			return "", UnsupportedMethod, e.Wrap(fmt.Sprintf("can't get top dics from chat %d: ", chat.ID), err)
 		}
 		mthd = sendMessageMethod
 
-	case utils.Contains(text, DicStartCmd):
+	case utils.Equal(text, DicStartCmd):
 		message, err = p.gameDick(chat, user, messageID)
 		if err != nil {
 			return "", UnsupportedMethod, e.Wrap("can't get message from gameDick: ", err)
@@ -95,17 +89,7 @@ func (p *Processor) selectCommand(text string, chat *telegram.Chat, user *telegr
 		}
 		mthd = sendMessageMethod
 
-	case utils.Contains(text, TodayLessonsCmd):
-		message = lessons.LessonsToday()
-		mthd = sendMessageMethod
-	case utils.Contains(text, TomorrowLessonsCmd):
-		message = lessons.TomorrowLessons()
-		mthd = sendMessageMethod
-	case utils.Contains(text, LessonsCmd):
-		message = lessons.AllLessons()
-		mthd = sendMessageMethod
-
-	case utils.Contains(text, XkcdCmd):
+	case utils.Equal(text, XkcdCmd):
 		var comics xkcd.Comics
 		comics, err = xkcd.RandomComics()
 		if err != nil {
@@ -114,16 +98,16 @@ func (p *Processor) selectCommand(text string, chat *telegram.Chat, user *telegr
 		message = comics.Img
 		mthd = sendPhotoMethod
 
-	case utils.Contains(text, AnecdotCmd):
+	case utils.Equal(text, AnecdotCmd):
 		message, err = jokesrv.Anecdot()
 		if err != nil {
 			return "", UnsupportedMethod, e.Wrap("can't get anecdot: ", err)
 		}
 		mthd = sendMessageMethod
-	case utils.Contains(text, FlipCmd):
+	case utils.Equal(text, FlipCmd):
 		message = RandomPhotoHinkOrRoom()
 		mthd = sendPhotoMethod
-	case utils.Contains(text, ScheduleCmd):
+	case utils.Equal(text, ScheduleCmd):
 		calendarID, err := p.storage.CalendarID(context.Background(), chat.ID)
 		if err != nil || calendarID == "" {
 			return "", UnsupportedMethod, e.Wrap("can't get calendarID: ", err)
