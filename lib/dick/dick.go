@@ -1,4 +1,4 @@
-package game
+package dick
 
 import (
 	"log"

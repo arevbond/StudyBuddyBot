@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"tg_ics_useful_bot/clients/telegram"
+	"tg_ics_useful_bot/lib/dick"
 	"tg_ics_useful_bot/lib/e"
-	"tg_ics_useful_bot/lib/game"
 	"tg_ics_useful_bot/storage"
 	"time"
 )
@@ -46,7 +46,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 		return "", err
 	}
 
-	if game.CanChangeDickSize(dbUser) {
+	if dick.CanChangeDickSize(dbUser) {
 		_, oldDickSize, err := p.changeRandomDickSize(dbUser)
 		if err != nil {
 			return "", err
@@ -79,7 +79,7 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 
 	if enemy, ok := duels[u1.Username]; ok && enemy.TgID == u2.TgID {
 		delete(duels, u1.Username)
-		User1Win, ch1, ch2 := game.Duel(u1.DickSize, u2.DickSize)
+		User1Win, ch1, ch2 := dick.Duel(u1.DickSize, u2.DickSize)
 		if User1Win {
 			if ch1 > 65 {
 				reward = 5
@@ -124,7 +124,7 @@ func (p *Processor) createNewPlayer(chatID int, user *telegram.User) (*storage.D
 		LastName:       user.LastName,
 		Username:       user.Username,
 		IsPremium:      user.IsPremium,
-		DickSize:       game.PositiveRandomValue(),
+		DickSize:       dick.PositiveRandomValue(),
 		DateChangeDick: time.Now(),
 	}
 	err := p.storage.CreateUser(context.Background(), dbUser)
@@ -149,7 +149,7 @@ func (p *Processor) changeDickSize(user *storage.DBUser, value int) (int, error)
 }
 
 func (p *Processor) changeRandomDickSize(user *storage.DBUser) (bool, int, error) {
-	value := game.RandomValue()
+	value := dick.RandomValue()
 	oldDickSize, err := p.changeDickSize(user, value)
 	if err != nil {
 		return false, 0, e.Wrap(fmt.Sprintf("[ERROR] chat id %d, user %s can't change random dick size: ",

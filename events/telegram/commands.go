@@ -8,8 +8,8 @@ import (
 	"tg_ics_useful_bot/clients/jokesrv"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/clients/xkcd"
-	"tg_ics_useful_bot/events/schedule"
 	"tg_ics_useful_bot/lib/e"
+	"tg_ics_useful_bot/lib/schedule"
 	"tg_ics_useful_bot/lib/utils"
 )
 
