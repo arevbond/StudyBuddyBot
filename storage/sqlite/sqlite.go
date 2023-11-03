@@ -181,7 +181,7 @@ func (s *Storage) CreateGayOfDay(ctx context.Context, gay *storage.DBGayOfDay) e
 	q := `INSERT INTO gays (chat_id, tg_id, username, date_last_used) 
 							VALUES (?, ?, ?, ?)`
 
-	log.Printf("create gay of day #%d '%s', chat_id = %d", gay.TgID, gay.Username, gay.ChatID)
+	log.Printf("[INFO] create gay of day #%d '%s', chat_id = %d", gay.TgID, gay.Username, gay.ChatID)
 
 	if _, err := s.db.ExecContext(ctx, q, gay.ChatID, gay.TgID, gay.Username, gay.DateLastUsed); err != nil {
 		return e.Wrap(fmt.Sprintf("can't create gay %d %s: ", gay.TgID, gay.Username), err)
