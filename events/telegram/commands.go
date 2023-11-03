@@ -1,12 +1,14 @@
 package telegram
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
 	"tg_ics_useful_bot/clients/jokesrv"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/clients/xkcd"
+	"tg_ics_useful_bot/events/schedule"
 	"tg_ics_useful_bot/lessons"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/lib/utils"
@@ -33,6 +35,9 @@ var (
 	TodayLessonsCmd    = []string{"/today", "/today@ics_useful_bot"}
 	LessonsCmd         = []string{"/lessons", "/lessons@ics_useful_bot"}
 	TomorrowLessonsCmd = []string{"/tomorrow", "/tomorrow@ics_useful_bot"}
+
+	// test
+	ScheduleCmd = []string{"/schedule"}
 )
 
 // selectCommand select one of available commands.
@@ -118,6 +123,14 @@ func (p *Processor) selectCommand(text string, chat *telegram.Chat, user *telegr
 	case utils.Contains(text, FlipCmd):
 		message = RandomPhotoHinkOrRoom()
 		mthd = sendPhotoMethod
+	case utils.Contains(text, ScheduleCmd):
+		calendarID, err := p.storage.CalendarID(context.Background(), chat.ID)
+		if err != nil || calendarID == "" {
+			return "", UnsupportedMethod, e.Wrap("can't get calendarID: ", err)
+		}
+
+		message = schedule.Schedule(calendarID)
+		mthd = sendMessageMethod
 	}
 	return message, mthd, nil
 }
