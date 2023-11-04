@@ -24,7 +24,7 @@ func (c Consumer) Start() error {
 	for {
 		gotEvents, err := c.fetcher.Fetch(c.batchSize)
 		if err != nil {
-			log.Printf("[ERR] consumer: %s", err.Error())
+			log.Printf("[ERROR] consumer: %s", err.Error())
 
 			continue
 		}
@@ -35,8 +35,8 @@ func (c Consumer) Start() error {
 			continue
 		}
 
-		if err := c.handleEvents(gotEvents); err != nil {
-			log.Print(err)
+		if err = c.handleEvents(gotEvents); err != nil {
+			log.Printf("[ERROR] consumer: %s", err.Error())
 
 			continue
 		}

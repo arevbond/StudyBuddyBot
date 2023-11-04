@@ -9,7 +9,7 @@ import (
 func Schedule(calendarID string) string {
 	result := "Расписание:\n\n"
 	for day := time.Monday; day <= time.Saturday; day++ {
-		cur := scheduleByDay(day, calendarID)
+		cur := ScheduleByDay(day, calendarID)
 		if cur != "" {
 			result += cur + "\n"
 		}
@@ -17,7 +17,7 @@ func Schedule(calendarID string) string {
 	return result
 }
 
-func scheduleByDay(day time.Weekday, calendarID string) string {
+func ScheduleByDay(day time.Weekday, calendarID string) string {
 	dayToLessons := google_calendar.Lessons(calendarID)
 	result := ""
 	lessons := dayToLessons[day]
