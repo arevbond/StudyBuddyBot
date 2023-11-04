@@ -2,11 +2,13 @@ package google_calendar
 
 import (
 	"context"
+	"fmt"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
 	"google.golang.org/api/option"
 	"log"
 	"os"
+	"tg_ics_useful_bot/lib/e"
 	"time"
 )
 
@@ -16,15 +18,18 @@ const (
 	ScopeEvents   = "https://www.googleapis.com/auth/calendar.events"
 )
 
-func Lessons(calendarID string) map[time.Weekday][]Lesson {
+func Lessons(calendarID string) (map[time.Weekday][]Lesson, error) {
 	lessons := make(map[time.Weekday][]Lesson)
-	events := allEvents(calendarID)
+	events, err := allEvents(calendarID)
+	if err != nil {
+		return nil, err
+	}
 	items := events.Items
 	for _, item := range items {
 		l := rewLesson(item.Summary, item.Start.DateTime)
 		lessons[l.DateTime.Weekday()] = append(lessons[l.DateTime.Weekday()], l)
 	}
-	return lessons
+	return lessons, nil
 }
 
 type Lesson struct {
@@ -40,13 +45,13 @@ func rewLesson(name string, stringTime string) Lesson {
 	return Lesson{name, t}
 }
 
-func allEvents(calendarID string) *calendar.Events {
+func allEvents(calendarID string) (*calendar.Events, error) {
 	srv := service()
 	events, err := srv.Events.List(calendarID).Do()
 	if err != nil {
-		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
+		return nil, e.Wrap(fmt.Sprintf("[ERROR] can't get events from calendar_id %s", calendarID), err)
 	}
-	return events
+	return events, nil
 }
 
 func service() *calendar.Service {
