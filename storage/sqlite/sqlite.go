@@ -33,7 +33,7 @@ func (s *Storage) Init(ctx context.Context) error {
 	q1 := `CREATE TABLE IF NOT EXISTS gays (chat_id int, tg_id int, username TEXT, date_last_used DATE)`
 	q2 := `CREATE TABLE IF NOT EXISTS users (tg_id int, chat_id int, is_bot BIT, first_name TEXT, last_name TEXT, 
 			username TEXT, is_premium BIT, dick_size INT DEFAULT 0, count_gay_of_day int DEFAULT 0 , last_try_change_dick DATE)`
-	q3 := `CREATE TABLE IF NOT EXISTS calendars (chat_id int, calendar_id TEXT)`
+	q3 := `CREATE TABLE IF NOT EXISTS calendars (chat_id int UNIQUE, calendar_id TEXT)`
 
 	_, err := s.db.ExecContext(ctx, q1)
 	if err != nil {
@@ -222,4 +222,12 @@ func (s *Storage) CalendarID(ctx context.Context, chatID int) (string, error) {
 		return "", e.Wrap(fmt.Sprintf("[ERROR] can't get calendar_id from table calendars chat id: %d", chatID), err)
 	}
 	return calendarID, nil
+}
+
+func (s *Storage) AddCalendarID(ctx context.Context, chatID int, calendarID string) error {
+	q := `INSERT INTO calendars (chat_id, calendar_id) VALUES (?, ?) ON CONFLICT (chat_id) DO UPDATE SET calendar_id = ?`
+	if _, err := s.db.ExecContext(ctx, q, chatID, calendarID, calendarID); err != nil {
+		return e.Wrap(fmt.Sprintf("can't update or create calendar_id in chat #%d: ", chatID), err)
+	}
+	return nil
 }

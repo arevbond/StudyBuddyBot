@@ -20,6 +20,7 @@ type Storage interface {
 	CreateGayOfDay(ctx context.Context, gay *DBGayOfDay) error
 
 	CalendarID(ctx context.Context, chatID int) (string, error)
+	AddCalendarID(ctx context.Context, chatID int, calendarID string) error
 }
 
 var ErrUserNotExist = errors.New("user not exists")
