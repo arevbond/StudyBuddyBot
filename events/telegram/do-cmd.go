@@ -28,7 +28,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 
 		switch mthd {
 		case UnsupportedMethod:
-			return e.Wrap(fmt.Sprintf("unsupported method from message: %s", text), nil)
+			return e.Wrap(fmt.Sprintf("unsupported method from message %s: %v", text), nil)
 		case sendMessageMethod:
 			return p.tg.SendMessage(chat.ID, msg)
 		case sendPhotoMethod:
