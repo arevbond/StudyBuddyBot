@@ -32,6 +32,8 @@ var (
 	DickTopCmd  = []string{"/top_dick", "/top_dick@ics_useful_bot"}
 	DickDuelCmd = []string{"/duel", "/duel@ics_useful_bot"}
 	ScheduleCmd = []string{"/schedule", "/schedule@ics_useful_bot"}
+
+	AddCalendarIDCmd = []string{"/add_calendar", "/add_calendar@ics_useful_bot"}
 )
 
 // selectCommand select one of available commands.
@@ -113,7 +115,30 @@ func (p *Processor) selectCommand(text string, chat *telegram.Chat, user *telegr
 			return "", UnsupportedMethod, e.Wrap("can't get calendarID: ", err)
 		}
 
-		message = schedule.Schedule(calendarID)
+		message, err = schedule.Schedule(calendarID)
+		if err != nil {
+			log.Printf("[ERROR] can't send schedule: %v", err)
+			message = fmt.Sprintf(msgErrorSendMessage, calendarID)
+		}
+		mthd = sendMessageMethod
+	case utils.Equal(strings.Split(text, " ")[0], AddCalendarIDCmd):
+		if !p.isAdmin(user, chat.ID) {
+			return msgForbiddenCalendarUpdate, sendMessageMethod, nil
+		}
+		strs := strings.Split(text, " ")
+		calendarID := ""
+		for _, str := range strs {
+			if len(str) > 0 {
+				calendarID = str
+			}
+		}
+		err = p.storage.AddCalendarID(context.Background(), chat.ID, calendarID)
+		if err != nil {
+			message = fmt.Sprintf(msgErrorUpdateCalendarID, calendarID)
+			log.Printf("[ERROR] can't update calender_id: %v", err)
+		} else {
+			message = msgSuccessUpdateCalendarID
+		}
 		mthd = sendMessageMethod
 	}
 	return message, mthd, nil
@@ -129,4 +154,17 @@ func (p *Processor) allUsernames(chatID int) string {
 		result += "@" + a.Username + " "
 	}
 	return result[:len(result)-1]
+}
+
+func (p *Processor) isAdmin(user *telegram.User, chatID int) bool {
+	admins, err := p.tg.ChatAdministrators(chatID)
+	if err != nil {
+		log.Printf("can't get admins in chat #%d: ", chatID, err)
+	}
+	for _, admin := range admins {
+		if user.ID == admin.ID {
+			return true
+		}
+	}
+	return false
 }
