@@ -18,9 +18,9 @@ func RandomValue() int {
 }
 
 func CanChangeDickSize(user *storage.DBUser) bool {
-	_, monthLastTry, dayLastTry := user.DateChangeDick.Date()
-	_, month, today := time.Now().Date()
-	return (month == monthLastTry && today > dayLastTry) || month > monthLastTry
+	yearLastTry, monthLastTry, dayLastTry := user.DateChangeDick.Date()
+	year, month, today := time.Now().Date()
+	return (month == monthLastTry && today > dayLastTry) || month > monthLastTry || year > yearLastTry
 }
 
 // Duel return true if dick1 wins.
