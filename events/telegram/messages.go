@@ -1,6 +1,7 @@
 package telegram
 
-const msgHelp = `I can save and keep your pages`
+// TODO: write help message
+const msgHelp = `HELP MESSAGE`
 
 const msgHello = "Hi there\n\n" + msgHelp
 
@@ -32,4 +33,8 @@ const (
 	msgErrorSendMessage        = "Не удалось получить расписание из календаря с id: %s"
 	msgErrorUpdateCalendarID   = "Не удалось добавить данное id календаря: \"%s\""
 	msgSuccessUpdateCalendarID = "Теперь к вашему чату привязано новое расписание\nНе забудь открыть доступ к своему календарю пользователю:\ncalendar-manager@flash-spark-404006.iam.gserviceaccount.com\n"
+
+	msgHomeworkWithoutSubject = "Пожалуйста после команды укажите название предмета в формате:\n/add_homework #ЗащитаИнформации Лабораторная 7..."
+	msgHomeworkWithoutData    = "Пожалуйста после команды и названия предмета укажите само задание в формате:\n/add_homework #ФизическаяКультура Задали пробежать 100 км на выходных"
+	msgHomeworkSuccessAdded   = "ДЗ: %s - %s\n Успешно добавлено"
 )

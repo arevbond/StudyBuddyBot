@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -46,7 +47,6 @@ func (c *Client) Updates(offset int, limit int) (updates []Update, err error) {
 	q := url.Values{}
 	q.Add("offset", strconv.Itoa(offset))
 	q.Add("limit", strconv.Itoa(limit))
-
 	data, err := c.doRequest(getUpdatesMethod, q)
 	if err != nil {
 		return nil, err
@@ -93,6 +93,19 @@ func (c *Client) SendMessage(chatID int, text string) error {
 		return e.Wrap("can't send message", err)
 	}
 
+	return nil
+}
+
+func (c *Client) SendMessageWithMarkup(chatID int, text string, buttons []KeyboardButton) error {
+	message := Message{chatID, text, ReplyKeyboardMarkup{[][]KeyboardButton{buttons}, true}}
+	jsonData, err := json.Marshal(message)
+	if err != nil {
+		return e.Wrap("can't marshall buttons to json", err)
+	}
+	_, err = c.doRequestWithBody(sendMessageMethod, jsonData)
+	if err != nil {
+		return e.Wrap("can't send message with markup:", err)
+	}
 	return nil
 }
 
@@ -160,4 +173,31 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 		return nil, err
 	}
 	return body, nil
+}
+
+func (c *Client) doRequestWithBody(method string, message []byte) (data []byte, err error) {
+	defer func() { err = e.WrapIfErr("can't do request with json", err) }()
+	u := url.URL{
+		Scheme: "https",
+		Host:   c.host,
+		Path:   path.Join(c.basePath, method),
+	}
+	req, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(message))
+	req.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		return nil, err
+	}
+	//req.URL.RawQuery = query.Encode()
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	resultBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	//log.Print(string(resultBody))
+	return resultBody, nil
 }

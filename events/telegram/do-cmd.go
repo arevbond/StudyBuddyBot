@@ -21,7 +21,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 
 	if utils.IsCommand(text) {
 		log.Printf("[INFO] got new command '%s' from '%s' in '%s'", text, user.Username, chat.Title)
-		msg, mthd, err := p.selectCommand(text, chat, user, messageID)
+		msg, mthd, buttons, err := p.selectCommand(text, chat, user, messageID)
 		if err != nil {
 			return e.Wrap(fmt.Sprintf("can't select command from message: %s", text), err)
 		}
@@ -33,6 +33,8 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 			return p.tg.SendMessage(chat.ID, msg)
 		case sendPhotoMethod:
 			return p.tg.SendPhoto(chat.ID, msg)
+		case sendMessageWithButtonsMethod:
+			return p.tg.SendMessageWithMarkup(chat.ID, msg, buttons)
 		}
 	}
 

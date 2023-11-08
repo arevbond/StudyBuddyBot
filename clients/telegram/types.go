@@ -42,3 +42,19 @@ type Chat struct {
 	Title           string   `json:"title"`
 	ActiveUsernames []string `json:"active_usernames"`
 }
+
+type Message struct {
+	ChatID      int                 `json:"chat_id"`
+	Text        string              `json:"text"`
+	ReplyMarkup ReplyKeyboardMarkup `json:"reply_markup"`
+}
+
+type ReplyKeyboardMarkup struct {
+	Keyboard        [][]KeyboardButton `json:"keyboard"`
+	OneTimeKeyboard bool               `json:"one_time_keyboard"`
+}
+
+type KeyboardButton struct {
+	Text string `json:"text"`
+	//CallbackData string `json:"callback_data"`
+}
