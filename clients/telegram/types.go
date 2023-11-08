@@ -44,17 +44,19 @@ type Chat struct {
 }
 
 type Message struct {
-	ChatID      int                 `json:"chat_id"`
-	Text        string              `json:"text"`
-	ReplyMarkup ReplyKeyboardMarkup `json:"reply_markup"`
+	ChatID           int                  `json:"chat_id"`
+	Text             string               `json:"text"`
+	ParseMode        string               `json:"parse_mode"`
+	ReplyToMessageID int                  `json:"reply_to_message_id"`
+	ReplyMarkup      InlineKeyboardMarkup `json:"reply_markup"`
 }
 
-type ReplyKeyboardMarkup struct {
-	Keyboard        [][]KeyboardButton `json:"keyboard"`
-	OneTimeKeyboard bool               `json:"one_time_keyboard"`
+type InlineKeyboardMarkup struct {
+	Keyboard        [][]InlineKeyboardButton `json:"keyboard"`
+	OneTimeKeyboard bool                     `json:"one_time_keyboard"`
 }
 
-type KeyboardButton struct {
-	Text string `json:"text"`
-	//CallbackData string `json:"callback_data"`
+type InlineKeyboardButton struct {
+	Text         string `json:"text"`
+	CallbackData string `json:"callback_data"`
 }

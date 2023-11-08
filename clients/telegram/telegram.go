@@ -47,7 +47,7 @@ func (c *Client) Updates(offset int, limit int) (updates []Update, err error) {
 	q := url.Values{}
 	q.Add("offset", strconv.Itoa(offset))
 	q.Add("limit", strconv.Itoa(limit))
-	data, err := c.doRequest(getUpdatesMethod, q)
+	data, err := c.doRequestWithQuery(getUpdatesMethod, q)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (c *Client) ChatAdministrators(chatID int) ([]User, error) {
 	q := url.Values{}
 	q.Add("chat_id", strconv.Itoa(chatID))
 
-	data, err := c.doRequest(getChatAdministratorsMethod, q)
+	data, err := c.doRequestWithQuery(getChatAdministratorsMethod, q)
 	if err != nil {
 		return nil, e.Wrap("can't get chat administrators: ", err)
 	}
@@ -83,30 +83,17 @@ func (c *Client) ChatAdministrators(chatID int) ([]User, error) {
 	return result, nil
 }
 
-func (c *Client) SendMessage(chatID int, text string) error {
-	q := url.Values{}
-	q.Add("chat_id", strconv.Itoa(chatID))
-	q.Add("text", text)
-	q.Add("parse_mode", "Markdown")
-
-	_, err := c.doRequest(sendMessageMethod, q)
+func (c *Client) SendMessage(chatID int, text string, parseMode string, replyToMessageID int, replyMarkup InlineKeyboardMarkup) error {
+	message := Message{chatID, text, parseMode, replyToMessageID, replyMarkup}
+	jsonData, err := json.Marshal(message)
+	if err != nil {
+		return e.Wrap("can't convert message to json: ", err)
+	}
+	_, err = c.doRequestWithBody(sendMessageMethod, jsonData)
 	if err != nil {
 		return e.Wrap("can't send message", err)
 	}
 
-	return nil
-}
-
-func (c *Client) SendMessageWithMarkup(chatID int, text string, buttons []KeyboardButton) error {
-	message := Message{chatID, text, ReplyKeyboardMarkup{[][]KeyboardButton{buttons}, true}}
-	jsonData, err := json.Marshal(message)
-	if err != nil {
-		return e.Wrap("can't marshall buttons to json", err)
-	}
-	_, err = c.doRequestWithBody(sendMessageMethod, jsonData)
-	if err != nil {
-		return e.Wrap("can't send message with markup:", err)
-	}
 	return nil
 }
 
@@ -115,7 +102,7 @@ func (c *Client) SendPhoto(chatID int, urlPhoto string) error {
 	q.Add("chat_id", strconv.Itoa(chatID))
 	q.Add("photo", urlPhoto)
 
-	_, err := c.doRequest(sendPhotoMethod, q)
+	_, err := c.doRequestWithQuery(sendPhotoMethod, q)
 	if err != nil {
 		return e.Wrap("can't send message", err)
 	}
@@ -128,7 +115,7 @@ func (c *Client) DeleteMessage(chatID int, messageID int) error {
 	q.Add("chat_id", strconv.Itoa(chatID))
 	q.Add("message_id", strconv.Itoa(messageID))
 
-	_, err := c.doRequest(deleteMessageMethod, q)
+	_, err := c.doRequestWithQuery(deleteMessageMethod, q)
 	if err != nil {
 		return e.Wrap("can't send message", err)
 	}
@@ -142,7 +129,7 @@ func (c *Client) BanChatMember(chatID int, userID int, timeout int) error {
 	q.Add("user_id", strconv.Itoa(userID))
 	q.Add("until_date", strconv.Itoa(int(time.Now().Unix())+timeToBan))
 
-	_, err := c.doRequest(banChatMemberMethod, q)
+	_, err := c.doRequestWithQuery(banChatMemberMethod, q)
 	if err != nil {
 		return e.Wrap("can't ban user: ", err)
 	}
@@ -150,7 +137,7 @@ func (c *Client) BanChatMember(chatID int, userID int, timeout int) error {
 	return nil
 }
 
-func (c *Client) doRequest(method string, query url.Values) (data []byte, err error) {
+func (c *Client) doRequestWithQuery(method string, query url.Values) (data []byte, err error) {
 	defer func() { err = e.WrapIfErr("can't do request", err) }()
 	u := url.URL{
 		Scheme: "https",
@@ -188,7 +175,6 @@ func (c *Client) doRequestWithBody(method string, message []byte) (data []byte, 
 	if err != nil {
 		return nil, err
 	}
-	//req.URL.RawQuery = query.Encode()
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -199,6 +185,5 @@ func (c *Client) doRequestWithBody(method string, message []byte) (data []byte, 
 	if err != nil {
 		return nil, err
 	}
-	//log.Print(string(resultBody))
 	return resultBody, nil
 }
