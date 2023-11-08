@@ -28,20 +28,23 @@ const (
 
 // TODO: Add /help command
 var (
-	AllCmd           = "/all"
-	AnecdotCmd       = "/joke"
-	FlipCmd          = "/flip"
-	GayStartCmd      = "/gay"
-	GayTopCmd        = "/top_gay"
-	XkcdCmd          = "/xkcd"
-	DicStartCmd      = "/dick"
-	DickTopCmd       = "/top_dick"
-	DickDuelCmd      = "/duel"
-	ScheduleCmd      = "/schedule"
+	HelpCmd = "/help"
+
+	DicStartCmd = "/dick"
+	DickTopCmd  = "/top_dick"
+	DickDuelCmd = "/duel"
+
+	GayStartCmd = "/gay"
+	GayTopCmd   = "/top_gay"
+
 	AddCalendarIDCmd = "/add_calendar"
-	HelpCmd          = "/help"
-	AddHomeworkCmd   = "/add_homework"
-	GetHomeworkCmd   = "/homework"
+
+	ScheduleCmd = "/schedule"
+	AnecdotCmd  = "/joke"
+	XkcdCmd     = "/xkcd"
+	FlipCmd     = "/flip"
+
+	AllCmd = "/all"
 )
 
 // selectCommand select one of available commands.
@@ -149,16 +152,10 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 			message = msgSuccessUpdateCalendarID
 		}
 		mthd = sendMessageMethod
-	case isCommand(strings.Split(cmd, " ")[0], AddHomeworkCmd):
-		message = p.AddHomework(cmd, chat.ID)
-		mthd = sendMessageMethod
-	case isCommand(cmd, GetHomeworkCmd) || isCommand(strings.Split(cmd, " ")[0], GetHomeworkCmd):
-		message = p.GetHomework(cmd, chat.ID)
-		mthd = sendMessageMethod
 	case isCommand(cmd, HelpCmd):
 		message = msgHelp
-		buttons = append(buttons, telegram.KeyboardButton{"Защита Информации"})
-		mthd = sendMessageWithButtonsMethod
+		mthd = sendMessageMethod
+
 	}
 	return message, mthd, buttons, nil
 }
