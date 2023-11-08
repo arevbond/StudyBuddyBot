@@ -7,7 +7,7 @@ import (
 )
 
 func Schedule(calendarID string) (string, error) {
-	result := "Расписание:\n"
+	result := ""
 	dayToLessons, err := google_calendar.Lessons(calendarID)
 	if err != nil {
 		return "", err
@@ -18,17 +18,17 @@ func Schedule(calendarID string) (string, error) {
 			result += "\n"
 			switch day {
 			case time.Monday:
-				result += "Понедельник"
+				result += "*Понедельник*"
 			case time.Tuesday:
-				result += "Вторник"
+				result += "*Вторник*"
 			case time.Wednesday:
-				result += "Среда"
+				result += "*Среда*"
 			case time.Thursday:
-				result += "Четверг"
+				result += "*Четверг*"
 			case time.Friday:
-				result += "Пятница"
+				result += "*Пятница*"
 			case time.Saturday:
-				result += "Суббота"
+				result += "*Суббота*"
 			}
 			result += "\n"
 			for _, l := range lessons {

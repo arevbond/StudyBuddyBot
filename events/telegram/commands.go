@@ -26,17 +26,23 @@ const (
 )
 
 var (
-	AllCmd           = "/all"
-	AnecdotCmd       = "/joke"
-	FlipCmd          = "/flip"
-	GayStartCmd      = "/gay"
-	GayTopCmd        = "/top_gay"
-	XkcdCmd          = "/xkcd"
-	DicStartCmd      = "/dick"
-	DickTopCmd       = "/top_dick"
-	DickDuelCmd      = "/duel"
-	ScheduleCmd      = "/schedule"
+	HelpCmd = "/help"
+
+	DicStartCmd = "/dick"
+	DickTopCmd  = "/top_dick"
+	DickDuelCmd = "/duel"
+
+	GayStartCmd = "/gay"
+	GayTopCmd   = "/top_gay"
+
 	AddCalendarIDCmd = "/add_calendar"
+	ScheduleCmd      = "/schedule"
+
+	AnecdotCmd = "/joke"
+	XkcdCmd    = "/xkcd"
+	FlipCmd    = "/flip"
+
+	AllCmd = "/all"
 )
 
 // selectCommand select one of available commands.
@@ -142,6 +148,9 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		} else {
 			message = msgSuccessUpdateCalendarID
 		}
+		mthd = sendMessageMethod
+	case isCommand(cmd, HelpCmd):
+		message = msgHelp
 		mthd = sendMessageMethod
 	}
 	return message, mthd, nil
