@@ -83,8 +83,8 @@ func (c *Client) ChatAdministrators(chatID int) ([]User, error) {
 	return result, nil
 }
 
-func (c *Client) SendMessage(chatID int, text string, parseMode string, replyToMessageID int, replyMarkup InlineKeyboardMarkup) error {
-	message := Message{chatID, text, parseMode, replyToMessageID, replyMarkup}
+func (c *Client) SendMessage(chatID int, text string, parseMode string, replyToMessageID int) error {
+	message := Message{chatID, text, parseMode, replyToMessageID}
 	jsonData, err := json.Marshal(message)
 	if err != nil {
 		return e.Wrap("can't convert message to json: ", err)
