@@ -34,6 +34,7 @@ func (s *Storage) Init(ctx context.Context) error {
 	q2 := `CREATE TABLE IF NOT EXISTS users (tg_id int, chat_id int, is_bot BIT, first_name TEXT, last_name TEXT, 
 			username TEXT, is_premium BIT, dick_size INT DEFAULT 0, count_gay_of_day int DEFAULT 0 , last_try_change_dick DATE)`
 	q3 := `CREATE TABLE IF NOT EXISTS calendars (chat_id int UNIQUE, calendar_id TEXT)`
+	q4 := `CREATE TABLE IF NOT EXISTS homeworks (chat_id int, subject TEXT, task TEXT, created_at DATE)`
 
 	_, err := s.db.ExecContext(ctx, q1)
 	if err != nil {
@@ -48,6 +49,11 @@ func (s *Storage) Init(ctx context.Context) error {
 	_, err = s.db.ExecContext(ctx, q3)
 	if err != nil {
 		return e.Wrap("[ERROR] can't create table calendars", err)
+	}
+
+	_, err = s.db.ExecContext(ctx, q4)
+	if err != nil {
+		return e.Wrap("[ERROR] can't create table homeworks", err)
 	}
 
 	return nil
@@ -230,4 +236,60 @@ func (s *Storage) AddCalendarID(ctx context.Context, chatID int, calendarID stri
 		return e.Wrap(fmt.Sprintf("can't update or create calendar_id in chat #%d: ", chatID), err)
 	}
 	return nil
+}
+
+func (s *Storage) AddHomework(ctx context.Context, chatID int, subject string, task string) error {
+	q := `INSERT INTO homeworks (chat_id, subject, task, created_at) VALUES (?, ?, ?, ?)`
+	if _, err := s.db.ExecContext(ctx, q, chatID, subject, task, time.Now()); err != nil {
+		return e.Wrap("can't add homework:", err)
+	}
+	return nil
+}
+
+func (s *Storage) GetHomeworkByChatID(ctx context.Context, chatID int, limit int) ([]*storage.DBHomework, error) {
+	q := `SELECT * from homeworks WHERE chat_id = ? ORDER BY -created_at LIMIT ?`
+
+	rows, err := s.db.QueryContext(ctx, q, chatID, limit)
+	if err != nil {
+		return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %s", chatID), err)
+	}
+	defer rows.Close()
+
+	var homeworks []*storage.DBHomework
+
+	for rows.Next() {
+		homework := &storage.DBHomework{}
+		if err := rows.Scan(&homework.ChatID, &homework.Subject, &homework.Task, &homework.CreatedAT); err != nil {
+			return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %s", chatID), err)
+		}
+		homeworks = append(homeworks, homework)
+	}
+	if err = rows.Err(); err != nil {
+		return homeworks, err
+	}
+	return homeworks, nil
+}
+
+func (s *Storage) GetHomeworkBySubject(ctx context.Context, chatID int, subject string) ([]*storage.DBHomework, error) {
+	q := `SELECT * from homeworks WHERE subject = ? ORDER BY -created_at`
+
+	rows, err := s.db.QueryContext(ctx, q, chatID, subject)
+	if err != nil {
+		return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %s", chatID), err)
+	}
+	defer rows.Close()
+
+	var homeworks []*storage.DBHomework
+
+	for rows.Next() {
+		homework := &storage.DBHomework{}
+		if err := rows.Scan(&homework.ChatID, &homework.Subject, &homework.Task, &homework.CreatedAT); err != nil {
+			return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %d", chatID), err)
+		}
+		homeworks = append(homeworks, homework)
+	}
+	if err = rows.Err(); err != nil {
+		return homeworks, err
+	}
+	return homeworks, nil
 }

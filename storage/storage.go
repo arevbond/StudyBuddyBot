@@ -21,6 +21,10 @@ type Storage interface {
 
 	CalendarID(ctx context.Context, chatID int) (string, error)
 	AddCalendarID(ctx context.Context, chatID int, calendarID string) error
+
+	AddHomework(ctx context.Context, chatID int, subject string, task string) error
+	GetHomeworkByChatID(ctx context.Context, chatID int, limit int) ([]*DBHomework, error)
+	GetHomeworkBySubject(ctx context.Context, chatID int, subject string) ([]*DBHomework, error)
 }
 
 var ErrUserNotExist = errors.New("user not exists")
@@ -43,4 +47,10 @@ type DBGayOfDay struct {
 	TgID         int
 	Username     string
 	DateLastUsed time.Time
+}
+
+type DBHomework struct {
+	ChatID        int
+	Subject, Task string
+	CreatedAT     time.Time
 }
