@@ -1,85 +1,108 @@
 package telegram
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
+	"tg_ics_useful_bot/storage"
 )
 
 type Homework struct {
 	subject string
-	data    string
+	Task    string
 }
 
-func newHomework(subject, data string) Homework {
-	return Homework{subject: subject, data: data}
+func newHomework(subject, task string) *Homework {
+	return &Homework{subject: subject, Task: task}
 }
 
-var chatToHomewords = make(map[int][]Homework)
+const (
+	maxRows = 5
+)
 
-func (p *Processor) AddHomework(text string, chatID int) string {
-	subject := ""
-	data := ""
-	for _, str := range strings.Split(text, " ")[1:] {
-		if strings.HasPrefix(str, "#") {
-			subject = str[1:]
-		} else if str != "" {
-			data += str + " "
+type UserWithChat struct {
+	ChatID int
+	UserID int
+}
+
+var stateHomework = make(map[UserWithChat]*Homework)
+
+func (p *Processor) AddHomework(text string, userWithChat UserWithChat) string {
+	if strings.HasPrefix(text, "/") {
+		stateHomework[userWithChat] = newHomework("", "")
+		return "Введите название предмета"
+	} else if hm, ok := stateHomework[userWithChat]; ok && hm.subject == "" {
+		hm.subject = text
+		return "Введите задание"
+	} else if hm, ok = stateHomework[userWithChat]; ok && hm.Task == "" {
+		hm.Task = text
+		message := fmt.Sprintf("ДЗ: %s - %s успешно добавлено", hm.subject, hm.Task)
+		err := p.storage.AddHomework(context.Background(), userWithChat.ChatID, hm.subject, hm.Task)
+		if err != nil {
+			message = "Не удалось добавить задание"
+			log.Printf("can't add homework: %v", err)
 		}
+		delete(stateHomework, userWithChat)
+		return message
 	}
-	if subject == "" {
-		return msgHomeworkWithoutSubject
-	} else if data == "" {
-		return msgHomeworkWithoutData
-	}
-	homework := newHomework(subject, data)
-	chatToHomewords[chatID] = append(chatToHomewords[chatID], homework)
-	return fmt.Sprintf(msgHomeworkSuccessAdded, homework.subject, homework.data)
+	return "Что-то пошло не так"
 }
 
 func (p *Processor) GetHomework(text string, chatID int) string {
 	val := ""
 	for _, s := range strings.Split(text, " ")[1:] {
 		if s != "" {
-			val = s
-			break
-		}
-	}
-	var isDigit bool
-	resultHomeworks := make([]Homework, 0)
-	homeworks := chatToHomewords[chatID]
-	if strings.HasPrefix(val, "#") {
-		for _, hm := range homeworks {
-			if hm.subject == val[1:] {
-				resultHomeworks = append(resultHomeworks, hm)
+			_, err := strconv.Atoi(s)
+			if err == nil {
+				val = s
+				break
 			}
+			val += s + " "
 		}
-		isDigit = false
-	} else if num, err := strconv.Atoi(val); err == nil {
-		for i := len(homeworks) - 1; i >= 0 && num > 0; i-- {
-			resultHomeworks = append(resultHomeworks, homeworks[i])
-			num--
-		}
-		isDigit = true
 	}
 
 	message := ""
-	if isDigit {
-		num, _ := strconv.Atoi(val)
-		if num > len(resultHomeworks) {
-			num = len(resultHomeworks)
+
+	homeworks := []*storage.DBHomework{}
+	if num, err := strconv.Atoi(val); err == nil {
+		homeworks, err = p.storage.GetHomeworkByChatID(context.Background(), chatID, num)
+		if err != nil {
+			log.Print(err)
+			return ""
 		}
-		message += fmt.Sprintf("Последние %d домашних заданий:\n", num)
+		message += fmt.Sprintf("Последние %d домашних задания:\n", num)
 	} else if val != "" {
-		message += fmt.Sprintf("Домашнее задания по предмету %s:\n", val)
-	} else {
-		for i := len(homeworks) - 1; i >= 0; i-- {
-			resultHomeworks = append(resultHomeworks, homeworks[i])
+		val = val[:len(val)-1]
+		homeworks, err = p.storage.GetHomeworkBySubject(context.Background(), chatID, val)
+		if err != nil {
+			log.Print(err)
+			return ""
 		}
-		message += fmt.Sprintf("Всё домашнее задание:\n")
+		message += fmt.Sprintf("Всё домашнее задание по предмету %s:\n", val)
+	} else {
+		homeworks, err = p.storage.GetHomeworkByChatID(context.Background(), chatID, maxRows)
+		if err != nil {
+			log.Print(err)
+			return ""
+		}
+		message += fmt.Sprintf("Последние %d добавленных домашних задания:\n", maxRows)
 	}
-	for _, h := range resultHomeworks {
-		message += fmt.Sprintf(" • %s - %s\n", h.subject, h.data)
+
+	for _, hm := range homeworks {
+		message += fmt.Sprintf("\"%s\" - \"%s\" (id = %d)\n", hm.Subject, hm.Task, hm.ID)
+	}
+
+	return message
+}
+
+func (p *Processor) DeleteHomework(rowID int) string {
+	err := p.storage.DeleteHomeworkByRowID(context.Background(), rowID)
+	message := fmt.Sprintf("Запись №%d успешно удалена", rowID)
+	if err != nil {
+		log.Print(err)
+		message = fmt.Sprintf("Не удалось удалить запись №%d", rowID)
 	}
 	return message
 }
