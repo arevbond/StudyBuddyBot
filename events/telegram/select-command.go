@@ -161,6 +161,7 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 	case isCommand(cmd, HelpCmd):
 		message = msgHelp
 		mthd = sendMessageMethod
+		parseMode = "Markdown"
 	}
 	return message, mthd, parseMode, replyMessageId, nil
 }
