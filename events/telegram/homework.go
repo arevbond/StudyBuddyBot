@@ -91,7 +91,7 @@ func (p *Processor) GetHomework(text string, chatID int) string {
 	}
 
 	for _, hm := range homeworks {
-		message += fmt.Sprintf("\"%s\" - \"%s\" (id = %d)\n", hm.Subject, hm.Task, hm.ID)
+		message += fmt.Sprintf(" • \"%s\" - \"%s\". [id = %d]\n", hm.Subject, hm.Task, hm.ID)
 	}
 
 	return message
