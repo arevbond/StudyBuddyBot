@@ -25,6 +25,7 @@ type Storage interface {
 	AddHomework(ctx context.Context, chatID int, subject string, task string) error
 	GetHomeworkByChatID(ctx context.Context, chatID int, limit int) ([]*DBHomework, error)
 	GetHomeworkBySubject(ctx context.Context, chatID int, subject string) ([]*DBHomework, error)
+	DeleteHomeworkByRowID(ctx context.Context, rowID int) error
 }
 
 var ErrUserNotExist = errors.New("user not exists")
@@ -50,6 +51,7 @@ type DBGayOfDay struct {
 }
 
 type DBHomework struct {
+	ID            int
 	ChatID        int
 	Subject, Task string
 	CreatedAT     time.Time

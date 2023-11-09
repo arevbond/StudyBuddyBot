@@ -247,7 +247,7 @@ func (s *Storage) AddHomework(ctx context.Context, chatID int, subject string, t
 }
 
 func (s *Storage) GetHomeworkByChatID(ctx context.Context, chatID int, limit int) ([]*storage.DBHomework, error) {
-	q := `SELECT * from homeworks WHERE chat_id = ? ORDER BY -created_at LIMIT ?`
+	q := `SELECT rowid, *  from homeworks WHERE chat_id = ? ORDER BY -created_at LIMIT ?`
 
 	rows, err := s.db.QueryContext(ctx, q, chatID, limit)
 	if err != nil {
@@ -259,7 +259,7 @@ func (s *Storage) GetHomeworkByChatID(ctx context.Context, chatID int, limit int
 
 	for rows.Next() {
 		homework := &storage.DBHomework{}
-		if err := rows.Scan(&homework.ChatID, &homework.Subject, &homework.Task, &homework.CreatedAT); err != nil {
+		if err := rows.Scan(&homework.ID, &homework.ChatID, &homework.Subject, &homework.Task, &homework.CreatedAT); err != nil {
 			return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %s", chatID), err)
 		}
 		homeworks = append(homeworks, homework)
@@ -271,9 +271,9 @@ func (s *Storage) GetHomeworkByChatID(ctx context.Context, chatID int, limit int
 }
 
 func (s *Storage) GetHomeworkBySubject(ctx context.Context, chatID int, subject string) ([]*storage.DBHomework, error) {
-	q := `SELECT * from homeworks WHERE subject = ? ORDER BY -created_at`
+	q := `SELECT rowid, * from homeworks WHERE subject = ? ORDER BY -created_at`
 
-	rows, err := s.db.QueryContext(ctx, q, chatID, subject)
+	rows, err := s.db.QueryContext(ctx, q, subject)
 	if err != nil {
 		return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %s", chatID), err)
 	}
@@ -283,8 +283,8 @@ func (s *Storage) GetHomeworkBySubject(ctx context.Context, chatID int, subject 
 
 	for rows.Next() {
 		homework := &storage.DBHomework{}
-		if err := rows.Scan(&homework.ChatID, &homework.Subject, &homework.Task, &homework.CreatedAT); err != nil {
-			return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %d", chatID), err)
+		if err := rows.Scan(&homework.ID, &homework.ChatID, &homework.Subject, &homework.Task, &homework.CreatedAT); err != nil {
+			return nil, e.Wrap(fmt.Sprintf("can't get homeworks by subject: %d", chatID), err)
 		}
 		homeworks = append(homeworks, homework)
 	}
@@ -292,4 +292,13 @@ func (s *Storage) GetHomeworkBySubject(ctx context.Context, chatID int, subject 
 		return homeworks, err
 	}
 	return homeworks, nil
+}
+
+func (s *Storage) DeleteHomeworkByRowID(ctx context.Context, rowID int) error {
+	q := `DELETE FROM homeworks WHERE rowid = ?`
+	_, err := s.db.ExecContext(ctx, q, rowID)
+	if err != nil {
+		return e.Wrap("can't delete row:", err)
+	}
+	return nil
 }
