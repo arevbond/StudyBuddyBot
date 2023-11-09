@@ -56,6 +56,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 	return fmt.Sprintf(msgAlreadyPlays, dbUser.Username), nil
 }
 
+//TODO: изменить формулу для награды
 func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *telegram.User, targetUsername string) (string, error) {
 	err := p.tg.DeleteMessage(chat.ID, messageID)
 	if err != nil {
