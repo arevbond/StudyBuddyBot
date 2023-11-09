@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/joho/godotenv"
 	"log"
 	tgClient "tg_ics_useful_bot/clients/telegram"
+	"tg_ics_useful_bot/config"
 	"tg_ics_useful_bot/consumer/event-consumer"
 	"tg_ics_useful_bot/events/telegram"
 	"tg_ics_useful_bot/storage/sqlite"
@@ -16,7 +18,17 @@ const (
 	batchSize         = 100
 )
 
+// init is invoked before main()
+func init() {
+	// loads values from .env into the system
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+}
+
 func main() {
+	conf := config.New()
+
 	s, err := sqlite.New(storageSQLitePath)
 	if err != nil {
 		log.Fatalf("can't connect to storage:", err)
@@ -28,7 +40,7 @@ func main() {
 	}
 
 	eventsProcessor := telegram.New(
-		tgClient.New(tgBotHost, mustToken()),
+		tgClient.New(tgBotHost, conf.TelegramToken),
 		s,
 	)
 
