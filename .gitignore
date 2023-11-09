@@ -5,3 +5,4 @@ go.sum
 data/sqlite/storage.db
 tg_ics_useful_bot
 .env
+clients/google-calendar/credentials.json
