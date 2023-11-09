@@ -101,7 +101,7 @@ func (p *Processor) processMessage(event events.Event) error {
 	}
 
 	if err = p.doCmd(event.Text, chat, user, messageID); err != nil {
-		return e.Wrap("[ERROR] can't process message", err)
+		return e.Wrap("can't process message", err)
 	}
 
 	return nil
@@ -110,7 +110,7 @@ func (p *Processor) processMessage(event events.Event) error {
 func meta(event events.Event) (Meta, error) {
 	res, ok := event.Meta.(Meta)
 	if !ok {
-		return Meta{}, e.Wrap("[ERROR] can't get meta", ErrUnknownMetaType)
+		return Meta{}, e.Wrap("can't get meta", ErrUnknownMetaType)
 	}
 
 	return res, nil
@@ -154,9 +154,8 @@ func fetchText(upd telegram.Update) string {
 }
 
 func fetchType(upd telegram.Update) events.Type {
-	if upd.Message == nil {
-		return events.Unknown
+	if upd.Message != nil {
+		return events.Message
 	}
-
-	return events.Message
+	return events.Unknown
 }
