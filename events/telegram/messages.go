@@ -48,6 +48,7 @@ const (
 	msgUser1Wins       = "@%s побеждает в дуели, теперь размер его пениса %d см\nРазмер пениса @%s уменьшается до %d см"
 	msgUser1Lost       = "@%s проигрывает в дуели, теперь размер его пениса %d см\nРазмер пениса @%s увеличивается до %d см"
 
+	msgCalendarNotExists       = "К вашей группе не привязан Google Calendar\nЧтобы приязвать Google Calendar воспользуйтесь командой /add_calendar"
 	msgForbiddenCalendarUpdate = "Обновить id календаря может только администратор группы"
 	msgErrorSendMessage        = "Не удалось получить расписание из календаря с id: %s"
 	msgErrorUpdateCalendarID   = "Не удалось добавить данное id календаря: \"%s\""

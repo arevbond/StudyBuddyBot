@@ -100,13 +100,16 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 	case isCommand(cmd, ScheduleCmd):
 		calendarID, err := p.storage.CalendarID(context.Background(), chat.ID)
 		if err != nil || calendarID == "" {
-			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get calendarID: ", err)
-		}
-
-		message, err = schedule.Schedule(calendarID)
-		if err != nil {
-			log.Printf("[ERROR] can't send schedule: %v", err)
-			message = fmt.Sprintf(msgErrorSendMessage, calendarID)
+			message = msgCalendarNotExists
+			log.Print("can't get calendarID: ", err)
+		} else {
+			message, err = schedule.Schedule(calendarID)
+			parseMode = "Markdown"
+			if err != nil {
+				log.Printf("[ERROR] can't send schedule: %v", err)
+				message = fmt.Sprintf(msgErrorSendMessage, calendarID)
+				parseMode = ""
+			}
 		}
 		mthd = sendMessageMethod
 	case isCommand(strings.Split(cmd, " ")[0], AddCalendarIDCmd):
