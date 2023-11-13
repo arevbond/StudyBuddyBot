@@ -36,4 +36,6 @@ const (
 	GetHomeworkCmd    = "/get"
 	DeleteHomeworkCmd = "/delete"
 	CancelHomeworkCmd = "/cancel"
+
+	ChangeDickCmd = "/change_dick"
 )

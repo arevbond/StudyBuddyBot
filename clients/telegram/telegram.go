@@ -16,6 +16,7 @@ type Client struct {
 	host     string
 	basePath string
 	client   http.Client
+	AdminsID []int
 }
 
 const timeToBan = 120
@@ -29,11 +30,12 @@ const (
 	getChatAdministratorsMethod = "getChatAdministrators"
 )
 
-func New(host string, token string) *Client {
+func New(host string, token string, adminsID []int) *Client {
 	return &Client{
 		host:     host,
 		basePath: newBasePath(token),
 		client:   http.Client{},
+		AdminsID: adminsID,
 	}
 }
 

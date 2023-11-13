@@ -17,7 +17,7 @@ func (p *Processor) allUsernames(chatID int) string {
 	return result[:len(result)-1]
 }
 
-func (p *Processor) isAdmin(user *telegram.User, chatID int) bool {
+func (p *Processor) isChatAdmin(user *telegram.User, chatID int) bool {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
 		log.Printf("can't get admins in chat #%d: ", chatID, err)

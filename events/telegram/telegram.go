@@ -95,8 +95,7 @@ func (p *Processor) processMessage(event events.Event) error {
 		Title:           meta.ChatTitle,
 		ActiveUsernames: meta.ChatActiveUsernames,
 	}
-
-	if chat.Type != "group" && chat.Type != "supergroup" {
+	if chat.Type == "private" && !p.isAdmin(user.ID) {
 		return nil
 	}
 
@@ -158,4 +157,13 @@ func fetchType(upd telegram.Update) events.Type {
 		return events.Message
 	}
 	return events.Unknown
+}
+
+func (p *Processor) isAdmin(userID int) bool {
+	for _, id := range p.tg.AdminsID {
+		if userID == id {
+			return true
+		}
+	}
+	return false
 }

@@ -40,7 +40,7 @@ func main() {
 	}
 
 	eventsProcessor := telegram.New(
-		tgClient.New(tgBotHost, conf.TelegramToken),
+		tgClient.New(tgBotHost, conf.TelegramToken, conf.AdminsID),
 		s,
 	)
 

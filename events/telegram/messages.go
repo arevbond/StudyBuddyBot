@@ -54,6 +54,9 @@ const (
 	msgErrorUpdateCalendarID   = "Не удалось добавить данное id календаря: \"%s\""
 	msgSuccessUpdateCalendarID = "Теперь к вашему чату привязано новое расписание\nНе забудь открыть доступ к своему календарю пользователю:\ncalendar-manager@flash-spark-404006.iam.gserviceaccount.com\n"
 
+	msgSuccessAdminChangeDickSize = "Успешно"
+	msgErrorAdminChangeDickSize   = "Не удалось поменять значение пениса данного пользователя"
+
 	msgHomeworkCanceled       = "Галя, у нас отмена!"
 	msgHomeworkWithoutSubject = "Пожалуйста после команды укажите название предмета в формате:\n/add_homework #ЗащитаИнформации Лабораторная 7..."
 	msgHomeworkWithoutData    = "Пожалуйста после команды и названия предмета укажите само задание в формате:\n/add_homework #ФизическаяКультура Задали пробежать 100 км на выходных"

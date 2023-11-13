@@ -113,7 +113,7 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		}
 		mthd = sendMessageMethod
 	case isCommand(strings.Split(cmd, " ")[0], AddCalendarIDCmd):
-		if !p.isAdmin(user, chat.ID) {
+		if !p.isChatAdmin(user, chat.ID) {
 			return msgForbiddenCalendarUpdate, sendMessageMethod, parseMode, replyMessageId, nil
 		}
 		strs := strings.Split(cmd, " ")
@@ -165,6 +165,17 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		message = msgHelp
 		mthd = sendMessageMethod
 		parseMode = "Markdown"
+
+	case isCommand(strings.Split(cmd, " ")[0], ChangeDickCmd):
+		strs := strings.Split(cmd, " ")
+		chatIDStr, userIDStr, valueStr := strs[1], strs[2], strs[3]
+		err = p.changeAnyDickSize(chatIDStr, userIDStr, valueStr)
+		if err != nil {
+			log.Print(err)
+			return message, mthd, parseMode, replyMessageId, err
+		}
+		message = msgSuccessAdminChangeDickSize
+		mthd = sendMessageMethod
 	}
 	return message, mthd, parseMode, replyMessageId, nil
 }
