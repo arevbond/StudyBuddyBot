@@ -35,6 +35,8 @@ func (s *Storage) Init(ctx context.Context) error {
 			username TEXT, is_premium BIT, dick_size INT DEFAULT 0, count_gay_of_day int DEFAULT 0 , last_try_change_dick DATE)`
 	q3 := `CREATE TABLE IF NOT EXISTS calendars (chat_id int UNIQUE, calendar_id TEXT)`
 	q4 := `CREATE TABLE IF NOT EXISTS homeworks (chat_id int, subject TEXT, task TEXT, created_at DATE)`
+	q5 := `CREATE TABLE IF NOT EXISTS user_stats (tg_user_id int, chat_id int, username TEXT, first_name TEXT, last_name TEXT, 
+message_count int, dick_plus_count int, dick_minus_count int, yes_count int, no_count int)`
 
 	_, err := s.db.ExecContext(ctx, q1)
 	if err != nil {
@@ -54,6 +56,11 @@ func (s *Storage) Init(ctx context.Context) error {
 	_, err = s.db.ExecContext(ctx, q4)
 	if err != nil {
 		return e.Wrap("[ERROR] can't create table homeworks", err)
+	}
+
+	_, err = s.db.ExecContext(ctx, q5)
+	if err != nil {
+		return e.Wrap("[ERROR] can't create table user_stats", err)
 	}
 
 	return nil
@@ -300,5 +307,92 @@ func (s *Storage) DeleteHomeworkByRowID(ctx context.Context, rowID int) error {
 	if err != nil {
 		return e.Wrap("can't delete row:", err)
 	}
+	return nil
+}
+
+func (s *Storage) CreateUserStats(ctx context.Context, u *storage.DBUserStats) error {
+	q := `INSERT INTO user_stats (tg_user_id, chat_id, username, first_name, last_name, message_count, dick_plus_count, 
+                        dick_minus_count, yes_count, no_count) 
+							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+	log.Printf("[INFO] create user_stats #%d chat_id = %d", u.TelegramID, u.ChatID)
+
+	if _, err := s.db.ExecContext(ctx, q, u.TelegramID, u.ChatID, u.UserName, u.FirstName, u.LastName, u.MessageCount, u.DickPlusCount,
+		u.DickMinusCount, u.YesCount, u.NoCount); err != nil {
+		return e.Wrap(fmt.Sprintf("can't create user stats %d %s: ", u.TelegramID, u.UserName), err)
+	}
+	return nil
+}
+
+func (s *Storage) UserStatsByTelegramIDAndChatID(ctx context.Context, tgID, chatID int) (*storage.DBUserStats, error) {
+	q := `SELECT * FROM user_stats WHERE tg_user_id = ? AND chat_id = ?`
+
+	user := &storage.DBUserStats{}
+
+	err := s.db.QueryRowContext(ctx, q, tgID, chatID).Scan(&user.TelegramID, &user.ChatID, &user.UserName, &user.FirstName, &user.LastName,
+		&user.MessageCount, &user.DickPlusCount, &user.DickMinusCount, &user.YesCount, &user.NoCount)
+
+	if err == sql.ErrNoRows {
+		return nil, storage.ErrUserNotExist
+	}
+
+	if err != nil {
+		return nil, e.Wrap(fmt.Sprintf("[ERROR] can't get user stats from storage tg id: %d, chat id: %d", tgID, chatID), err)
+	}
+	return user, nil
+}
+
+func (s *Storage) IncreaseMessageCount(ctx context.Context, u *storage.DBUserStats) error {
+	q := `UPDATE user_stats SET message_count = ? WHERE tg_user_id = ? AND chat_id = ?`
+	oldCount := u.MessageCount
+	if _, err := s.db.ExecContext(ctx, q, oldCount+1, u.TelegramID, u.ChatID); err != nil {
+		return e.Wrap(fmt.Sprintf("[ERROR] can't update message count of user %d chat id %d",
+			u.TelegramID, u.ChatID), err)
+	}
+	u.MessageCount += 1
+	return nil
+}
+
+func (s *Storage) IncreaseDickPlusCount(ctx context.Context, u *storage.DBUserStats) error {
+	q := `UPDATE user_stats SET dick_plus_count = ? WHERE tg_user_id = ? AND chat_id = ?`
+	oldCount := u.DickPlusCount
+	if _, err := s.db.ExecContext(ctx, q, oldCount+1, u.TelegramID, u.ChatID); err != nil {
+		return e.Wrap(fmt.Sprintf("[ERROR] can't update dick_plus_count of user %d chat id %d",
+			u.TelegramID, u.ChatID), err)
+	}
+	u.DickPlusCount += 1
+	return nil
+}
+
+func (s *Storage) IncreaseDickMinusCount(ctx context.Context, u *storage.DBUserStats) error {
+	q := `UPDATE user_stats SET dick_minus_count = ? WHERE tg_user_id = ? AND chat_id = ?`
+	oldCount := u.DickMinusCount
+	if _, err := s.db.ExecContext(ctx, q, oldCount+1, u.TelegramID, u.ChatID); err != nil {
+		return e.Wrap(fmt.Sprintf("[ERROR] can't update dick_minus_count of user %d chat id %d",
+			u.TelegramID, u.ChatID), err)
+	}
+	u.DickMinusCount += 1
+	return nil
+}
+
+func (s *Storage) IncreaseYesCount(ctx context.Context, u *storage.DBUserStats) error {
+	q := `UPDATE user_stats SET yes_count = ? WHERE tg_user_id = ? AND chat_id = ?`
+	oldCount := u.YesCount
+	if _, err := s.db.ExecContext(ctx, q, oldCount+1, u.TelegramID, u.ChatID); err != nil {
+		return e.Wrap(fmt.Sprintf("[ERROR] can't update yes_count of user %d chat id %d",
+			u.TelegramID, u.ChatID), err)
+	}
+	u.YesCount += 1
+	return nil
+}
+
+func (s *Storage) IncreaseNoCount(ctx context.Context, u *storage.DBUserStats) error {
+	q := `UPDATE user_stats SET no_count = ? WHERE tg_user_id = ? AND chat_id = ?`
+	oldCount := u.NoCount
+	if _, err := s.db.ExecContext(ctx, q, oldCount+1, u.TelegramID, u.ChatID); err != nil {
+		return e.Wrap(fmt.Sprintf("[ERROR] can't update no_count of user %d chat id %d",
+			u.TelegramID, u.ChatID), err)
+	}
+	u.NoCount += 1
 	return nil
 }

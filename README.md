@@ -19,7 +19,6 @@
 
 
 ## Tasks:
-- Добавить http сервер с админскими ручками в которых:
-    - silence_mode chat_id - все сообщения в данном чате удаляются
-    - chat_id user_id dick_size - поменять данному пользователю размер пениса
-    - chat_id message - отправить сообщение от имени бота в данную группу
+- Собирать статистику пользователей:
+  - Новая таблица user_stat с полями:
+  telegram_user_id, chat_id, message_count, dick_plus_count, dick_minus_count, yes_count, no_count

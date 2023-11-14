@@ -26,6 +26,14 @@ type Storage interface {
 	GetHomeworkByChatID(ctx context.Context, chatID int, limit int) ([]*DBHomework, error)
 	GetHomeworkBySubject(ctx context.Context, chatID int, subject string) ([]*DBHomework, error)
 	DeleteHomeworkByRowID(ctx context.Context, rowID int) error
+
+	CreateUserStats(ctx context.Context, u *DBUserStats) error
+	UserStatsByTelegramIDAndChatID(ctx context.Context, tgID, chatID int) (*DBUserStats, error)
+	IncreaseMessageCount(ctx context.Context, u *DBUserStats) error
+	IncreaseDickPlusCount(ctx context.Context, u *DBUserStats) error
+	IncreaseDickMinusCount(ctx context.Context, u *DBUserStats) error
+	IncreaseYesCount(ctx context.Context, u *DBUserStats) error
+	IncreaseNoCount(ctx context.Context, u *DBUserStats) error
 }
 
 var ErrUserNotExist = errors.New("user not exists")
@@ -55,4 +63,21 @@ type DBHomework struct {
 	ChatID        int
 	Subject, Task string
 	CreatedAT     time.Time
+}
+
+type DBUserStats struct {
+	TelegramID     int
+	ChatID         int
+	UserName       string
+	FirstName      string
+	LastName       string
+	MessageCount   int
+	DickPlusCount  int
+	DickMinusCount int
+	YesCount       int
+	NoCount        int
+}
+
+func NewDBUserStats(telegramID, chatID int, username string, firstName, lastName string) *DBUserStats {
+	return &DBUserStats{telegramID, chatID, username, firstName, lastName, 0, 0, 0, 0, 0}
 }
