@@ -16,9 +16,3 @@
 | `/schedule`               | получить расписание из google calendar                                                                                                                    |
 | `/gay`, `/top_gay`        | игра: узнать у кого сегодня удачный день                                                                                                                  |
 | `/xkcd`, `/joke`          | случайная картина из [xkcd.com](https://xkcd.com/), или анекдот от @bobuk                                                                                 |
-
-
-## Tasks:
-- Собирать статистику пользователей:
-  - Новая таблица user_stat с полями:
-  telegram_user_id, chat_id, message_count, dick_plus_count, dick_minus_count, yes_count, no_count
