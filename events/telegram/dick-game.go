@@ -3,6 +3,7 @@ package telegram
 import (
 	"context"
 	"fmt"
+	"log"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/dick"
 	"tg_ics_useful_bot/lib/e"
@@ -56,7 +57,7 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, messageID
 	return fmt.Sprintf(msgAlreadyPlays, dbUser.Username), nil
 }
 
-//TODO: изменить формулу для награды
+// TODO: изменить формулу для награды
 func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *telegram.User, targetUsername string) (string, error) {
 	err := p.tg.DeleteMessage(chat.ID, messageID)
 	if err != nil {
@@ -151,6 +152,21 @@ func (p *Processor) changeDickSize(user *storage.DBUser, value int) (int, error)
 
 func (p *Processor) changeRandomDickSize(user *storage.DBUser) (bool, int, error) {
 	value := dick.RandomValue()
+
+	userStats, err := p.storage.UserStatsByTelegramIDAndChatID(context.Background(), user.TgID, user.ChatID)
+	if err != nil {
+		log.Print(err)
+	}
+	if value > 0 {
+		err = p.storage.IncreaseDickPlusCount(context.Background(), userStats)
+		log.Print(err)
+	} else {
+		err = p.storage.IncreaseDickMinusCount(context.Background(), userStats)
+		if err != nil {
+			log.Print(err)
+		}
+	}
+
 	oldDickSize, err := p.changeDickSize(user, value)
 	if err != nil {
 		return false, 0, e.Wrap(fmt.Sprintf("[ERROR] chat id %d, user %s can't change random dick size: ",
