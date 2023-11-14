@@ -176,6 +176,16 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		}
 		message = msgSuccessAdminChangeDickSize
 		mthd = sendMessageMethod
+
+	case isCommand(cmd, GetMyStatsCmd):
+		userStats, err := p.storage.UserStatsByTelegramIDAndChatID(context.Background(), user.ID, chat.ID)
+		if err != nil {
+			return message, mthd, parseMode, replyMessageId, err
+		}
+		replyMessageId = messageID
+		message = fmt.Sprintf(msgUserStats, userStats.MessageCount, userStats.DickPlusCount,
+			userStats.DickMinusCount, userStats.YesCount, userStats.NoCount)
+		mthd = sendMessageMethod
 	}
 	return message, mthd, parseMode, replyMessageId, nil
 }

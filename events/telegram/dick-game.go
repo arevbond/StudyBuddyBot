@@ -159,7 +159,9 @@ func (p *Processor) changeRandomDickSize(user *storage.DBUser) (bool, int, error
 	}
 	if value > 0 {
 		err = p.storage.IncreaseDickPlusCount(context.Background(), userStats)
-		log.Print(err)
+		if err != nil {
+			log.Print(err)
+		}
 	} else {
 		err = p.storage.IncreaseDickMinusCount(context.Background(), userStats)
 		if err != nil {
