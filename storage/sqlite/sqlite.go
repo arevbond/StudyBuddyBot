@@ -396,3 +396,30 @@ func (s *Storage) IncreaseNoCount(ctx context.Context, u *storage.DBUserStats) e
 	u.NoCount += 1
 	return nil
 }
+
+func (s *Storage) UsersStatsByChatID(ctx context.Context, chatID int) ([]*storage.DBUserStats, error) {
+	q := `SELECT * FROM user_stats WHERE chat_id = ?`
+
+	rows, err := s.db.QueryContext(ctx, q, chatID)
+
+	if err != nil {
+		return nil, e.Wrap(fmt.Sprintf("can't get users stats by chat id: %s", chatID), err)
+	}
+	defer rows.Close()
+
+	var users []*storage.DBUserStats
+
+	for rows.Next() {
+		user := &storage.DBUserStats{}
+		if err := rows.Scan(&user.TelegramID, &user.ChatID, &user.UserName, &user.FirstName,
+			&user.LastName, &user.MessageCount, &user.DickPlusCount, &user.DickMinusCount, &user.YesCount,
+			&user.NoCount); err != nil {
+			return users, e.Wrap(fmt.Sprintf("can't get users stats by chat id: %s", chatID), err)
+		}
+		users = append(users, user)
+	}
+	if err = rows.Err(); err != nil {
+		return users, err
+	}
+	return users, nil
+}

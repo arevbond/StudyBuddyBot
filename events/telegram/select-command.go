@@ -186,6 +186,11 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		message = fmt.Sprintf(msgUserStats, userStats.MessageCount, userStats.DickPlusCount,
 			userStats.DickMinusCount, userStats.YesCount, userStats.NoCount)
 		mthd = sendMessageMethod
+	case isCommand(cmd, GetChatStatsCmd):
+		messageCnt, dickPlusCnt, dickMinusCnt, yesCnt, noCnt := p.chatStats(chat.ID)
+		message = fmt.Sprintf(msgUserStats, messageCnt, dickPlusCnt, dickMinusCnt, yesCnt, noCnt)
+		replyMessageId = messageID
+		mthd = sendMessageMethod
 	}
 	return message, mthd, parseMode, replyMessageId, nil
 }

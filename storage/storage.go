@@ -28,6 +28,7 @@ type Storage interface {
 	DeleteHomeworkByRowID(ctx context.Context, rowID int) error
 
 	CreateUserStats(ctx context.Context, u *DBUserStats) error
+	UsersStatsByChatID(ctx context.Context, chatID int) ([]*DBUserStats, error)
 	UserStatsByTelegramIDAndChatID(ctx context.Context, tgID, chatID int) (*DBUserStats, error)
 	IncreaseMessageCount(ctx context.Context, u *DBUserStats) error
 	IncreaseDickPlusCount(ctx context.Context, u *DBUserStats) error

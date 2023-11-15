@@ -37,7 +37,8 @@ const (
 	DeleteHomeworkCmd = "/delete"
 	CancelHomeworkCmd = "/cancel"
 
-	GetMyStatsCmd = "/my_stats"
+	GetMyStatsCmd   = "/my_stats"
+	GetChatStatsCmd = "/chat_stats"
 
 	// admins commands
 	ChangeDickCmd = "/change_dick"
