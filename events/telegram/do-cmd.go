@@ -62,6 +62,8 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 			return p.tg.SendPhoto(chat.ID, msg)
 		case sendMessageWithButtonsMethod:
 			return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
+		case doNothingMethod:
+			log.Printf("Message: \"%s\" - do nothing", text)
 		}
 	}
 

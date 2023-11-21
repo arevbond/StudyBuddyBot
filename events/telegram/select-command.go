@@ -176,6 +176,23 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		}
 		message = msgSuccessAdminChangeDickSize
 		mthd = sendMessageMethod
+	case isCommand(strings.Split(cmd, " ")[0], SendMessageByAdminCmd):
+		strs := strings.Split(cmd, " ")
+		chatIDStr, message := strs[1], strings.Join(strs[2:], " ")
+		chatID, err := strconv.Atoi(chatIDStr)
+		if err != nil {
+			log.Print(err)
+		}
+		err = p.tg.SendMessage(chatID, message, parseMode, replyMessageId)
+		if err != nil {
+			log.Print(err)
+		}
+		mthd = doNothingMethod
+
+	case isCommand(cmd, GetChatIDCmd):
+		message = strconv.Itoa(chat.ID)
+		mthd = sendMessageMethod
+		replyMessageId = messageID
 
 	case isCommand(cmd, GetMyStatsCmd):
 		userStats, err := p.storage.UserStatsByTelegramIDAndChatID(context.Background(), user.ID, chat.ID)

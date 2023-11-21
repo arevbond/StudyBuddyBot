@@ -7,6 +7,7 @@ const (
 	sendMessageMethod
 	sendPhotoMethod
 	sendMessageWithButtonsMethod
+	doNothingMethod
 )
 
 const (
@@ -40,6 +41,9 @@ const (
 	GetMyStatsCmd   = "/my_stats"
 	GetChatStatsCmd = "/chat_stats"
 
+	GetChatIDCmd = "/chat_id"
+
 	// admins commands
-	ChangeDickCmd = "/change_dick"
+	ChangeDickCmd         = "/change_dick"
+	SendMessageByAdminCmd = "/send_message"
 )
