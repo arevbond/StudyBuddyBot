@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/dick"
 	"tg_ics_useful_bot/lib/e"
@@ -152,6 +153,10 @@ func (p *Processor) changeDickSize(user *storage.DBUser, value int) (int, error)
 
 func (p *Processor) changeRandomDickSize(user *storage.DBUser) (bool, int, error) {
 	value := dick.RandomValue()
+
+	if rand.Intn(101) == 77 {
+		value = 100
+	}
 
 	userStats, err := p.storage.UserStatsByTelegramIDAndChatID(context.Background(), user.TgID, user.ChatID)
 	if err != nil {

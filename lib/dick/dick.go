@@ -10,8 +10,8 @@ import (
 func RandomValue() int {
 	rand.Seed(time.Now().UnixNano())
 	sign := rand.Intn(11)
-	value := rand.Intn(25)
-	if sign > 1 {
+	value := rand.Intn(15)
+	if sign > 0 {
 		return value
 	}
 	return -1 * value
