@@ -23,3 +23,10 @@ func Equal(text string, strs []string) bool {
 func IsCommand(text string) bool {
 	return strings.HasPrefix(text, "/")
 }
+
+func Abs(a int) int {
+	if a > 0 {
+		return a
+	}
+	return -1 * a
+}
