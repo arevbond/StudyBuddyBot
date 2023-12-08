@@ -96,7 +96,7 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 				return "", err3
 			}
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2) +
-				fmt.Sprintf(msgUser1Wins, u1.Username, u1.DickSize, u2.Username, u2.DickSize), nil
+				fmt.Sprintf(msgFinishDuel, u1.Username, u1.DickSize, u2.Username, u2.DickSize), nil
 		} else {
 			if ch1 <= 35 {
 				reward = 5
@@ -110,7 +110,7 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 				return "", err3
 			}
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldDickSize1, ch1, u2.Username, oldDickSize2, ch2) +
-				fmt.Sprintf(msgUser1Lost, u1.Username, u1.DickSize, u2.Username, u2.DickSize), nil
+				fmt.Sprintf(msgFinishDuel, u2.Username, u2.DickSize, u1.Username, u1.DickSize), nil
 		}
 	} else {
 		duels[targetUsername] = u1
