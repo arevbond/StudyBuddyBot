@@ -1,14 +1,13 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	tgClient "tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/config"
 	"tg_ics_useful_bot/consumer/event-consumer"
 	"tg_ics_useful_bot/events/telegram"
-	"tg_ics_useful_bot/storage/sqlite"
+	"tg_ics_useful_bot/storage/postgres"
 )
 
 const (
@@ -20,15 +19,15 @@ const (
 func main() {
 	cfg := config.New()
 
-	s, err := sqlite.New(storageSQLitePath)
+	s, err := postgres.New(cfg)
 	if err != nil {
 		log.Fatalf("can't connect to storage:", err)
 	}
 
-	err = s.Init(context.TODO())
-	if err != nil {
-		log.Fatalf("can't init storage", err)
-	}
+	//err = s.Init(context.TODO())
+	//if err != nil {
+	//	log.Fatalf("can't init storage", err)
+	//}
 
 	eventsProcessor := telegram.New(
 		tgClient.New(tgBotHost, cfg.TelegramToken, cfg.AdminsID),

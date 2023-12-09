@@ -18,14 +18,14 @@ type Config struct {
 }
 
 type PostgresSettings struct {
-	DBName   string `env:"POSTGRES_DB"`
-	User     string `env:"POSTGRES_USER"`
-	Password string `env:"POSTGRES_PASSWORD"`
+	PostgresDBName   string `env:"POSTGRES_DB"`
+	PostgresUser     string `env:"POSTGRES_USER"`
+	PostgresPassword string `env:"POSTGRES_PASSWORD"`
 }
 
 type PgAdminSettings struct {
-	DefaultEmail string `env:"PGADMIN_DEFAULT_EMAIL"`
-	Password     string `env:"PGADMIN_DEFAULT_PASSWORD"`
+	PgAdminEmail    string `env:"PGADMIN_DEFAULT_EMAIL"`
+	PgAdminPassword string `env:"PGADMIN_DEFAULT_PASSWORD"`
 }
 
 // New returns a new Config struct

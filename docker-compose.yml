@@ -10,15 +10,15 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - 5430:5432
-    restart: always
+    restart: unless-stopped
 
   pgAdmin:
     container_name: "tg-bot-pg-admin"
     image: dpage/pgadmin4
-    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_LISTEN_PORT: 8081
     ports:
       - 8082:8081
+    restart: unless-stopped

@@ -8,7 +8,6 @@ import (
 )
 
 func RandomValue() int {
-	rand.Seed(time.Now().UnixNano())
 	sign := rand.Intn(11)
 	value := rand.Intn(15)
 	if sign > 0 {
@@ -18,7 +17,7 @@ func RandomValue() int {
 }
 
 func CanChangeDickSize(user *storage.DBUser) bool {
-	yearLastTry, monthLastTry, dayLastTry := user.DateChangeDick.Date()
+	yearLastTry, monthLastTry, dayLastTry := user.ChangeDickAt.Date()
 	year, month, today := time.Now().Date()
 	return (month == monthLastTry && today > dayLastTry) || month > monthLastTry || year > yearLastTry
 }

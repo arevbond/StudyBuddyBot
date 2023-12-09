@@ -36,12 +36,14 @@ func (p *Processor) gameGayTop(chatID int) (message string, err error) {
 		dbUsers = append(dbUsers, dbUser)
 	}
 	sort.Slice(dbUsers, func(i, j int) bool {
-		return dbUsers[i].CountGayOfDay >= dbUsers[j].CountGayOfDay
+		//TODO: переделать
+		return false
+		//return dbUsers[i].CountGayOfDay >= dbUsers[j].CountGayOfDay
 	})
 	result := "Рейтинг пидоров: \n\n"
 
 	for i, dbU := range dbUsers {
-		result += fmt.Sprintf("%d. %s %s - %d раз \n", i+1, dbU.FirstName, dbU.LastName, dbU.CountGayOfDay)
+		result += fmt.Sprintf("%d. %s %sраз \n", i+1, dbU.FirstName, dbU.LastName)
 	}
 	return result, nil
 }
@@ -59,7 +61,7 @@ func (p *Processor) gameGay(chatID int) (string, error) {
 	} else if err != nil {
 		return "", e.Wrap("can't get gay of day: ", err)
 	}
-	if (gay.DateLastUsed.Month() == time.Now().Month() && gay.DateLastUsed.Day() < time.Now().Day()) || gay.DateLastUsed.Month() < time.Now().Month() {
+	if (gay.CreatedAt.Month() == time.Now().Month() && gay.CreatedAt.Day() < time.Now().Day()) || gay.CreatedAt.Month() < time.Now().Month() {
 		err = p.storage.RemoveGayOfDay(context.Background(), chatID)
 		if err != nil {
 			return "", err
@@ -70,8 +72,7 @@ func (p *Processor) gameGay(chatID int) (string, error) {
 	return fmt.Sprintf(msgCurrentGayOfDay, gay.Username), nil
 }
 
-func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*storage.DBGayOfDay, error) {
-	rand.Seed(time.Now().Unix())
+func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*storage.DBGay, error) {
 	n := rand.Intn(len(admins))
 	u := admins[n]
 	dbUser, err := p.storage.UserByTelegramID(context.Background(), u.ID, chatID)
@@ -91,11 +92,11 @@ func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*stor
 	} else if err != nil {
 		return nil, err
 	}
-	gay := &storage.DBGayOfDay{
-		ChatID:       chatID,
-		TgID:         dbUser.TgID,
-		Username:     dbUser.Username,
-		DateLastUsed: time.Now(),
+	gay := &storage.DBGay{
+		ChatID:    chatID,
+		TgID:      dbUser.TgID,
+		Username:  dbUser.Username,
+		CreatedAt: time.Now(),
 	}
 	err = p.storage.CreateGayOfDay(context.Background(), gay)
 	if err != nil {

@@ -12,10 +12,14 @@ import (
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/lib/schedule"
 	"tg_ics_useful_bot/lib/utils"
+	"tg_ics_useful_bot/storage"
 )
 
+// TODO: Заменить возвращение 4-х переменных, на одну структуру
 // selectCommand select one of available commands.
-func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegram.User, messageID int) (string, method, string, int, error) {
+func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat,
+	messageID int) (string, method, string, int, error) {
+
 	var message string
 	var mthd method
 	var parseMode string
@@ -35,29 +39,30 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		message = p.allUsernames(chat.ID)
 		mthd = sendMessageMethod
 
-	case isCommand(cmd, GayTopCmd):
-		message, err = p.gameGayTop(chat.ID)
-		if err != nil {
-			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do GayTopCmd: ", err)
-		}
-		mthd = sendMessageMethod
-
-	case isCommand(cmd, GayStartCmd):
-		message, err = p.gameGay(chat.ID)
-		if err != nil {
-			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameGay: ", err)
-		}
-		mthd = sendMessageMethod
+	//case isCommand(cmd, GayTopCmd):
+	//	message, err = p.gameGayTop(chat.ID)
+	//	if err != nil {
+	//		return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do GayTopCmd: ", err)
+	//	}
+	//	mthd = sendMessageMethod
+	//
+	//case isCommand(cmd, GayStartCmd):
+	//
+	//	message, err = p.gameGay(chat.ID)
+	//	if err != nil {
+	//		return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameGay: ", err)
+	//	}
+	//	mthd = sendMessageMethod
 
 	case isCommand(cmd, DickTopCmd):
-		message, err = p.topDick(chat.ID)
+		message, err = p.topDicks(chat.ID)
 		if err != nil {
 			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap(fmt.Sprintf("can't get top dics from chat %d: ", chat.ID), err)
 		}
 		mthd = sendMessageMethod
 
 	case isCommand(cmd, DicStartCmd):
-		message, err = p.gameDick(chat, user, messageID)
+		message, err = p.gameDick(chat, user, userStats, messageID)
 		if err != nil {
 			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameDick: ", err)
 		}
