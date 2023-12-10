@@ -3,23 +3,29 @@ package dick
 import (
 	"log"
 	"math/rand"
-	"tg_ics_useful_bot/storage"
 	"time"
 )
 
+// RandomValue возвращает случайное положительное или отрицательное число в конкретном диапозоне.
 func RandomValue() int {
-	sign := rand.Intn(11)
+	sign := rand.Intn(10)
 	value := rand.Intn(15)
-	if sign > 0 {
+
+	if value == 0 {
+		value++
+	}
+
+	if sign > 1 {
 		return value
 	}
 	return -1 * value
 }
 
-func CanChangeDickSize(user *storage.DBUser) bool {
-	yearLastTry, monthLastTry, dayLastTry := user.ChangeDickAt.Date()
-	year, month, today := time.Now().Date()
-	return (month == monthLastTry && today > dayLastTry) || month > monthLastTry || year > yearLastTry
+func IsJackpot() bool {
+	if value := rand.Intn(100); value == 77 {
+		return true
+	}
+	return false
 }
 
 // Duel return true if dick1 wins.
@@ -40,20 +46,4 @@ func Duel(dick1 int, dick2 int) (bool, float64, float64) {
 	result := float64(rand.Intn(100))
 	log.Printf("duel between dick1 = %d and dick2 = %d. chance1 = %f and chance2 = %f", dick1, dick2, chance1, chance2)
 	return result <= chance1, chance1, chance2
-}
-
-func maxFloat(a, b float64) float64 {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func PositiveRandomValue() int {
-	rand.Seed(time.Now().UnixNano())
-	value := rand.Intn(20)
-	if value < 10 {
-		value = 12
-	}
-	return value
 }
