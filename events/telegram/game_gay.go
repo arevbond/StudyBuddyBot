@@ -18,7 +18,7 @@ func (p *Processor) gameGay(chatID int) (string, error) {
 		return "", e.Wrap("can't get chat administrators: ", err)
 	}
 
-	gay, err := p.storage.GayOfDay(context.Background(), chatID)
+	gay, err := p.storage.GetGayOfDay(context.Background(), chatID)
 	if err == storage.ErrUserNotExist {
 		gay, err = p.createNewGayOfDay(chatID, admins)
 		return fmt.Sprintf(msgNewGayOfDay, gay.Username), nil

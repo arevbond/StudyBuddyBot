@@ -171,7 +171,7 @@ package sqlite
 //	return users, nil
 //}
 //
-//func (s *Storage) GayOfDay(ctx context.Context, chatID int) (*storage.DBGay, error) {
+//func (s *Storage) GetGayOfDay(ctx context.Context, chatID int) (*storage.DBGay, error) {
 //	q := `SELECT * FROM gays WHERE chat_id = ?`
 //
 //	gay := &storage.DBGay{}
@@ -223,7 +223,7 @@ package sqlite
 //	return nil
 //}
 //
-//func (s *Storage) CalendarID(ctx context.Context, chatID int) (string, error) {
+//func (s *Storage) GetCalendarID(ctx context.Context, chatID int) (string, error) {
 //	q := `SELECT * from calendars WHERE chat_id = ?`
 //	var id int
 //	var calendarID string
@@ -281,28 +281,28 @@ package sqlite
 //func (s *Storage) GetHomeworkBySubject(ctx context.Context, chatID int, subject string) ([]*storage.DBHomework, error) {
 //	q := `SELECT rowid, * from homeworks WHERE subject = ? ORDER BY -created_at`
 //
-//	rows, err := s.db.QueryContext(ctx, q, subject)
-//	if err != nil {
-//		return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %s", chatID), err)
-//	}
-//	defer rows.Close()
+//rows, err := s.db.QueryContext(ctx, q, subject)
+//if err != nil {
+//	return nil, e.Wrap(fmt.Sprintf("can't get homeworks by chat id: %s", chatID), err)
+//}
+//defer rows.Close()
 //
-//	var homeworks []*storage.DBHomework
+//var homeworks []*storage.DBHomework
 //
-//	for rows.Next() {
-//		homework := &storage.DBHomework{}
-//		if err := rows.Scan(&homework.ID, &homework.ChatID, &homework.Subject, &homework.Task, &homework.CreatedAT); err != nil {
-//			return nil, e.Wrap(fmt.Sprintf("can't get homeworks by subject: %d", chatID), err)
-//		}
-//		homeworks = append(homeworks, homework)
+//for rows.Next() {
+//	homework := &storage.DBHomework{}
+//	if err := rows.Scan(&homework.ID, &homework.ChatID, &homework.Subject, &homework.Task, &homework.CreatedAT); err != nil {
+//		return nil, e.Wrap(fmt.Sprintf("can't get homeworks by subject: %d", chatID), err)
 //	}
-//	if err = rows.Err(); err != nil {
-//		return homeworks, err
-//	}
-//	return homeworks, nil
+//	homeworks = append(homeworks, homework)
+//}
+//if err = rows.Err(); err != nil {
+//	return homeworks, err
+//}
+//return homeworks, nil
 //}
 //
-//func (s *Storage) DeleteHomeworkByRowID(ctx context.Context, rowID int) error {
+//func (s *Storage) DeleteHomework(ctx context.Context, rowID int) error {
 //	q := `DELETE FROM homeworks WHERE rowid = ?`
 //	_, err := s.db.ExecContext(ctx, q, rowID)
 //	if err != nil {

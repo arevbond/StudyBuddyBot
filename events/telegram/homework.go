@@ -98,7 +98,7 @@ func (p *Processor) GetHomework(text string, chatID int) string {
 }
 
 func (p *Processor) DeleteHomework(rowID int) string {
-	err := p.storage.DeleteHomeworkByRowID(context.Background(), rowID)
+	err := p.storage.DeleteHomework(context.Background(), rowID)
 	message := fmt.Sprintf("Запись №%d успешно удалена", rowID)
 	if err != nil {
 		log.Print(err)

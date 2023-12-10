@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// TopDick возвращает string сообщение со списком всех dick > 0 в чате.
+// topDicks возвращает string сообщение со списком всех dick > 0 в чате.
 func (p *Processor) topDicks(chatID int) (msg string, err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chatID)
 	if err != nil {

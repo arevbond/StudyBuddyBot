@@ -14,17 +14,17 @@ type Storage interface {
 
 	UserByUsername(ctx context.Context, username string, chatID int) (*DBUser, error)
 
-	GayOfDay(ctx context.Context, chatID int) (*DBGay, error)
+	GetGayOfDay(ctx context.Context, chatID int) (*DBGay, error)
 	CreateGayOfDay(ctx context.Context, gay *DBGay) error
 	RemoveGayOfDay(ctx context.Context, chatID int) error
 
-	CalendarID(ctx context.Context, chatID int) (string, error)
+	GetCalendarID(ctx context.Context, chatID int) (string, error)
 	AddCalendarID(ctx context.Context, chatID int, calendarID string) error
 
 	AddHomework(ctx context.Context, chatID int, subject string, task string) error
 	GetHomeworkByChatID(ctx context.Context, chatID int, limit int) ([]*DBHomework, error)
 	GetHomeworkBySubject(ctx context.Context, chatID int, subject string) ([]*DBHomework, error)
-	DeleteHomeworkByRowID(ctx context.Context, rowID int) error
+	DeleteHomework(ctx context.Context, rowID int) error
 
 	CreateUserStats(ctx context.Context, u *DBUserStat) (int, error)
 	GetUserStats(ctx context.Context, u *DBUser) (*DBUserStat, error)

@@ -1,10 +1,16 @@
 package telegram
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"strconv"
+	"strings"
+	"tg_ics_useful_bot/clients/jokesrv"
 	"tg_ics_useful_bot/clients/telegram"
+	"tg_ics_useful_bot/clients/xkcd"
 	"tg_ics_useful_bot/lib/e"
+	"tg_ics_useful_bot/lib/schedule"
 	"tg_ics_useful_bot/storage"
 )
 
@@ -79,93 +85,93 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 	//	}
 	//	mthd = sendMessageMethod
 	//
-	//case isCommand(cmd, XkcdCmd):
-	//	var comics xkcd.Comics
-	//	comics, err = xkcd.RandomComics()
-	//	if err != nil {
-	//		return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get comics from xkcd: ", err)
-	//	}
-	//	message = comics.Img
-	//	mthd = sendPhotoMethod
-	//
-	//case isCommand(cmd, AnecdotCmd):
-	//	message, err = jokesrv.Anecdot()
-	//	if err != nil {
-	//		return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get anecdot: ", err)
-	//	}
-	//	mthd = sendMessageMethod
-	//case isCommand(cmd, FlipCmd):
-	//	message = RandomPhotoHinkOrRoom()
-	//	mthd = sendPhotoMethod
-	//case isCommand(cmd, ScheduleCmd):
-	//	calendarID, err := p.storage.CalendarID(context.Background(), chat.ID)
-	//	if err != nil || calendarID == "" {
-	//		message = msgCalendarNotExists
-	//		log.Print("can't get calendarID: ", err)
-	//	} else {
-	//		message, err = schedule.Schedule(calendarID)
-	//		parseMode = "Markdown"
-	//		if err != nil {
-	//			log.Printf("[ERROR] can't send schedule: %v", err)
-	//			message = fmt.Sprintf(msgErrorSendMessage, calendarID)
-	//			parseMode = ""
-	//		}
-	//	}
-	//	mthd = sendMessageMethod
-	//case isCommand(strings.Split(cmd, " ")[0], AddCalendarIDCmd):
-	//	if !p.isChatAdmin(user, chat.ID) {
-	//		return msgForbiddenCalendarUpdate, sendMessageMethod, parseMode, replyMessageId, nil
-	//	}
-	//	strs := strings.Split(cmd, " ")
-	//	calendarID := ""
-	//	for _, str := range strs {
-	//		if len(str) > 0 {
-	//			calendarID = str
-	//		}
-	//	}
-	//	err = p.storage.AddCalendarID(context.Background(), chat.ID, calendarID)
-	//	if err != nil {
-	//		message = fmt.Sprintf(msgErrorUpdateCalendarID, calendarID)
-	//		log.Printf("can't update calender_id: %v", err)
-	//	} else {
-	//		message = msgSuccessUpdateCalendarID
-	//	}
-	//	mthd = sendMessageMethod
-	//
-	//case isCommand(cmd, AddHomeworkCmd):
-	//	message = p.AddHomework(cmd, userWithChat)
-	//	mthd = sendMessageWithButtonsMethod
-	//	replyMessageId = messageID
-	//case isCommand(cmd, GetHomeworkCmd) || isCommand(strings.Split(cmd, " ")[0], GetHomeworkCmd):
-	//	message = p.GetHomework(cmd, chat.ID)
-	//	mthd = sendMessageMethod
-	//case isCommand(cmd, CancelHomeworkCmd):
-	//	if _, ok := stateHomework[userWithChat]; ok {
-	//		delete(stateHomework, userWithChat)
-	//		message = msgHomeworkCanceled
-	//		mthd = sendMessageMethod
-	//		replyMessageId = messageID
-	//	}
-	//case isCommand(strings.Split(cmd, " ")[0], DeleteHomeworkCmd):
-	//	val := ""
-	//	for _, str := range strings.Split(cmd, " ")[1:] {
-	//		if str != "" {
-	//			val = str
-	//			break
-	//		}
-	//	}
-	//	num, err := strconv.Atoi(val)
-	//	message = p.DeleteHomework(num)
-	//	if err != nil {
-	//		message = fmt.Sprintf("%s - некоректное значение id", val)
-	//	}
-	//	mthd = sendMessageMethod
-	//
-	//case isCommand(cmd, HelpCmd):
-	//	message = msgHelp
-	//	mthd = sendMessageMethod
-	//	parseMode = "Markdown"
-	//
+	case isCommand(cmd, XkcdCmd):
+		var comics xkcd.Comics
+		comics, err = xkcd.RandomComics()
+		if err != nil {
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get comics from xkcd: ", err)
+		}
+		message = comics.Img
+		mthd = sendPhotoMethod
+
+	case isCommand(cmd, AnecdotCmd):
+		message, err = jokesrv.Anecdot()
+		if err != nil {
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get anecdot: ", err)
+		}
+		mthd = sendMessageMethod
+	case isCommand(cmd, FlipCmd):
+		message = RandomPhotoHinkOrRoom()
+		mthd = sendPhotoMethod
+	case isCommand(cmd, ScheduleCmd):
+		calendarID, err := p.storage.GetCalendarID(context.Background(), chat.ID)
+		if err != nil || calendarID == "" {
+			message = msgCalendarNotExists
+			log.Print("can't get calendarID: ", err)
+		} else {
+			message, err = schedule.Schedule(calendarID)
+			parseMode = "Markdown"
+			if err != nil {
+				log.Printf("[ERROR] can't send schedule: %v", err)
+				message = fmt.Sprintf(msgErrorSendMessage, calendarID)
+				parseMode = ""
+			}
+		}
+		mthd = sendMessageMethod
+	case isCommand(strings.Split(cmd, " ")[0], AddCalendarIDCmd):
+		if !p.isChatAdmin(user, chat.ID) {
+			return msgForbiddenCalendarUpdate, sendMessageMethod, parseMode, replyMessageId, nil
+		}
+		strs := strings.Split(cmd, " ")
+		calendarID := ""
+		for _, str := range strs {
+			if len(str) > 0 {
+				calendarID = str
+			}
+		}
+		err = p.storage.AddCalendarID(context.Background(), chat.ID, calendarID)
+		if err != nil {
+			message = fmt.Sprintf(msgErrorUpdateCalendarID, calendarID)
+			log.Printf("can't update calender_id: %v", err)
+		} else {
+			message = msgSuccessUpdateCalendarID
+		}
+		mthd = sendMessageMethod
+
+	case isCommand(cmd, AddHomeworkCmd):
+		message = p.AddHomework(cmd, userWithChat)
+		mthd = sendMessageWithButtonsMethod
+		replyMessageId = messageID
+	case isCommand(cmd, GetHomeworkCmd) || isCommand(strings.Split(cmd, " ")[0], GetHomeworkCmd):
+		message = p.GetHomework(cmd, chat.ID)
+		mthd = sendMessageMethod
+	case isCommand(cmd, CancelHomeworkCmd):
+		if _, ok := stateHomework[userWithChat]; ok {
+			delete(stateHomework, userWithChat)
+			message = msgHomeworkCanceled
+			mthd = sendMessageMethod
+			replyMessageId = messageID
+		}
+	case isCommand(strings.Split(cmd, " ")[0], DeleteHomeworkCmd):
+		val := ""
+		for _, str := range strings.Split(cmd, " ")[1:] {
+			if str != "" {
+				val = str
+				break
+			}
+		}
+		num, err := strconv.Atoi(val)
+		message = p.DeleteHomework(num)
+		if err != nil {
+			message = fmt.Sprintf("%s - некоректное значение id", val)
+		}
+		mthd = sendMessageMethod
+
+	case isCommand(cmd, HelpCmd):
+		message = msgHelp
+		mthd = sendMessageMethod
+		parseMode = "Markdown"
+
 	//case isCommand(strings.Split(cmd, " ")[0], ChangeDickCmd):
 	//	strs := strings.Split(cmd, " ")
 	//	chatIDStr, userIDStr, valueStr := strs[1], strs[2], strs[3]
