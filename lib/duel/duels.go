@@ -1,4 +1,4 @@
-package duels
+package duel
 
 import (
 	"log"

@@ -46,6 +46,7 @@ func (s *Storage) CreateUser(ctx context.Context, u *storage.DBUser) error {
 	return nil
 }
 
+// UpdateUser update all info in database.
 func (s *Storage) UpdateUser(ctx context.Context, u *storage.DBUser) error {
 	q := `UPDATE users SET is_premium = $1, first_name = $2, last_name = $3, username = $4, dick_size = $5, change_dick_at = $6, 
     		health_points = $7, hp_taked_at = $8, is_gay = $9, gay_at = $10, points = $11, cur_dick_change_count = $12, max_dick_change_count = $13 
@@ -60,8 +61,8 @@ func (s *Storage) UpdateUser(ctx context.Context, u *storage.DBUser) error {
 	return nil
 }
 
-// User get user by chatID and telegram ID.
-func (s *Storage) UserByTelegramID(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
+// GetUser get user by chatID and telegram ID.
+func (s *Storage) GetUser(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE tg_id = $1 AND chat_id = $2`
 
 	var user storage.DBUser
@@ -140,7 +141,7 @@ func (s *Storage) GayOfDay(ctx context.Context, chatID int) (*storage.DBGay, err
 
 	gay := &storage.DBGay{}
 
-	err := s.db.QueryRowContext(ctx, q, chatID).Scan(&gay.ChatID, &gay.TgID, &gay.Username, &gay.CreatedAt)
+	err := s.db.QueryRowContext(ctx, q, chatID).Scan(&gay.ID, &gay.ChatID, &gay.TgID, &gay.Username, &gay.CreatedAt)
 
 	if err == sql.ErrNoRows {
 		return nil, storage.ErrUserNotExist
@@ -150,13 +151,11 @@ func (s *Storage) GayOfDay(ctx context.Context, chatID int) (*storage.DBGay, err
 		return nil, e.Wrap(fmt.Sprintf("[ERROR] can't get gay from table gays chat id: %d", chatID), err)
 	}
 
-	// log.Printf("from storage get user: tg id = %d, chat id = %d, dick size = %d", user.TgID, user.ChatID, user.DickSize)
-
 	return gay, nil
 }
 
 func (s *Storage) CreateGayOfDay(ctx context.Context, gay *storage.DBGay) error {
-	q := `INSERT INTO gays (chat_id, tg_id, username, date_last_used) 
+	q := `INSERT INTO gays (chat_id, tg_id, username, created_at) 
 							VALUES ($1, $2, $3, $4)`
 
 	log.Printf("[INFO] create gay of day #%d '%s', chat_id = %d", gay.TgID, gay.Username, gay.ChatID)
@@ -323,8 +322,16 @@ func (s *Storage) IncreaseNoCount(ctx context.Context, u *storage.DBUserStat) er
 	return nil
 }
 
-func (s *Storage) UsersStatsByChatID(ctx context.Context, chatID int) ([]*storage.DBUserStat, error) {
-	return nil, nil
+func (s *Storage) AllUsersStatsInChat(ctx context.Context, chatID int) ([]*storage.DBUserStat, error) {
+	q := `SELECT * FROM user_stats WHERE chat_id = $1`
+
+	allUserStats := []*storage.DBUserStat{}
+	err := s.db.Select(&allUserStats, q, chatID)
+	if err != nil {
+		return nil, e.Wrap("can't get user stats", err)
+	}
+	return allUserStats, nil
+
 }
 
 func (s *Storage) UpdateUserStats(ctx context.Context, u *storage.DBUserStat) error {

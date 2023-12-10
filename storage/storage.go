@@ -7,19 +7,16 @@ import (
 )
 
 type Storage interface {
-	UserByTelegramID(ctx context.Context, tgID, chatID int) (*DBUser, error)
+	GetUser(ctx context.Context, tgID, chatID int) (*DBUser, error)
 	CreateUser(ctx context.Context, u *DBUser) error
 	UpdateUser(ctx context.Context, u *DBUser) error
+	UsersByChat(ctx context.Context, chatID int) ([]*DBUser, error)
 
 	UserByUsername(ctx context.Context, username string, chatID int) (*DBUser, error)
-	UpdateUserDickSize(ctx context.Context, u *DBUser, dickSize int) error
-	UpdateDateLastTryChangeDickToNow(ctx context.Context, u *DBUser) error
-	UsersByChat(ctx context.Context, chatID int) ([]*DBUser, error)
-	IncreaseCountOfGay(ctx context.Context, u *DBUser) error
 
 	GayOfDay(ctx context.Context, chatID int) (*DBGay, error)
-	RemoveGayOfDay(ctx context.Context, chatID int) error
 	CreateGayOfDay(ctx context.Context, gay *DBGay) error
+	RemoveGayOfDay(ctx context.Context, chatID int) error
 
 	CalendarID(ctx context.Context, chatID int) (string, error)
 	AddCalendarID(ctx context.Context, chatID int, calendarID string) error
@@ -32,14 +29,6 @@ type Storage interface {
 	CreateUserStats(ctx context.Context, u *DBUserStat) (int, error)
 	GetUserStats(ctx context.Context, u *DBUser) (*DBUserStat, error)
 	UpdateUserStats(ctx context.Context, u *DBUserStat) error
-
-	UsersStatsByChatID(ctx context.Context, chatID int) ([]*DBUserStat, error)
-	UserStatsByTelegramIDAndChatID(ctx context.Context, tgID, chatID int) (*DBUserStat, error)
-	IncreaseMessageCount(ctx context.Context, u *DBUserStat) error
-	IncreaseDickPlusCount(ctx context.Context, u *DBUserStat) error
-	IncreaseDickMinusCount(ctx context.Context, u *DBUserStat) error
-	IncreaseYesCount(ctx context.Context, u *DBUserStat) error
-	IncreaseNoCount(ctx context.Context, u *DBUserStat) error
 }
 
 var ErrUserNotExist = errors.New("user not exists")

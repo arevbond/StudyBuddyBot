@@ -83,7 +83,7 @@ package sqlite
 //}
 //
 //// User get user by chatID and telegram ID.
-//func (s *Storage) UserByTelegramID(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
+//func (s *Storage) GetUser(ctx context.Context, tgID, chatID int) (*storage.DBUser, error) {
 //	q := `SELECT * FROM users WHERE tg_id = ? AND chat_id = ?`
 //
 //	user := &storage.DBUser{}
@@ -398,7 +398,7 @@ package sqlite
 //	return nil
 //}
 //
-//func (s *Storage) UsersStatsByChatID(ctx context.Context, chatID int) ([]*storage.DBUserStat, error) {
+//func (s *Storage) AllUsersStatsInChat(ctx context.Context, chatID int) ([]*storage.DBUserStat, error) {
 //	q := `SELECT * FROM user_stats WHERE chat_id = ?`
 //
 //	rows, err := s.db.QueryContext(ctx, q, chatID)
