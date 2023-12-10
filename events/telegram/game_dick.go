@@ -35,7 +35,7 @@ func (p *Processor) topDicks(chatID int) (msg string, err error) {
 func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat) (msg string, err error) {
 	defer func() { err = e.WrapIfErr("error in gameDick: ", err) }()
 
-	dbUser, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
+	dbUser, err := p.storage.GetUser(context.Background(), user.ID, chat.ID)
 
 	if err != nil {
 		return "", err

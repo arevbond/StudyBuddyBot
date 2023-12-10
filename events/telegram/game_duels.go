@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"tg_ics_useful_bot/clients/telegram"
-	"tg_ics_useful_bot/lib/dick"
+	"tg_ics_useful_bot/lib/duel"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 )
@@ -20,7 +20,7 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 		return "", e.Wrap(fmt.Sprintf("[ERROR] can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
 	}
 
-	u1, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
+	u1, err := p.storage.GetUser(context.Background(), user.ID, chat.ID)
 	if err != nil {
 		return "", err
 	}
@@ -35,18 +35,21 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 		return fmt.Sprintf(msgDuelWithYourself, u1.Username), nil
 	}
 
+	oldDickSize1 := u1.DickSize
+	oldDickSize2 := u2.DickSize
+
 	if enemy, ok := duels[u1.Username]; ok && enemy.TgID == u2.TgID {
 		delete(duels, u1.Username)
-		User1Win, ch1, ch2 := dick.Duel(u1.DickSize, u2.DickSize)
+		User1Win, ch1, ch2 := duel.Duel(u1.DickSize, u2.DickSize)
 		if User1Win {
 			if ch1 > 65 {
 				reward = 5
 			}
-			oldDickSize1, err2 := p.changeDickSizeAndTime(u1, reward)
+			err2 := p.changeDickSizeAndTime(u1, reward)
 			if err2 != nil {
 				return "", err
 			}
-			oldDickSize2, err3 := p.changeDickSizeAndTime(u2, -1*reward)
+			err3 := p.changeDickSizeAndTime(u2, -1*reward)
 			if err3 != nil {
 				return "", err3
 			}
@@ -56,11 +59,11 @@ func (p *Processor) gameDuelDick(chat *telegram.Chat, messageID int, user *teleg
 			if ch1 <= 35 {
 				reward = 5
 			}
-			oldDickSize1, err2 := p.changeDickSizeAndTime(u1, -1*reward)
+			err2 := p.changeDickSizeAndTime(u1, -1*reward)
 			if err2 != nil {
 				return "", err
 			}
-			oldDickSize2, err3 := p.changeDickSizeAndTime(u2, reward)
+			err3 := p.changeDickSizeAndTime(u2, reward)
 			if err3 != nil {
 				return "", err3
 			}

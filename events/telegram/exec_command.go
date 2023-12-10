@@ -17,7 +17,7 @@ const (
 )
 
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
-	dbUser, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
+	dbUser, err := p.storage.GetUser(context.Background(), user.ID, chat.ID)
 	if err == storage.ErrUserNotExist {
 		dbUser, err = p.createNewUserInDB(chat.ID, user)
 		if err != nil {

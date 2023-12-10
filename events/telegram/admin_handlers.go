@@ -19,7 +19,7 @@ func (p *Processor) changeAnyDickSize(chatIDStr, userIDStr, valueStr string) err
 	if err != nil {
 		return err
 	}
-	dbUser, err := p.storage.UserByTelegramID(context.Background(), userID, chatID)
+	dbUser, err := p.storage.GetUser(context.Background(), userID, chatID)
 	err = p.storage.UpdateUserDickSize(context.Background(), dbUser, value)
 	if err != nil {
 		log.Print(err)
