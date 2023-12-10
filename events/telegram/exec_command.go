@@ -27,6 +27,11 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return err
 	}
 
+	dbUser, err = p.UserChangeInfo(user, dbUser)
+	if err != nil {
+		return e.Wrap("can't update user info in 'doCmd'", err)
+	}
+
 	userStats, err := p.storage.GetUserStats(context.Background(), dbUser)
 	if err == storage.ErrUserNotExist {
 		return e.Wrap("not find user stats", err)
@@ -107,6 +112,37 @@ func (p *Processor) createNewUserInDB(chatID int, user *telegram.User) (*storage
 
 	if err != nil {
 		return nil, err
+	}
+	return dbUser, nil
+}
+
+func (p *Processor) UserChangeInfo(user *telegram.User, dbUser *storage.DBUser) (*storage.DBUser, error) {
+	if user.FirstName != dbUser.FirstName || user.LastName != dbUser.LastName ||
+		user.Username != dbUser.Username || user.IsPremium != dbUser.IsPremium {
+		newDbUser := &storage.DBUser{
+			ID:                 dbUser.ID,
+			TgID:               dbUser.TgID,
+			ChatID:             dbUser.ChatID,
+			IsBot:              user.IsBot,
+			IsPremium:          user.IsPremium,
+			FirstName:          user.FirstName,
+			LastName:           user.LastName,
+			Username:           user.Username,
+			DickSize:           dbUser.DickSize,
+			ChangeDickAt:       dbUser.ChangeDickAt,
+			UserStatId:         dbUser.UserStatId,
+			HealthPoints:       dbUser.HealthPoints,
+			HpTakedAt:          dbUser.HpTakedAt,
+			IsGay:              dbUser.IsGay,
+			GayAt:              dbUser.GayAt,
+			Points:             dbUser.Points,
+			CurDickChangeCount: dbUser.CurDickChangeCount,
+			MaxDickChangeCount: dbUser.MaxDickChangeCount,
+		}
+		err := p.storage.UpdateUser(context.Background(), newDbUser)
+		if err != nil {
+			return newDbUser, err
+		}
 	}
 	return dbUser, nil
 }
