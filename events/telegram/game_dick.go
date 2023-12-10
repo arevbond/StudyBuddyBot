@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/dick"
 	"tg_ics_useful_bot/lib/e"
@@ -12,25 +11,29 @@ import (
 	"time"
 )
 
+// TopDick возвращает string сообщение со списком всех dick > 0 в чате.
 func (p *Processor) topDicks(chatID int) (msg string, err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chatID)
 	if err != nil {
 		return "", e.Wrap("[ERROR] can't get users: ", err)
 	}
+
 	result := ""
-	for i, u := range users {
-		result += fmt.Sprintf("%d. %s — %d см\n", i+1, u.FirstName+" "+u.LastName, u.DickSize)
+	indx := 1
+	for _, u := range users {
+		if u.DickSize > 0 {
+			result += fmt.Sprintf("%d. %s — %d см\n", indx, u.FirstName+" "+u.LastName, u.DickSize)
+			indx++
+		}
 	}
 	return result, nil
 }
 
-func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat, messageID int) (msg string, err error) {
-	defer func() { err = e.WrapIfErr("can't change dick size: ", err) }()
-
-	err = p.tg.DeleteMessage(chat.ID, messageID)
-	if err != nil {
-		return "", e.Wrap(fmt.Sprintf("can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
-	}
+// gameDick это функция изменяющая размер пениса на случайное число и время изменения пениса.
+// /dick - command
+// Возвращает сообщение, отправляемое в чат.
+func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat) (msg string, err error) {
+	defer func() { err = e.WrapIfErr("error in gameDick: ", err) }()
 
 	dbUser, err := p.storage.UserByTelegramID(context.Background(), user.ID, chat.ID)
 
@@ -42,8 +45,10 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, userStats
 	if err != nil {
 		return "", err
 	}
+
 	if canChange {
-		_, oldDickSize, err := p.changeRandomDickSize(dbUser, userStats)
+		oldDickSize := dbUser.DickSize
+		err = p.updateRandomDickAndChangeTime(dbUser, userStats)
 		if err != nil {
 			return "", err
 		}
@@ -55,20 +60,8 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, userStats
 	return fmt.Sprintf(msgAlreadyPlays, dbUser.Username), nil
 }
 
-func (p *Processor) changeDickSizeAndTime(user *storage.DBUser, value int) (int, error) {
-	oldDickSize := user.DickSize
-
-	user.DickSize += value
-	user.ChangeDickAt = time.Now()
-	err := p.storage.UpdateUser(context.Background(), user)
-	if err != nil {
-		return 0, e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size or change dick at: ", user.ChatID, user.Username), err)
-	}
-	return oldDickSize, nil
-}
-
-// TODO: переделать
-func (p *Processor) changeRandomDickSize(user *storage.DBUser, userStats *storage.DBUserStat) (bool, int, error) {
+// updateRandomDickAndChangeTime изменяет значение пениса на слуайное число и время его изменения в базе данных.
+func (p *Processor) updateRandomDickAndChangeTime(user *storage.DBUser, userStats *storage.DBUserStat) error {
 	var value int
 	for {
 		value = dick.RandomValue()
@@ -77,7 +70,7 @@ func (p *Processor) changeRandomDickSize(user *storage.DBUser, userStats *storag
 		}
 	}
 
-	if rand.Intn(101) == 77 {
+	if dick.IsJackpot() {
 		value = 100
 	}
 
@@ -95,14 +88,17 @@ func (p *Processor) changeRandomDickSize(user *storage.DBUser, userStats *storag
 		}
 	}
 
-	oldDickSize, err := p.changeDickSizeAndTime(user, value)
+	user.DickSize += value
+	user.ChangeDickAt = time.Now()
+	err := p.storage.UpdateUser(context.Background(), user)
 	if err != nil {
-		return false, 0, e.Wrap(fmt.Sprintf("[ERROR] chat id %d, user %s can't change random dick size: ",
-			user.ChatID, user.Username), err)
+		return e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size or change dick at: ", user.ChatID, user.Username), err)
 	}
-	return value >= 0, oldDickSize, nil
+	return nil
 }
 
+// CanChangeDickSize - может ли пользователь изменить пенис сегодня. (остались ли у него попытки)
+// Обновляет попытки каждый день до 0.
 func (p *Processor) CanChangeDickSize(user *storage.DBUser) (bool, error) {
 	yearLastTry, monthLastTry, dayLastTry := user.ChangeDickAt.Date()
 	year, month, today := time.Now().Date()
@@ -123,4 +119,15 @@ func (p *Processor) CanChangeDickSize(user *storage.DBUser) (bool, error) {
 	}
 
 	return false, nil
+}
+
+// TODO: remove this method.
+func (p *Processor) changeDickSizeAndTime(user *storage.DBUser, value int) error {
+	user.DickSize += value
+	user.ChangeDickAt = time.Now()
+	err := p.storage.UpdateUser(context.Background(), user)
+	if err != nil {
+		return e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size or change dick at: ", user.ChatID, user.Username), err)
+	}
+	return nil
 }
