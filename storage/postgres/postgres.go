@@ -84,9 +84,9 @@ func (s *Storage) GetUser(ctx context.Context, tgID, chatID int) (*storage.DBUse
 func (s *Storage) UserByUsername(ctx context.Context, username string, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE username = $1 AND chat_id = $2`
 
-	user := &storage.DBUser{}
+	user := storage.DBUser{}
 
-	err := s.db.Get(&user, q)
+	err := s.db.Get(&user, q, username, chatID)
 
 	if err == sql.ErrNoRows {
 		return nil, storage.ErrUserNotExist
@@ -98,7 +98,7 @@ func (s *Storage) UserByUsername(ctx context.Context, username string, chatID in
 
 	// log.Printf("from storage get user: tg id = %d, chat id = %d, dick size = %d", user.TgID, user.ChatID, user.DickSize)
 
-	return user, nil
+	return &user, nil
 }
 
 // UsersByChat возвращает всех пользователей из базы данных, которые находятся в одном телеграм чате.

@@ -11,10 +11,10 @@ import (
 	"tg_ics_useful_bot/clients/xkcd"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/lib/schedule"
+	"tg_ics_useful_bot/lib/utils"
 	"tg_ics_useful_bot/storage"
 )
 
-// TODO: Заменить возвращение 4-х переменных, на одну структуру
 // selectCommand select one of available commands.
 func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat,
 	messageID int) (string, method, string, int, error) {
@@ -69,22 +69,28 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		}
 		mthd = sendMessageMethod
 
-	//case isCommand(strings.Split(cmd, " ")[0], DickDuelCmd) || isCommand(cmd, DickDuelCmd):
-	//	message, err = p.gameDuelDick(chat, messageID, user, user.Username)
-	//	if err != nil {
-	//		return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do gameDuelDick: ", err)
-	//	}
-	//	if utils.StringContains("@", cmd) {
-	//		textSplited := strings.Split(cmd, "@")
-	//		target := textSplited[len(textSplited)-1]
-	//		log.Printf("[INFO] @%s вызывает на дуель @%s", user.Username, target)
-	//		message, err = p.gameDuelDick(chat, messageID, user, target)
-	//		if err != nil {
-	//			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do gameDuelDick: ", err)
-	//		}
-	//	}
-	//	mthd = sendMessageMethod
-	//
+	// DUEL
+	case isCommand(strings.Split(cmd, " ")[0], DickDuelCmd) || isCommand(cmd, DickDuelCmd):
+		err = p.tg.DeleteMessage(chat.ID, messageID)
+		if err != nil {
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't delete message: ", err)
+		}
+
+		message, err = p.gameDuel(chat, user, user.Username)
+		if err != nil {
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do gameDuel: ", err)
+		}
+		if utils.StringContains("@", cmd) {
+			textSplited := strings.Split(cmd, "@")
+			target := textSplited[len(textSplited)-1]
+			log.Printf("[INFO] @%s вызывает на дуель @%s", user.Username, target)
+			message, err = p.gameDuel(chat, user, target)
+			if err != nil {
+				return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do gameDuel: ", err)
+			}
+		}
+		mthd = sendMessageMethod
+
 	case isCommand(cmd, XkcdCmd):
 		var comics xkcd.Comics
 		comics, err = xkcd.RandomComics()
@@ -172,29 +178,29 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		mthd = sendMessageMethod
 		parseMode = "Markdown"
 
-	//case isCommand(strings.Split(cmd, " ")[0], ChangeDickCmd):
-	//	strs := strings.Split(cmd, " ")
-	//	chatIDStr, userIDStr, valueStr := strs[1], strs[2], strs[3]
-	//	err = p.changeAnyDickSize(chatIDStr, userIDStr, valueStr)
-	//	if err != nil {
-	//		log.Print(err)
-	//		return message, mthd, parseMode, replyMessageId, err
-	//	}
-	//	message = msgSuccessAdminChangeDickSize
-	//	mthd = sendMessageMethod
-	//case isCommand(strings.Split(cmd, " ")[0], SendMessageByAdminCmd):
-	//	strs := strings.Split(cmd, " ")
-	//	chatIDStr, message := strs[1], strings.Join(strs[2:], " ")
-	//	chatID, err := strconv.Atoi(chatIDStr)
-	//	if err != nil {
-	//		log.Print(err)
-	//	}
-	//	err = p.tg.SendMessage(chatID, message, parseMode, replyMessageId)
-	//	if err != nil {
-	//		log.Print(err)
-	//	}
-	//	mthd = doNothingMethod
-	//
+	case isCommand(strings.Split(cmd, " ")[0], ChangeDickCmd):
+		strs := strings.Split(cmd, " ")
+		chatIDStr, userIDStr, valueStr := strs[1], strs[2], strs[3]
+		err = p.changeDickByAdmin(chatIDStr, userIDStr, valueStr)
+		if err != nil {
+			log.Print(err)
+			return message, mthd, parseMode, replyMessageId, err
+		}
+		message = msgSuccessAdminChangeDickSize
+		mthd = sendMessageMethod
+	case isCommand(strings.Split(cmd, " ")[0], SendMessageByAdminCmd):
+		strs := strings.Split(cmd, " ")
+		chatIDStr, message := strs[1], strings.Join(strs[2:], " ")
+		chatID, err := strconv.Atoi(chatIDStr)
+		if err != nil {
+			log.Print(err)
+		}
+		err = p.tg.SendMessage(chatID, message, parseMode, replyMessageId)
+		if err != nil {
+			log.Print(err)
+		}
+		mthd = doNothingMethod
+
 	case isCommand(cmd, GetChatIDCmd):
 		message = strconv.Itoa(chat.ID)
 		mthd = sendMessageMethod

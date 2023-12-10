@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"tg_ics_useful_bot/clients/telegram"
-	"tg_ics_useful_bot/lib/dick"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 	"time"
@@ -64,13 +64,13 @@ func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, userStats
 func (p *Processor) updateRandomDickAndChangeTime(user *storage.DBUser, userStats *storage.DBUserStat) error {
 	var value int
 	for {
-		value = dick.RandomValue()
+		value = RandomValue()
 		if user.DickSize+value > 0 {
 			break
 		}
 	}
 
-	if dick.IsJackpot() {
+	if IsJackpot() {
 		value = 100
 	}
 
@@ -121,13 +121,25 @@ func (p *Processor) CanChangeDickSize(user *storage.DBUser) (bool, error) {
 	return false, nil
 }
 
-// TODO: remove this method.
-func (p *Processor) changeDickSizeAndTime(user *storage.DBUser, value int) error {
-	user.DickSize += value
-	user.ChangeDickAt = time.Now()
-	err := p.storage.UpdateUser(context.Background(), user)
-	if err != nil {
-		return e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size or change dick at: ", user.ChatID, user.Username), err)
+// RandomValue возвращает случайное положительное или отрицательное число в конкретном диапозоне.
+func RandomValue() int {
+	sign := rand.Intn(10)
+	value := rand.Intn(15)
+
+	if value == 0 {
+		value++
 	}
-	return nil
+
+	if sign > 1 {
+		return value
+	}
+	return -1 * value
+}
+
+// IsJackpot показывает выиграл ли пользователь джекпот.
+func IsJackpot() bool {
+	if value := rand.Intn(100); value == 77 {
+		return true
+	}
+	return false
 }
