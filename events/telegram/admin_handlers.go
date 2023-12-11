@@ -6,7 +6,8 @@ import (
 	"strconv"
 )
 
-func (p *Processor) changeAnyDickSize(chatIDStr, userIDStr, valueStr string) error {
+// changeDickByAdminCmd админская ручка, позволяющая изменить пенис любому пользователю.
+func (p *Processor) changeDickByAdminCmd(chatIDStr, userIDStr, valueStr string) error {
 	chatID, err := strconv.Atoi(chatIDStr)
 	if err != nil {
 		return err
@@ -19,8 +20,12 @@ func (p *Processor) changeAnyDickSize(chatIDStr, userIDStr, valueStr string) err
 	if err != nil {
 		return err
 	}
-	dbUser, err := p.storage.UserByTelegramID(context.Background(), userID, chatID)
-	err = p.storage.UpdateUserDickSize(context.Background(), dbUser, value)
+	dbUser, err := p.storage.GetUser(context.Background(), userID, chatID)
+	if err != nil {
+		return err
+	}
+	dbUser.DickSize += value
+	err = p.storage.UpdateUser(context.Background(), dbUser)
 	if err != nil {
 		log.Print(err)
 		return err

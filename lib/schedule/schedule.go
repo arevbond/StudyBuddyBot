@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func Schedule(calendarID string) (string, error) {
+func ScheduleCmd(calendarID string) (string, error) {
 	result := ""
 	dayToLessons, err := google_calendar.Lessons(calendarID)
 	if err != nil {

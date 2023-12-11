@@ -29,7 +29,7 @@ type UserWithChat struct {
 
 var stateHomework = make(map[UserWithChat]*Homework)
 
-func (p *Processor) AddHomework(text string, userWithChat UserWithChat) string {
+func (p *Processor) addHomeworkCmd(text string, userWithChat UserWithChat) string {
 	if strings.HasPrefix(text, "/") {
 		stateHomework[userWithChat] = newHomework("", "")
 		return "Введите название предмета"
@@ -50,7 +50,7 @@ func (p *Processor) AddHomework(text string, userWithChat UserWithChat) string {
 	return "Что-то пошло не так"
 }
 
-func (p *Processor) GetHomework(text string, chatID int) string {
+func (p *Processor) getHomeworkdCmd(text string, chatID int) string {
 	val := ""
 	for _, s := range strings.Split(text, " ")[1:] {
 		if s != "" {
@@ -98,7 +98,7 @@ func (p *Processor) GetHomework(text string, chatID int) string {
 }
 
 func (p *Processor) DeleteHomework(rowID int) string {
-	err := p.storage.DeleteHomeworkByRowID(context.Background(), rowID)
+	err := p.storage.DeleteHomework(context.Background(), rowID)
 	message := fmt.Sprintf("Запись №%d успешно удалена", rowID)
 	if err != nil {
 		log.Print(err)

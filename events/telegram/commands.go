@@ -43,6 +43,8 @@ const (
 
 	GetChatIDCmd = "/chat_id"
 
+	GetHPCmd = "/hp"
+
 	// admins commands
 	ChangeDickCmd         = "/change_dick"
 	SendMessageByAdminCmd = "/send_message"

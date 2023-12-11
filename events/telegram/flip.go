@@ -10,7 +10,7 @@ const (
 	urlImgRoom = "https://www.vsu.ru/gallery/photos/study/dept_phys.jpg"
 )
 
-func RandomPhotoHinkOrRoom() string {
+func hinkOrRoomCmd() string {
 	rand.Seed(time.Now().UnixNano())
 	n := rand.Intn(2)
 	if n == 1 {

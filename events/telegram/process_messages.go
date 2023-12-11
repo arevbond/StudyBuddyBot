@@ -75,7 +75,7 @@ func (p *Processor) Process(event events.Event) error {
 func (p *Processor) processMessage(event events.Event) error {
 	meta, err := meta(event)
 	if err != nil {
-		return e.Wrap("[ERROR] can't process message", err)
+		return e.Wrap("can't process message", err)
 	}
 
 	messageID := meta.MessageID
