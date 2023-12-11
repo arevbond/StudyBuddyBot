@@ -81,6 +81,7 @@ func (s *Storage) GetUser(ctx context.Context, tgID, chatID int) (*storage.DBUse
 	return &user, nil
 }
 
+// UserByUsername возращает пользователя из конкретного чата по его телеграм @username.
 func (s *Storage) UserByUsername(ctx context.Context, username string, chatID int) (*storage.DBUser, error) {
 	q := `SELECT * FROM users WHERE username = $1 AND chat_id = $2`
 
@@ -254,9 +255,9 @@ func (s *Storage) GetUserStats(ctx context.Context, u *storage.DBUser) (*storage
 // UpdateUserStats обновляет статистику пользователя в чате.
 func (s *Storage) UpdateUserStats(ctx context.Context, u *storage.DBUserStat) error {
 	q := `UPDATE user_stats SET message_count = $1, dick_plus_count = $2, dick_minus_count = $3, yes_count = $4, no_count = $5, 
-                      duels_count = $6, duels_win_count = $7, duels_lose_count = $8, gay_count = $9 WHERE id = $10`
+                      duels_count = $6, duels_win_count = $7, duels_lose_count = $8, kill_count = $9, die_count = $10, gay_count = $11 WHERE id = $12`
 	_, err := s.db.ExecContext(ctx, q, u.MessageCount, u.DickPlusCount, u.DickMinusCount, u.YesCount, u.NoCount, u.DuelsCount, u.DuelsWinCount,
-		u.DuelsLoseCount, u.GayCount, u.ID)
+		u.DuelsLoseCount, u.KillCount, u.DieCount, u.GayCount, u.ID)
 
 	if err != nil {
 		return e.Wrap("can't update user stats", err)

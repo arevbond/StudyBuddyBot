@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// topDicks возвращает string сообщение со списком всех dick > 0 в чате.
-func (p *Processor) topDicks(chatID int) (msg string, err error) {
+// topDicksCmd возвращает string сообщение со списком всех dick > 0 в чате.
+func (p *Processor) topDicksCmd(chatID int) (msg string, err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chatID)
 	if err != nil {
 		return "", e.Wrap("[ERROR] can't get users: ", err)
@@ -29,19 +29,18 @@ func (p *Processor) topDicks(chatID int) (msg string, err error) {
 	return result, nil
 }
 
-// gameDick это функция изменяющая размер пениса на случайное число и время изменения пениса.
+// gameDickCmd это функция изменяющая размер пениса на случайное число и время изменения пениса.
 // /dick - command
 // Возвращает сообщение, отправляемое в чат.
-func (p *Processor) gameDick(chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat) (msg string, err error) {
-	defer func() { err = e.WrapIfErr("error in gameDick: ", err) }()
+func (p *Processor) gameDickCmd(chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat) (msg string, err error) {
+	defer func() { err = e.WrapIfErr("error in gameDickCmd: ", err) }()
 
 	dbUser, err := p.storage.GetUser(context.Background(), user.ID, chat.ID)
-
 	if err != nil {
 		return "", err
 	}
 
-	canChange, err := p.CanChangeDickSize(dbUser)
+	canChange, err := p.canChangeDickSize(dbUser)
 	if err != nil {
 		return "", err
 	}
@@ -97,23 +96,23 @@ func (p *Processor) updateRandomDickAndChangeTime(user *storage.DBUser, userStat
 	return nil
 }
 
-// CanChangeDickSize - может ли пользователь изменить пенис сегодня. (остались ли у него попытки)
+// canChangeDickSize - может ли пользователь изменить пенис сегодня. (остались ли у него попытки)
 // Обновляет попытки каждый день до 0.
-func (p *Processor) CanChangeDickSize(user *storage.DBUser) (bool, error) {
+func (p *Processor) canChangeDickSize(user *storage.DBUser) (bool, error) {
 	yearLastTry, monthLastTry, dayLastTry := user.ChangeDickAt.Date()
 	year, month, today := time.Now().Date()
 	if (month == monthLastTry && today > dayLastTry) || month > monthLastTry || year > yearLastTry {
 		user.CurDickChangeCount = 0
 		err := p.storage.UpdateUser(context.Background(), user)
 		if err != nil {
-			return false, e.Wrap("can't update user in 'CanChangeDickSize'", err)
+			return false, e.Wrap("can't update user in 'canChangeDickSize'", err)
 		}
 	}
 	if user.CurDickChangeCount+1 <= user.MaxDickChangeCount {
 		user.CurDickChangeCount++
 		err := p.storage.UpdateUser(context.Background(), user)
 		if err != nil {
-			return false, e.Wrap("can't update user in 'CanChangeDickSize'", err)
+			return false, e.Wrap("can't update user in 'canChangeDickSize'", err)
 		}
 		return true, nil
 	}

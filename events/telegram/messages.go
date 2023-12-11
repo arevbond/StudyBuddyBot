@@ -67,5 +67,15 @@ const (
 
 	msgAcceptDuel = "@%s %s %d см 🍌 %.2f%%\n⚔️\n@%s %s %d см 🍌 %.2f%%\n"
 
-	msgFinishDuel = "\n\n🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️\n\n🏆 @%s %d см 👍 ➕ %d \n🤕@%s %d см 👎 ➖ %d"
+	msgFinishDuel = "\n\n🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️\n\n🏆 @%s %s %d см ➕ %d \n🤕@%s %s %d см ➖ %d"
+
+	msgPlayerDie = "\n\nεつ▄█▀█ ●\n\n🏆 @%s %s %d см ➕ %d \n🤕@%s %s %d см ➖ %d"
+
+	msgCantCreateDuel = "Невозможно создать дуель между @%s и @%s\nУ дуелянтов недостаточно HP"
+)
+
+// HP
+const (
+	msgCantGetHP = "@%s ты сегодня уже пополнял HP ❌"
+	msgGetHp     = "@%s пополнил HP 🥰\nТекущее здоровье  %s"
 )

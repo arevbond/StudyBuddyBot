@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	MAX_DICK_CHANGE_COUNT = 3
+	MAX_DICK_CHANGE_COUNT = 1
+	DEFAULT_HP_USER       = 3
 )
 
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
@@ -107,6 +108,7 @@ func (p *Processor) createNewUserInDB(chatID int, user *telegram.User) (*storage
 		Username:           user.Username,
 		UserStatId:         dbUserStatID,
 		MaxDickChangeCount: MAX_DICK_CHANGE_COUNT,
+		HealthPoints:       DEFAULT_HP_USER,
 	}
 	err = p.storage.CreateUser(context.Background(), dbUser)
 

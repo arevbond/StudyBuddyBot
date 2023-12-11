@@ -27,32 +27,32 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 	userWithChat := UserWithChat{chat.ID, user.ID}
 
 	if _, ok := stateHomework[userWithChat]; ok {
-		message = p.AddHomework(cmd, userWithChat)
+		message = p.addHomeworkCmd(cmd, userWithChat)
 		mthd = sendMessageMethod
 		replyMessageId = messageID
 	}
 
 	switch {
 	case isCommand(cmd, AllCmd):
-		message = p.allUsernames(chat.ID)
+		message = p.allUsernamesCmd(chat.ID)
 		mthd = sendMessageMethod
 
 	case isCommand(cmd, GayTopCmd):
-		message, err = p.TopGays(chat.ID)
+		message, err = p.topGaysCmd(chat.ID)
 		if err != nil {
 			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do GayTopCmd: ", err)
 		}
 		mthd = sendMessageMethod
 
 	case isCommand(cmd, GayStartCmd):
-		message, err = p.gameGay(chat.ID)
+		message, err = p.gameGayCmd(chat.ID)
 		if err != nil {
-			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameGay: ", err)
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameGayCmd: ", err)
 		}
 		mthd = sendMessageMethod
 
 	case isCommand(cmd, DickTopCmd):
-		message, err = p.topDicks(chat.ID)
+		message, err = p.topDicksCmd(chat.ID)
 		if err != nil {
 			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap(fmt.Sprintf("can't get top dics from chat %d: ", chat.ID), err)
 		}
@@ -63,9 +63,9 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		if err != nil {
 			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap(fmt.Sprintf("can't delete message: user #%d, chat id #%d", user.ID, chat.ID), err)
 		}
-		message, err = p.gameDick(chat, user, userStats)
+		message, err = p.gameDickCmd(chat, user, userStats)
 		if err != nil {
-			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameDick: ", err)
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameDickCmd: ", err)
 		}
 		mthd = sendMessageMethod
 
@@ -76,20 +76,33 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't delete message: ", err)
 		}
 
-		message, err = p.gameDuel(chat, user, user.Username)
+		message, err = p.gameDuelCmd(chat, user, user.Username)
 		if err != nil {
-			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do gameDuel: ", err)
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do gameDuelCmd: ", err)
 		}
 		if utils.StringContains("@", cmd) {
 			textSplited := strings.Split(cmd, "@")
 			target := textSplited[len(textSplited)-1]
 			log.Printf("[INFO] @%s вызывает на дуель @%s", user.Username, target)
-			message, err = p.gameDuel(chat, user, target)
+			message, err = p.gameDuelCmd(chat, user, target)
 			if err != nil {
-				return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do gameDuel: ", err)
+				return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do gameDuelCmd: ", err)
 			}
 		}
 		mthd = sendMessageMethod
+
+	case isCommand(cmd, GetHPCmd):
+		err = p.tg.DeleteMessage(chat.ID, messageID)
+		if err != nil {
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't delete message: ", err)
+		}
+
+		message, err = p.getHpCmd(user, chat)
+		if err != nil {
+			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get hp in 'selectCommand':", err)
+		}
+		mthd = sendMessageMethod
+	// END DUEL	COMMANDS
 
 	case isCommand(cmd, XkcdCmd):
 		var comics xkcd.Comics
@@ -107,7 +120,7 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		}
 		mthd = sendMessageMethod
 	case isCommand(cmd, FlipCmd):
-		message = RandomPhotoHinkOrRoom()
+		message = hinkOrRoomCmd()
 		mthd = sendPhotoMethod
 	case isCommand(cmd, ScheduleCmd):
 		calendarID, err := p.storage.GetCalendarID(context.Background(), chat.ID)
@@ -115,7 +128,7 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 			message = msgCalendarNotExists
 			log.Print("can't get calendarID: ", err)
 		} else {
-			message, err = schedule.Schedule(calendarID)
+			message, err = schedule.ScheduleCmd(calendarID)
 			parseMode = "Markdown"
 			if err != nil {
 				log.Printf("[ERROR] can't send schedule: %v", err)
@@ -145,11 +158,11 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 		mthd = sendMessageMethod
 
 	case isCommand(cmd, AddHomeworkCmd):
-		message = p.AddHomework(cmd, userWithChat)
+		message = p.addHomeworkCmd(cmd, userWithChat)
 		mthd = sendMessageWithButtonsMethod
 		replyMessageId = messageID
 	case isCommand(cmd, GetHomeworkCmd) || isCommand(strings.Split(cmd, " ")[0], GetHomeworkCmd):
-		message = p.GetHomework(cmd, chat.ID)
+		message = p.getHomeworkdCmd(cmd, chat.ID)
 		mthd = sendMessageMethod
 	case isCommand(cmd, CancelHomeworkCmd):
 		if _, ok := stateHomework[userWithChat]; ok {
@@ -181,7 +194,7 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 	case isCommand(strings.Split(cmd, " ")[0], ChangeDickCmd):
 		strs := strings.Split(cmd, " ")
 		chatIDStr, userIDStr, valueStr := strs[1], strs[2], strs[3]
-		err = p.changeDickByAdmin(chatIDStr, userIDStr, valueStr)
+		err = p.changeDickByAdminCmd(chatIDStr, userIDStr, valueStr)
 		if err != nil {
 			log.Print(err)
 			return message, mthd, parseMode, replyMessageId, err

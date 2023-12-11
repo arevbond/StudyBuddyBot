@@ -246,7 +246,7 @@ package sqlite
 //	return nil
 //}
 //
-//func (s *Storage) AddHomework(ctx context.Context, chatID int, subject string, task string) error {
+//func (s *Storage) addHomeworkCmd(ctx context.Context, chatID int, subject string, task string) error {
 //	q := `INSERT INTO homeworks (chat_id, subject, task, created_at) VALUES (?, ?, ?, ?)`
 //	if _, err := s.db.ExecContext(ctx, q, chatID, subject, task, time.Now()); err != nil {
 //		return e.Wrap("can't add homework:", err)

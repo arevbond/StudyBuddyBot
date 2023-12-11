@@ -6,8 +6,8 @@ import (
 	"strconv"
 )
 
-// changeDickByAdmin админская ручка, позволяющая изменить пенис любому пользователю.
-func (p *Processor) changeDickByAdmin(chatIDStr, userIDStr, valueStr string) error {
+// changeDickByAdminCmd админская ручка, позволяющая изменить пенис любому пользователю.
+func (p *Processor) changeDickByAdminCmd(chatIDStr, userIDStr, valueStr string) error {
 	chatID, err := strconv.Atoi(chatIDStr)
 	if err != nil {
 		return err

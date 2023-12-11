@@ -5,7 +5,7 @@ import (
 	"tg_ics_useful_bot/clients/telegram"
 )
 
-func (p *Processor) allUsernames(chatID int) string {
+func (p *Processor) allUsernamesCmd(chatID int) string {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
 		log.Printf("can't get admins in chat #%d: ", chatID, err)
