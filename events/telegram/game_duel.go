@@ -158,7 +158,7 @@ func (p *Processor) gameDuelCmd(chat *telegram.Chat, user *telegram.User, target
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +
-				fmt.Sprintf(finishMessage, u2.Username, p.hpString(u1), u2.DickSize, reward, u1.Username, p.hpString(u2),
+				fmt.Sprintf(finishMessage, u2.Username, p.hpString(u2), u2.DickSize, reward, u1.Username, p.hpString(u1),
 					u1.DickSize, reward), nil
 		}
 	} else {
