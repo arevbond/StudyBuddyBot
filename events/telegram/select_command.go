@@ -15,12 +15,58 @@ import (
 	"tg_ics_useful_bot/storage"
 )
 
-// selectCommand select one of available commands.
-func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat,
-	messageID int) (string, method, string, int, error) {
+type CmdExecutor interface {
+	Exec(inMessage string, user *telegram.User, chat *telegram.Chat, userStats *storage.DBUserStat, messageID int) (*Response, error)
+	SetProcessor(p *Processor)
+}
+
+type Response struct {
+	message        string
+	method         method
+	parseMode      telegram.ParseMode
+	replyMessageId int
+}
+
+var allCommands = map[string]CmdExecutor{
+	AllCmd + suffix:      &allUsernamesCmd{AllCmd + suffix, nil},
+	GayTopCmd + suffix:   &topGaysCmd{GayTopCmd + suffix, nil},
+	GayStartCmd + suffix: &gameGayCmd{GayStartCmd + suffix, nil},
+}
+
+var ResponseUnknownCommand = &Response{method: UnsupportedMethod}
+
+func (p *Processor) selectCommand(text string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+	strCmd := strings.Split(text, " ")[0]
+	cmd := p.getCmd(strCmd)
+	if cmd == nil {
+		return ResponseUnknownCommand, nil
+	}
+	response, err := cmd.Exec(text, user, chat, userStats, messageID)
+	if err != nil {
+		return nil, e.Wrap("can't select cmd:", err)
+	}
+	return response, nil
+}
+
+func (p *Processor) getCmd(strCmd string) CmdExecutor {
+	if !strings.Contains(strCmd, "@") {
+		strCmd += suffix
+	}
+	cmd, ok := allCommands[strCmd]
+	if !ok {
+		return nil
+	}
+	cmd.SetProcessor(p)
+	return cmd
+}
+
+// OldSelectCommand select one of available commands.
+func (p *Processor) OldSelectCommand(cmd string, chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat,
+	messageID int) (string, method, telegram.ParseMode, int, error) {
 	var message string
 	var mthd method
-	var parseMode string
+	var parseMode telegram.ParseMode
 	var replyMessageId int
 	var err error
 
@@ -33,23 +79,23 @@ func (p *Processor) selectCommand(cmd string, chat *telegram.Chat, user *telegra
 	}
 
 	switch {
-	case isCommand(cmd, AllCmd):
-		message = p.allUsernamesCmd(chat.ID)
-		mthd = sendMessageMethod
+	//case isCommand(cmd, AllCmd):
+	//	message = p.allUsernames(chat.ID)
+	//	mthd = sendMessageMethod
 
-	case isCommand(cmd, GayTopCmd):
-		message, err = p.topGaysCmd(chat.ID)
-		if err != nil {
-			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do GayTopCmd: ", err)
-		}
-		mthd = sendMessageMethod
+	//case isCommand(cmd, GayTopCmd):
+	//	message, err = p.topGaysCmd(chat.ID)
+	//	if err != nil {
+	//		return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't do GayTopCmd: ", err)
+	//	}
+	//	mthd = sendMessageMethod
 
-	case isCommand(cmd, GayStartCmd):
-		message, err = p.gameGayCmd(chat.ID)
-		if err != nil {
-			return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameGayCmd: ", err)
-		}
-		mthd = sendMessageMethod
+	//case isCommand(cmd, GayStartCmd):
+	//	message, err = p.gameGay(chat.ID)
+	//	if err != nil {
+	//		return "", UnsupportedMethod, parseMode, replyMessageId, e.Wrap("can't get message from gameGay: ", err)
+	//	}
+	//	mthd = sendMessageMethod
 
 	case isCommand(cmd, DickTopCmd):
 		message, err = p.topDicksCmd(chat.ID)

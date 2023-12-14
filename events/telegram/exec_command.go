@@ -46,7 +46,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		log.Print(err)
 	}
 
-	text, parseMode := strings.TrimSpace(text), ""
+	text, parseMode := strings.TrimSpace(text), telegram.ParseMode("")
 
 	switch utils.CheckYesOrNo(text) {
 	case utils.IsYesCommand:
@@ -69,11 +69,12 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 
 	if utils.IsCommand(text) || len(stateHomework) > 0 {
 		log.Printf("[INFO] got new command '%s' from '%s' in '%s'", text, user.Username, chat.Title)
-		msg, mthd, parseMode, replyToMessageID, err := p.selectCommand(text, chat, user, userStats, messageID)
-
+		response, err := p.selectCommand(text, user, chat, userStats, messageID)
 		if err != nil {
 			return e.Wrap(fmt.Sprintf("can't select command from message: %s", text), err)
 		}
+
+		msg, mthd, parseMode, replyToMessageID := response.message, response.method, response.parseMode, response.replyMessageId
 
 		switch mthd {
 		case UnsupportedMethod:

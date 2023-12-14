@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// gameGayCmd определяет пидора дня среди администратора и возвращает сообщение для чата.
-func (p *Processor) gameGayCmd(chatID int) (string, error) {
+// gameGay определяет пидора дня среди администратора и возвращает сообщение для чата.
+func (p *Processor) gameGay(chatID int) (string, error) {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
 		return "", e.Wrap("can't get chat administrators: ", err)
@@ -74,7 +74,7 @@ func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*stor
 }
 
 // topGaysCmd возвращает список всех админов и сколько раз они были пидорами.
-func (p *Processor) topGaysCmd(chatID int) (message string, err error) {
+func (p *Processor) topGays(chatID int) (message string, err error) {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
 		return "", e.Wrap("[ERROR] can't get chat administrators: ", err)

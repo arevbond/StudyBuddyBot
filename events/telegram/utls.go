@@ -3,9 +3,26 @@ package telegram
 import (
 	"log"
 	"tg_ics_useful_bot/clients/telegram"
+	"tg_ics_useful_bot/storage"
 )
 
-func (p *Processor) allUsernamesCmd(chatID int) string {
+type allUsernamesCmd struct {
+	command string
+	p       *Processor
+}
+
+func (a *allUsernamesCmd) Exec(inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+	message := a.p.allUsernames(chat.ID)
+	mthd := sendMessageMethod
+	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+}
+
+func (a *allUsernamesCmd) SetProcessor(p *Processor) {
+	a.p = p
+}
+
+func (p *Processor) allUsernames(chatID int) string {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
 		log.Printf("can't get admins in chat #%d: ", chatID, err)

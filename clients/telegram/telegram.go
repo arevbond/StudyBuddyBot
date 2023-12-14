@@ -19,6 +19,14 @@ type Client struct {
 	AdminsID []int
 }
 
+type ParseMode string
+
+const (
+	MarkdownV2 ParseMode = "MarkdownV2"
+	HTML       ParseMode = "HTML"
+	Markdown   ParseMode = "Markdown"
+)
+
 const timeToBan = 120
 
 const (
@@ -85,8 +93,8 @@ func (c *Client) ChatAdministrators(chatID int) ([]User, error) {
 	return result, nil
 }
 
-func (c *Client) SendMessage(chatID int, text string, parseMode string, replyToMessageID int) error {
-	message := Message{chatID, text, parseMode, replyToMessageID}
+func (c *Client) SendMessage(chatID int, text string, parseMode ParseMode, replyToMessageID int) error {
+	message := Message{chatID, text, string(parseMode), replyToMessageID}
 	jsonData, err := json.Marshal(message)
 	if err != nil {
 		return e.Wrap("can't convert message to json: ", err)

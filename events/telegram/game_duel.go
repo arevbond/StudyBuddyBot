@@ -212,7 +212,7 @@ func (p *Processor) isDie(user *storage.DBUser) bool {
 
 // canDuel возвращает имеют ли два пользователя больше 0 хп или имеют ли они писюны.
 func (p *Processor) canDuel(user1 *storage.DBUser, user2 *storage.DBUser) bool {
-	return (user1.HealthPoints > 0 && user2.HealthPoints > 0) || (user1.DickSize > 0 && user2.DickSize > 0)
+	return (user1.HealthPoints > 0 && user2.HealthPoints > 0) && (user1.DickSize > 0 && user2.DickSize > 0)
 }
 
 // canGetHp возвращает может ли пользватель сегодня пополнить хп.
