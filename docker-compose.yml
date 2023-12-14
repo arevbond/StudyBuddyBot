@@ -22,3 +22,8 @@ services:
     ports:
       - 8082:8081
     restart: unless-stopped
+
+  app:
+    build: .
+    depends_on:
+      - db
