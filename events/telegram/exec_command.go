@@ -12,11 +12,49 @@ import (
 	"tg_ics_useful_bot/storage"
 )
 
+// CmdExecutor предоставляет интерфейс с методом Exec
+// для процедуры выполнения команды пользователя.
+type CmdExecutor interface {
+	Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+		userStats *storage.DBUserStat, messageID int) (*Response, error)
+}
+
+// Response структура содержащая поля для отправки сообщения пользователю.
+type Response struct {
+	message        string
+	method         method
+	parseMode      telegram.ParseMode
+	replyMessageId int
+}
+
+// allCommands список всех возможных команд бота.
+var allCommands = map[string]CmdExecutor{
+	AllCmd + suffix:                &allUsernamesExec{AllCmd + suffix},
+	GayTopCmd + suffix:             &topGaysExec{GayTopCmd + suffix},
+	GayStartCmd + suffix:           &gayExec{GayStartCmd + suffix},
+	DickTopCmd + suffix:            &dickTopExec{DickTopCmd + suffix},
+	DicStartCmd + suffix:           &dickStartExec{DicStartCmd + suffix},
+	GetHPCmd + suffix:              &getHpExec{GetHPCmd + suffix},
+	DickDuelCmd + suffix:           &duelExec{DickDuelCmd + suffix},
+	HelpCmd + suffix:               &helpExec{HelpCmd + suffix},
+	GetMyStatsCmd + suffix:         &myStatsExec{GetMyStatsCmd + suffix},
+	GetChatStatsCmd + suffix:       &chatStatsExec{GetChatStatsCmd + suffix},
+	ChangeDickCmd + suffix:         &adminChangeDickExec{ChangeDickCmd + suffix},
+	SendMessageByAdminCmd + suffix: &adminSendMessageExec{SendMessageByAdminCmd + suffix},
+	AddCalendarIDCmd + suffix:      &addCalendarExec{AddCalendarIDCmd + suffix},
+	ScheduleCmd + suffix:           &scheduleExec{ScheduleCmd + suffix},
+	XkcdCmd + suffix:               &xkcdExec{XkcdCmd + suffix},
+	AnecdotCmd + suffix:            &anekdotExec{AnecdotCmd + suffix},
+	FlipCmd + suffix:               &flipExec{FlipCmd + suffix},
+	GetChatIDCmd + suffix:          &chatIDExec{GetChatIDCmd + suffix},
+}
+
 const (
 	MAX_DICK_CHANGE_COUNT = 1
 	DEFAULT_HP_USER       = 3
 )
 
+// doCmd выбирает необходимую логику для выолнения команды.
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
 	dbUser, err := p.storage.GetUser(context.Background(), user.ID, chat.ID)
 	if err == storage.ErrUserNotExist {
@@ -28,7 +66,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return err
 	}
 
-	dbUser, err = p.UserChangeInfo(user, dbUser)
+	dbUser, err = p.userChangeInfo(user, dbUser)
 	if err != nil {
 		return e.Wrap("can't update user info in 'doCmd'", err)
 	}
@@ -69,7 +107,14 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 
 	if utils.IsCommand(text) || len(stateHomework) > 0 {
 		log.Printf("[INFO] got new command '%s' from '%s' in '%s'", text, user.Username, chat.Title)
-		response, err := p.selectCommand(text, user, chat, userStats, messageID)
+
+		strCmd := strings.Split(text, " ")[0]
+		cmd := p.getCmd(strCmd)
+		if cmd == nil {
+			return e.Wrap(fmt.Sprintf("can't get command from %s", strCmd), err)
+		}
+
+		response, err := cmd.Exec(p, text, user, chat, userStats, messageID)
 		if err != nil {
 			return e.Wrap(fmt.Sprintf("can't select command from message: %s", text), err)
 		}
@@ -93,6 +138,19 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	return nil
 }
 
+// getCmd возвращает executor для команды, если она существует.
+func (p *Processor) getCmd(strCmd string) CmdExecutor {
+	if !strings.Contains(strCmd, "@") {
+		strCmd += suffix
+	}
+	cmd, ok := allCommands[strCmd]
+	if !ok {
+		return nil
+	}
+	return cmd
+}
+
+// createNewUserInDB создаёт пользователя в базе данных, если он там ещё не существует.
 func (p *Processor) createNewUserInDB(chatID int, user *telegram.User) (*storage.DBUser, error) {
 	dbUserStatID, err := p.storage.CreateUserStats(context.Background(), &storage.DBUserStat{})
 
@@ -119,7 +177,8 @@ func (p *Processor) createNewUserInDB(chatID int, user *telegram.User) (*storage
 	return dbUser, nil
 }
 
-func (p *Processor) UserChangeInfo(user *telegram.User, dbUser *storage.DBUser) (*storage.DBUser, error) {
+// userChangeInfo изменяет данные пользователя в базе данных, если он поменял данные в телеграмме.
+func (p *Processor) userChangeInfo(user *telegram.User, dbUser *storage.DBUser) (*storage.DBUser, error) {
 	if user.FirstName != dbUser.FirstName || user.LastName != dbUser.LastName ||
 		user.Username != dbUser.Username || user.IsPremium != dbUser.IsPremium {
 		newDbUser := &storage.DBUser{

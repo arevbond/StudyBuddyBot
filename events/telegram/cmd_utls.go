@@ -1,19 +1,21 @@
 package telegram
 
 import (
+	"strconv"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 )
 
-type helpCmd struct {
+// helpExec предоставляет метод Exec для выполнения /help.
+type helpExec struct {
 	command string
-	p       *Processor
 }
 
-func (a *helpCmd) Exec(inMessage string, user *telegram.User, chat *telegram.Chat,
+// Exec: /help - возвращает help сообщениею
+func (a *helpExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
-	message, err := a.p.getHp(user, chat)
+	message, err := p.getHp(user, chat)
 	if err != nil {
 		return nil, e.Wrap("can't get hp in 'selectCommand':", err)
 	}
@@ -21,25 +23,16 @@ func (a *helpCmd) Exec(inMessage string, user *telegram.User, chat *telegram.Cha
 	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
-func (a *helpCmd) SetProcessor(p *Processor) {
-	a.p = p
-}
-
-type getChatIDcmd struct {
+// chatIDExec предоставляет метод Exec для выполнения /chat_id.
+type chatIDExec struct {
 	command string
-	p       *Processor
 }
 
-func (a *getChatIDcmd) Exec(inMessage string, user *telegram.User, chat *telegram.Chat,
+// Exec: /chat_id - возвращает chat id.
+func (a *chatIDExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
-	message, err := a.p.getHp(user, chat)
-	if err != nil {
-		return nil, e.Wrap("can't get hp in 'selectCommand':", err)
-	}
+
+	message := strconv.Itoa(chat.ID)
 	mthd := sendMessageMethod
 	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
-}
-
-func (a *getChatIDcmd) SetProcessor(p *Processor) {
-	a.p = p
 }

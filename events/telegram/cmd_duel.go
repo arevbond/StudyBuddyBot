@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"strconv"
+	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
+	"tg_ics_useful_bot/lib/utils"
 	"tg_ics_useful_bot/storage"
 	"time"
 )
@@ -17,8 +20,49 @@ const (
 	REWARD_FOR_KILL = 25
 )
 
-// getHpCmd пополняет HP пользователя раз в день.
-func (p *Processor) getHpCmd(user *telegram.User, chat *telegram.Chat) (string, error) {
+// getHpExec предоставляет Exec метод для выполнения /hp.
+type getHpExec struct {
+	command string
+}
+
+// Exec: /hp - один раз в день пополняет здоровье пользователя.
+func (a *getHpExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	message := strconv.Itoa(chat.ID)
+	mthd := sendMessageMethod
+	replyMessageId := messageID
+	return &Response{message: message, method: mthd, replyMessageId: replyMessageId}, nil
+}
+
+// duelExec предоставляет Exec метод для выполнения /duel.
+type duelExec struct {
+	command string
+}
+
+// Exec: /duel {@username} - игра дуели.
+func (a *duelExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	message, err := p.gameDuel(chat, user, user.Username)
+	if err != nil {
+		return nil, e.Wrap("can't do gameDuel: ", err)
+	}
+	if utils.StringContains("@", inMessage) {
+		textSplited := strings.Split(inMessage, "@")
+		target := textSplited[len(textSplited)-1]
+		log.Printf("[INFO] @%s вызывает на дуель @%s", user.Username, target)
+		message, err = p.gameDuel(chat, user, target)
+		if err != nil {
+			return nil, e.Wrap("can't do gameDuel: ", err)
+		}
+	}
+	mthd := sendMessageMethod
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+}
+
+// getHp пополняет HP пользователя раз в день.
+func (p *Processor) getHp(user *telegram.User, chat *telegram.Chat) (string, error) {
 	dbUser, err := p.storage.GetUser(context.Background(), user.ID, chat.ID)
 	if err != nil {
 		return "", err
@@ -42,8 +86,8 @@ func (p *Processor) getHpCmd(user *telegram.User, chat *telegram.Chat) (string, 
 	return fmt.Sprintf(msgGetHp, dbUser.Username, p.hpString(dbUser)), nil
 }
 
-// gameDuelCmd проводит дуель между двумя участиками чата на оснвое их DickSize и HP.
-func (p *Processor) gameDuelCmd(chat *telegram.Chat, user *telegram.User, targetUsername string) (string, error) {
+// gameDuel проводит дуель между двумя участиками чата на оснвое их DickSize и HP.
+func (p *Processor) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsername string) (string, error) {
 	u1, err := p.storage.GetUser(context.Background(), user.ID, chat.ID)
 	if err != nil {
 		return "", err
@@ -65,11 +109,11 @@ func (p *Processor) gameDuelCmd(chat *telegram.Chat, user *telegram.User, target
 
 	stats1, err := p.storage.GetUserStats(context.Background(), u1)
 	if err != nil {
-		return "", e.Wrap("can't get user stats in 'gameDuelCmd'", err)
+		return "", e.Wrap("can't get user stats in 'gameDuel'", err)
 	}
 	stats2, err := p.storage.GetUserStats(context.Background(), u2)
 	if err != nil {
-		return "", e.Wrap("can't get user stats in 'gameDuelCmd'", err)
+		return "", e.Wrap("can't get user stats in 'gameDuel'", err)
 	}
 
 	oldDickSize1 := u1.DickSize
@@ -117,7 +161,7 @@ func (p *Processor) gameDuelCmd(chat *telegram.Chat, user *telegram.User, target
 			err1 := p.storage.UpdateUserStats(context.Background(), stats1)
 			err2 := p.storage.UpdateUserStats(context.Background(), stats2)
 			if err1 != nil || err2 != nil {
-				log.Println("[ERROR] can't update user stats in 'gameDuelCmd'")
+				log.Println("[ERROR] can't update user stats in 'gameDuel'")
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +
@@ -154,7 +198,7 @@ func (p *Processor) gameDuelCmd(chat *telegram.Chat, user *telegram.User, target
 			err1 := p.storage.UpdateUserStats(context.Background(), stats1)
 			err2 := p.storage.UpdateUserStats(context.Background(), stats2)
 			if err1 != nil || err2 != nil {
-				log.Println("[ERROR] can't update user stats in 'gameDuelCmd'")
+				log.Println("[ERROR] can't update user stats in 'gameDuel'")
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +

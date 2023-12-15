@@ -12,19 +12,19 @@ import (
 // adminSendMessageExec предоставляет метод Exec для отправки сообщения от имени бота в любой чат
 type adminSendMessageExec struct {
 	command string
-	p       *Processor
 }
 
-// Exec - /send_message {chat_id} {message}
-func (a *adminSendMessageExec) Exec(inMessage string, user *telegram.User, chat *telegram.Chat,
+// Exec: /send_message {chat_id} {message}
+func (a *adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
 	strs := strings.Split(inMessage, " ")
 	chatIDStr, message := strs[1], strings.Join(strs[2:], " ")
 	chatID, err := strconv.Atoi(chatIDStr)
 	if err != nil {
 		log.Print(err)
 	}
-	err = a.p.tg.SendMessage(chatID, message, "", -1)
+	err = p.tg.SendMessage(chatID, message, "", -1)
 	if err != nil {
 		log.Println("can't send message by admin:", err)
 	}
@@ -32,34 +32,24 @@ func (a *adminSendMessageExec) Exec(inMessage string, user *telegram.User, chat 
 	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }
 
-// SetProcessor устанавливает Processor для Executor
-func (a *adminSendMessageExec) SetProcessor(p *Processor) {
-	a.p = p
-}
-
 // adminChangeDickExec предоставляет метод Exec для выполнения команды /change_dick
 type adminChangeDickExec struct {
 	command string
-	p       *Processor
 }
 
-// Exec - /change_dick {chat_id} {user_id} {value}
-func (a *adminChangeDickExec) Exec(inMessage string, user *telegram.User, chat *telegram.Chat,
+// Exec: /change_dick {chat_id} {user_id} {value}
+func (a *adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
 	strs := strings.Split(inMessage, " ")
 	chatIDStr, userIDStr, valueStr := strs[1], strs[2], strs[3]
-	err := a.p.changeDickByAdminCmd(chatIDStr, userIDStr, valueStr)
+	err := p.changeDickByAdminCmd(chatIDStr, userIDStr, valueStr)
 	if err != nil {
 		return nil, err
 	}
 	message := msgSuccessAdminChangeDickSize
 	mthd := sendMessageMethod
 	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
-}
-
-// SetProcessor устанавливает Processor для Executor
-func (a *adminChangeDickExec) SetProcessor(p *Processor) {
-	a.p = p
 }
 
 // changeDickByAdminCmd админская ручка, позволяющая изменить пенис любому пользователю.

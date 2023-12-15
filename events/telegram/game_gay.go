@@ -73,7 +73,7 @@ func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*stor
 	return gay, nil
 }
 
-// topGaysCmd возвращает список всех админов и сколько раз они были пидорами.
+// topGaysExec возвращает список всех админов и сколько раз они были пидорами.
 func (p *Processor) topGays(chatID int) (message string, err error) {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
