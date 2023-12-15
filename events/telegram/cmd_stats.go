@@ -5,6 +5,8 @@ import (
 	"tg_ics_useful_bot/storage"
 )
 
+
+
 func (p *Processor) chatStats(chatID int) (*storage.DBUserStat, error) {
 	users, err := p.storage.UsersByChat(context.Background(), chatID)
 	if err != nil {
