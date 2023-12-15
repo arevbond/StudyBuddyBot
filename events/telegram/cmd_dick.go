@@ -20,7 +20,7 @@ func (a *dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, 
 		return nil, e.Wrap(fmt.Sprintf("can't get top dics from chat %d: ", chat.ID), err)
 	}
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }
 
 // dickStartExec предоставляет метод Exec для выполнения /dick.
@@ -36,5 +36,5 @@ func (a *dickStartExec) Exec(p *Processor, inMessage string, user *telegram.User
 		return nil, e.Wrap("can't get message from gameDickCmd: ", err)
 	}
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }

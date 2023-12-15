@@ -19,7 +19,7 @@ func (a *gayExec) Exec(p *Processor, inMessage string, user *telegram.User, chat
 		return nil, e.Wrap("can't get message from gameGay: ", err)
 	}
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }
 
 // topGaysExec предоставляет метод Exec для вывода топа пидоров.
@@ -35,5 +35,5 @@ func (a *topGaysExec) Exec(p *Processor, inMessage string, user *telegram.User, 
 		return nil, e.Wrap("can't do GayTop: ", err)
 	}
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }

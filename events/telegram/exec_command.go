@@ -120,6 +120,12 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		}
 
 		msg, mthd, parseMode, replyToMessageID := response.message, response.method, response.parseMode, response.replyMessageId
+		if replyToMessageID <= 0 {
+			err = p.tg.DeleteMessage(chat.ID, messageID)
+			if err != nil {
+				return err
+			}
+		}
 
 		switch mthd {
 		case UnsupportedMethod:

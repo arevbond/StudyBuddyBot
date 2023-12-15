@@ -3,7 +3,6 @@ package telegram
 import (
 	"strconv"
 	"tg_ics_useful_bot/clients/telegram"
-	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 )
 
@@ -15,12 +14,10 @@ type helpExec struct {
 // Exec: /help - возвращает help сообщениею
 func (a *helpExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
-	message, err := p.getHp(user, chat)
-	if err != nil {
-		return nil, e.Wrap("can't get hp in 'selectCommand':", err)
-	}
+
+	message := msgHelp
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }
 
 // chatIDExec предоставляет метод Exec для выполнения /chat_id.
@@ -34,5 +31,5 @@ func (a *chatIDExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 
 	message := strconv.Itoa(chat.ID)
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }

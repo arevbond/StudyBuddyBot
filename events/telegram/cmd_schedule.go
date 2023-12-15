@@ -38,7 +38,7 @@ func (a *addCalendarExec) Exec(p *Processor, inMessage string, user *telegram.Us
 		message = msgSuccessUpdateCalendarID
 	}
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }
 
 // scheduleExec предоставляет Exec метод для выполнения /schedule.
@@ -65,5 +65,5 @@ func (a *scheduleExec) Exec(p *Processor, inMessage string, user *telegram.User,
 		}
 	}
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: messageID, parseMode: parseMode}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1, parseMode: parseMode}, nil
 }
