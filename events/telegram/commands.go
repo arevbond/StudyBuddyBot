@@ -1,15 +1,5 @@
 package telegram
 
-type method int
-
-const (
-	UnsupportedMethod method = iota
-	sendMessageMethod
-	sendPhotoMethod
-	sendMessageWithButtonsMethod
-	doNothingMethod
-)
-
 const (
 	suffix = "@ics_useful_bot"
 )

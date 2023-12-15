@@ -12,6 +12,16 @@ import (
 	"tg_ics_useful_bot/storage"
 )
 
+type method int
+
+const (
+	UnsupportedMethod method = iota
+	sendMessageMethod
+	sendPhotoMethod
+	sendMessageWithButtonsMethod
+	doNothingMethod
+)
+
 // CmdExecutor предоставляет интерфейс с методом Exec
 // для процедуры выполнения команды пользователя.
 type CmdExecutor interface {

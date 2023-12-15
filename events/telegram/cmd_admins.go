@@ -38,7 +38,7 @@ type adminChangeDickExec struct {
 }
 
 // Exec: /change_dick {chat_id} {user_id} {value}
-func (a *adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	strs := strings.Split(inMessage, " ")
