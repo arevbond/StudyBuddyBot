@@ -34,6 +34,7 @@ type addHomeworkExec string
 
 func (a addHomeworkExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+	
 	message := p.addHomeworkCmd(inMessage, UserWithChat{ChatID: chat.ID, UserID: user.ID})
 	mthd := sendMessageWithButtonsMethod
 	replyMessageId := messageID
@@ -43,22 +44,22 @@ func (a addHomeworkExec) Exec(p *Processor, inMessage string, user *telegram.Use
 func (p *Processor) addHomeworkCmd(text string, userWithChat UserWithChat) string {
 	if strings.HasPrefix(text, "/") {
 		stateHomework[userWithChat] = newHomework("", "")
-		return "Введите название предмета"
+		return msgAddSubject
 	} else if hm, ok := stateHomework[userWithChat]; ok && hm.subject == "" {
 		hm.subject = text
-		return "Введите задание"
+		return msgAddTask
 	} else if hm, ok = stateHomework[userWithChat]; ok && hm.Task == "" {
 		hm.Task = text
 		message := fmt.Sprintf("ДЗ: %s - %s успешно добавлено", hm.subject, hm.Task)
 		err := p.storage.AddHomework(context.Background(), userWithChat.ChatID, hm.subject, hm.Task)
 		if err != nil {
-			message = "Не удалось добавить задание"
+			message = msgErrorAddHomework
 			log.Printf("can't add homework: %v", err)
 		}
 		delete(stateHomework, userWithChat)
 		return message
 	}
-	return "Что-то пошло не так"
+	return msgSomethingWrong
 }
 
 // getHomeworkExec предоставляет метод Exec для выполнения /get.
@@ -138,7 +139,7 @@ func (a deleteHomeworkExec) Exec(p *Processor, inMessage string, user *telegram.
 	num, err := strconv.Atoi(val)
 	message := p.deleteHomework(num)
 	if err != nil {
-		message = fmt.Sprintf("%s - некоректное значение id", val)
+		message = fmt.Sprintf(msgIncorrectValue, val)
 	}
 	mthd := sendMessageMethod
 	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
@@ -147,10 +148,10 @@ func (a deleteHomeworkExec) Exec(p *Processor, inMessage string, user *telegram.
 // deleteHomework удаляет запись домашнего задания.
 func (p *Processor) deleteHomework(rowID int) string {
 	err := p.storage.DeleteHomework(context.Background(), rowID)
-	message := fmt.Sprintf("Запись №%d успешно удалена", rowID)
+	message := fmt.Sprintf(msgSuccessDelete, rowID)
 	if err != nil {
 		log.Print(err)
-		message = fmt.Sprintf("Не удалось удалить запись №%d", rowID)
+		message = fmt.Sprintf(msgErrorDelete, rowID)
 	}
 	return message
 }
