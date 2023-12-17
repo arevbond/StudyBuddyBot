@@ -32,6 +32,14 @@ var stateHomework = make(map[UserWithChat]*Homework)
 
 type addHomeworkExec string
 
+func (a addHomeworkExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+	message := p.addHomeworkCmd(inMessage, UserWithChat{ChatID: chat.ID, UserID: user.ID})
+	mthd := sendMessageWithButtonsMethod
+	replyMessageId := messageID
+	return &Response{message: message, method: mthd, replyMessageId: replyMessageId}, nil
+}
+
 func (p *Processor) addHomeworkCmd(text string, userWithChat UserWithChat) string {
 	if strings.HasPrefix(text, "/") {
 		stateHomework[userWithChat] = newHomework("", "")

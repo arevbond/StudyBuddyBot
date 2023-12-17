@@ -58,6 +58,7 @@ var allCommands = map[string]CmdExecutor{
 	FlipCmd + suffix:               flipExec(FlipCmd + suffix),
 	GetChatIDCmd + suffix:          chatIDExec(GetChatIDCmd + suffix),
 
+	AddHomeworkCmd + suffix:    addHomeworkExec(AddHomeworkCmd + suffix),
 	GetHomeworkCmd + suffix:    getHomeworkExec(GetHomeworkCmd + suffix),
 	DeleteHomeworkCmd + suffix: deleteHomeworkExec(DeleteHomeworkCmd + suffix),
 }
@@ -118,7 +119,16 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return p.tg.SendMessage(chat.ID, "Пидора ответ", parseMode, messageID)
 	}
 
-	if utils.IsCommand(text) || len(stateHomework) > 0 {
+	//TODO: переделать механику добавления домашнего задания
+	userWithChat := UserWithChat{chat.ID, user.ID}
+
+	if _, ok := stateHomework[userWithChat]; ok {
+		msg := p.addHomeworkCmd(text, userWithChat)
+		replyToMessageID := messageID
+		return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
+	}
+
+	if utils.IsCommand(text) {
 		log.Printf("[INFO] got new command '%s' from '%s' in '%s'", text, user.Username, chat.Title)
 
 		strCmd := strings.Split(text, " ")[0]
@@ -138,15 +148,6 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 			if err != nil {
 				return err
 			}
-		}
-
-		//TODO: переделать механику добавления домашнего задания
-		userWithChat := UserWithChat{chat.ID, user.ID}
-
-		if _, ok := stateHomework[userWithChat]; ok {
-			msg = p.addHomeworkCmd(text, userWithChat)
-			mthd = sendMessageMethod
-			replyToMessageID = messageID
 		}
 
 		switch mthd {
