@@ -39,24 +39,27 @@ type Response struct {
 
 // allCommands список всех возможных команд бота.
 var allCommands = map[string]CmdExecutor{
-	AllCmd + suffix:                &allUsernamesExec{AllCmd + suffix},
-	GayTopCmd + suffix:             &topGaysExec{GayTopCmd + suffix},
-	GayStartCmd + suffix:           &gayExec{GayStartCmd + suffix},
-	DickTopCmd + suffix:            &dickTopExec{DickTopCmd + suffix},
-	DicStartCmd + suffix:           &dickStartExec{DicStartCmd + suffix},
-	GetHPCmd + suffix:              &getHpExec{GetHPCmd + suffix},
-	DickDuelCmd + suffix:           &duelExec{DickDuelCmd + suffix},
-	HelpCmd + suffix:               &helpExec{HelpCmd + suffix},
-	GetMyStatsCmd + suffix:         &myStatsExec{GetMyStatsCmd + suffix},
-	GetChatStatsCmd + suffix:       &chatStatsExec{GetChatStatsCmd + suffix},
-	ChangeDickCmd + suffix:         &adminChangeDickExec{ChangeDickCmd + suffix},
-	SendMessageByAdminCmd + suffix: &adminSendMessageExec{SendMessageByAdminCmd + suffix},
-	AddCalendarIDCmd + suffix:      &addCalendarExec{AddCalendarIDCmd + suffix},
-	ScheduleCmd + suffix:           &scheduleExec{ScheduleCmd + suffix},
-	XkcdCmd + suffix:               &xkcdExec{XkcdCmd + suffix},
-	AnecdotCmd + suffix:            &anekdotExec{AnecdotCmd + suffix},
-	FlipCmd + suffix:               &flipExec{FlipCmd + suffix},
-	GetChatIDCmd + suffix:          &chatIDExec{GetChatIDCmd + suffix},
+	AllCmd + suffix:                allUsernamesExec(AllCmd + suffix),
+	GayTopCmd + suffix:             topGaysExec(GayTopCmd + suffix),
+	GayStartCmd + suffix:           gayExec(GayStartCmd + suffix),
+	DickTopCmd + suffix:            dickTopExec(DickTopCmd + suffix),
+	DicStartCmd + suffix:           dickStartExec(DicStartCmd + suffix),
+	GetHPCmd + suffix:              getHpExec(GetHPCmd + suffix),
+	DickDuelCmd + suffix:           duelExec(DickDuelCmd + suffix),
+	HelpCmd + suffix:               helpExec(HelpCmd + suffix),
+	GetMyStatsCmd + suffix:         myStatsExec(GetMyStatsCmd + suffix),
+	GetChatStatsCmd + suffix:       chatStatsExec(GetChatStatsCmd + suffix),
+	ChangeDickCmd + suffix:         adminChangeDickExec(ChangeDickCmd + suffix),
+	SendMessageByAdminCmd + suffix: adminSendMessageExec(SendMessageByAdminCmd + suffix),
+	AddCalendarIDCmd + suffix:      addCalendarExec(AddCalendarIDCmd + suffix),
+	ScheduleCmd + suffix:           scheduleExec(ScheduleCmd + suffix),
+	XkcdCmd + suffix:               xkcdExec(XkcdCmd + suffix),
+	AnecdotCmd + suffix:            anekdotExec(AnecdotCmd + suffix),
+	FlipCmd + suffix:               flipExec(FlipCmd + suffix),
+	GetChatIDCmd + suffix:          chatIDExec(GetChatIDCmd + suffix),
+
+	GetHomeworkCmd + suffix:    getHomeworkExec(GetHomeworkCmd + suffix),
+	DeleteHomeworkCmd + suffix: deleteHomeworkExec(DeleteHomeworkCmd + suffix),
 }
 
 const (
@@ -135,6 +138,15 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 			if err != nil {
 				return err
 			}
+		}
+
+		//TODO: переделать механику добавления домашнего задания
+		userWithChat := UserWithChat{chat.ID, user.ID}
+
+		if _, ok := stateHomework[userWithChat]; ok {
+			msg = p.addHomeworkCmd(text, userWithChat)
+			mthd = sendMessageMethod
+			replyToMessageID = messageID
 		}
 
 		switch mthd {

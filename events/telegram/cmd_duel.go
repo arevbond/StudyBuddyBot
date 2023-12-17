@@ -21,12 +21,10 @@ const (
 )
 
 // getHpExec предоставляет Exec метод для выполнения /hp.
-type getHpExec struct {
-	command string
-}
+type getHpExec string
 
 // Exec: /hp - один раз в день пополняет здоровье пользователя.
-func (a *getHpExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a getHpExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	message := strconv.Itoa(chat.ID)
@@ -36,12 +34,10 @@ func (a *getHpExec) Exec(p *Processor, inMessage string, user *telegram.User, ch
 }
 
 // duelExec предоставляет Exec метод для выполнения /duel.
-type duelExec struct {
-	command string
-}
+type duelExec string
 
 // Exec: /duel {@username} - игра дуели.
-func (a *duelExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a duelExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	message, err := p.gameDuel(chat, user, user.Username)
@@ -69,7 +65,7 @@ func (p *Processor) getHp(user *telegram.User, chat *telegram.Chat) (string, err
 	}
 
 	if !p.canGetHp(dbUser) {
-		return fmt.Sprintf(msgCantGetHP, dbUser.Username), nil
+		return fmt.Sprintf(msgCantGetHP, p.hpString(dbUser)), nil
 	}
 
 	dbUser.HpTakedAt = time.Now()

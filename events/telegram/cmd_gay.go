@@ -12,12 +12,10 @@ import (
 )
 
 // gayExec предоставляет метод Exec для выполнения /gay.
-type gayExec struct {
-	command string
-}
+type gayExec string
 
 // Exec: /gay - определяет случайного пидора в чате среди админов чата.
-func (a *gayExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a gayExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	message, err := p.gameGay(chat.ID)
 	if err != nil {
@@ -28,12 +26,10 @@ func (a *gayExec) Exec(p *Processor, inMessage string, user *telegram.User, chat
 }
 
 // topGaysExec предоставляет метод Exec для вывода топа пидоров.
-type topGaysExec struct {
-	command string
-}
+type topGaysExec string
 
 // Exec: /top_gay - выводит список участников чата и их кол-во становления пидором дня.
-func (a *topGaysExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a topGaysExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	message, err := p.topGays(chat.ID)
 	if err != nil {

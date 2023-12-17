@@ -12,12 +12,10 @@ import (
 )
 
 // dickTopExec предоставляет метод Exec для выполнения /top_dick.
-type dickTopExec struct {
-	command string
-}
+type dickTopExec string
 
 // Exec: /top_dick - пишет топ всех пенисов в чат.
-func (a *dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	message, err := p.topDicksCmd(chat.ID)
 	if err != nil {
@@ -28,12 +26,10 @@ func (a *dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, 
 }
 
 // dickStartExec предоставляет метод Exec для выполнения /dick.
-type dickStartExec struct {
-	command string
-}
+type dickStartExec string
 
 // Exec: /dick - игра в пенис.
-func (a *dickStartExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a dickStartExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	message, err := p.gameDickCmd(chat, user, userStats)
 	if err != nil {

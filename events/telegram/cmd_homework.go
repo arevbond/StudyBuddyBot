@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/storage"
 )
 
@@ -29,6 +30,8 @@ type UserWithChat struct {
 
 var stateHomework = make(map[UserWithChat]*Homework)
 
+type addHomeworkExec string
+
 func (p *Processor) addHomeworkCmd(text string, userWithChat UserWithChat) string {
 	if strings.HasPrefix(text, "/") {
 		stateHomework[userWithChat] = newHomework("", "")
@@ -50,7 +53,20 @@ func (p *Processor) addHomeworkCmd(text string, userWithChat UserWithChat) strin
 	return "Что-то пошло не так"
 }
 
-func (p *Processor) getHomeworkdCmd(text string, chatID int) string {
+// getHomeworkExec предоставляет метод Exec для выполнения /get.
+type getHomeworkExec string
+
+// Exec: /get [number] [subject] - возвращает последние записи домашнего задания
+func (a getHomeworkExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	message := p.getHomework(inMessage, chat.ID)
+	mthd := sendMessageMethod
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+}
+
+// getHomework формирует строку домашнего задания.
+func (p *Processor) getHomework(text string, chatID int) string {
 	val := ""
 	for _, s := range strings.Split(text, " ")[1:] {
 		if s != "" {
@@ -97,7 +113,31 @@ func (p *Processor) getHomeworkdCmd(text string, chatID int) string {
 	return message
 }
 
-func (p *Processor) DeleteHomework(rowID int) string {
+// deleteHomeworkExec предоставляет метод Exec для выполнения /delete.
+type deleteHomeworkExec string
+
+// Exec: /delete [id] - удаляет запись о домашнем задании
+func (a deleteHomeworkExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	val := ""
+	for _, str := range strings.Split(inMessage, " ")[1:] {
+		if str != "" {
+			val = str
+			break
+		}
+	}
+	num, err := strconv.Atoi(val)
+	message := p.deleteHomework(num)
+	if err != nil {
+		message = fmt.Sprintf("%s - некоректное значение id", val)
+	}
+	mthd := sendMessageMethod
+	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+}
+
+// deleteHomework удаляет запись домашнего задания.
+func (p *Processor) deleteHomework(rowID int) string {
 	err := p.storage.DeleteHomework(context.Background(), rowID)
 	message := fmt.Sprintf("Запись №%d успешно удалена", rowID)
 	if err != nil {

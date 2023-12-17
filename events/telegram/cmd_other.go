@@ -11,12 +11,10 @@ import (
 )
 
 // xkcdExec предоставляет Exec метод для выполнения /xkcd.
-type xkcdExec struct {
-	command string
-}
+type xkcdExec string
 
 // Exec: /xkcd - возвращает случайный xkcd комикс.
-func (a *xkcdExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a xkcdExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	var comics xkcd.Comics
@@ -30,12 +28,10 @@ func (a *xkcdExec) Exec(p *Processor, inMessage string, user *telegram.User, cha
 }
 
 // anekdotExec предоставляет Exec метод для выполнения /joke.
-type anekdotExec struct {
-	command string
-}
+type anekdotExec string
 
 // Exec: /joke - возвращает случайный анекдот от @bobuk.
-func (a *anekdotExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a anekdotExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	message, err := jokesrv.Anecdot()
@@ -47,12 +43,10 @@ func (a *anekdotExec) Exec(p *Processor, inMessage string, user *telegram.User, 
 }
 
 // flipExec предоставляет Exec метод длы выполнения /flip.
-type flipExec struct {
-	command string
-}
+type flipExec string
 
 // Exec: /flip - возвращает случайную картинку из двух предоставленных ниже.
-func (a *flipExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a flipExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	message := khinkalnyaOrVSU()

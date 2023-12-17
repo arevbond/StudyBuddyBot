@@ -7,12 +7,10 @@ import (
 )
 
 // allUsernamesExec предоставляет метод Exec для вызова всех админов в чате.
-type allUsernamesExec struct {
-	command string
-}
+type allUsernamesExec string
 
 // Exec: /all - тэгает всех админов в чате.
-func (a *allUsernamesExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a allUsernamesExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	message := p.allUsernames(chat.ID)
@@ -24,7 +22,7 @@ func (a *allUsernamesExec) Exec(p *Processor, inMessage string, user *telegram.U
 func (p *Processor) allUsernames(chatID int) string {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
-		log.Printf("can't get admins in chat #%d: ", chatID, err)
+		log.Printf("can't get admins in chat #%d: %v", chatID, err)
 	}
 	result := ""
 	for _, a := range admins {
@@ -37,7 +35,7 @@ func (p *Processor) allUsernames(chatID int) string {
 func (p *Processor) isChatAdmin(user *telegram.User, chatID int) bool {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
-		log.Printf("can't get admins in chat #%d: ", chatID, err)
+		log.Printf("can't get admins in chat #%d: %v", chatID, err)
 	}
 	for _, admin := range admins {
 		if user.ID == admin.ID {

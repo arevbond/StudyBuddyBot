@@ -11,12 +11,10 @@ import (
 )
 
 // addCalendarExec предоставляет Exec метод для выполнения /add_calendar.
-type addCalendarExec struct {
-	command string
-}
+type addCalendarExec string
 
 // Exec: /add_calendar {calendar_id}
-func (a *addCalendarExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a addCalendarExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	if !p.isChatAdmin(user, chat.ID) {
@@ -42,12 +40,10 @@ func (a *addCalendarExec) Exec(p *Processor, inMessage string, user *telegram.Us
 }
 
 // scheduleExec предоставляет Exec метод для выполнения /schedule.
-type scheduleExec struct {
-	command string
-}
+type scheduleExec string
 
 // Exec: /schedule - возвращает расписание из Google Calender.
-func (a *scheduleExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a scheduleExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	var message string
 	var parseMode telegram.ParseMode

@@ -10,12 +10,10 @@ import (
 )
 
 // adminSendMessageExec предоставляет метод Exec для отправки сообщения от имени бота в любой чат
-type adminSendMessageExec struct {
-	command string
-}
+type adminSendMessageExec string
 
 // Exec: /send_message {chat_id} {message}
-func (a *adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	strs := strings.Split(inMessage, " ")
@@ -33,9 +31,7 @@ func (a *adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegr
 }
 
 // adminChangeDickExec предоставляет метод Exec для выполнения команды /change_dick
-type adminChangeDickExec struct {
-	command string
-}
+type adminChangeDickExec string
 
 // Exec: /change_dick {chat_id} {user_id} {value}
 func (a adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,

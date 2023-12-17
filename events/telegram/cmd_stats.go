@@ -9,12 +9,10 @@ import (
 )
 
 // myStatsExec предоставляет Exec метод для выполнения /my_stats.
-type myStatsExec struct {
-	message string
-}
+type myStatsExec string
 
 // Exec: /my_stats - возвращает статистику пользователя в данном чате.
-func (a *myStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a myStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	message := fmt.Sprintf(msgUserStats, userStats.MessageCount, userStats.DickPlusCount,
 		userStats.DickMinusCount, userStats.YesCount, userStats.NoCount, userStats.DuelsCount,
@@ -25,12 +23,10 @@ func (a *myStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, 
 }
 
 // chatStatsExec предоставляет Exec метод для выполнения /chat_stats.
-type chatStatsExec struct {
-	message string
-}
+type chatStatsExec string
 
 // Exec: /chat_stats - возвращает всю статистику данного чата.
-func (a *chatStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (a chatStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	userStats, err := p.chatStats(chat.ID)
 	if err != nil {
