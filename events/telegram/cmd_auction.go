@@ -14,14 +14,13 @@ import (
 )
 
 const (
-	MAX_DEPOSIT        = 25
+	MAX_DEPOSIT        = 50
 	MAX_DEPOSIT_AMOUNT = 3
 )
 
 type AuctionPlayer struct {
 	u       *storage.DBUser
 	deposit int
-	amount  int
 }
 
 // auctions
@@ -87,7 +86,6 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 	if !p.canDeposit(deposit, dbUser, player) {
 		return msgErrorDeposit, nil
 	}
-	player.amount++
 
 	err = p.changeDickSize(dbUser, -deposit)
 	if err != nil {
@@ -101,7 +99,8 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 // canDeposit проверяет может ли участник положить столько см пениса в аукцион.
 func (p *Processor) canDeposit(deposit int, user *storage.DBUser, player *AuctionPlayer) bool {
 	dickSize := user.DickSize
-	return deposit >= 1 && deposit <= MAX_DEPOSIT && dickSize-deposit >= 1 && player.amount+1 <= MAX_DEPOSIT_AMOUNT
+	playerDeposit := player.deposit
+	return deposit >= 1 && deposit+playerDeposit <= MAX_DEPOSIT && dickSize-deposit >= 1
 }
 
 // getPlayer возвращает игрока аукциона.
