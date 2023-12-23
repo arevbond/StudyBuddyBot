@@ -22,7 +22,7 @@ func (a dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 		return nil, e.Wrap(fmt.Sprintf("can't get top dics from chat %d: ", chat.ID), err)
 	}
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1, parseMode: telegram.Markdown}, nil
 }
 
 // dickStartExec предоставляет метод Exec для выполнения /dick.
@@ -47,11 +47,13 @@ func (p *Processor) topDicksCmd(chatID int) (msg string, err error) {
 	}
 
 	result := ""
-	indx := 1
-	for _, u := range users {
+	for i, u := range users {
 		if u.DickSize > 0 {
-			result += fmt.Sprintf("%d. %s — %d см\n", indx, u.FirstName+" "+u.LastName, u.DickSize)
-			indx++
+			if i == 0 {
+				result += fmt.Sprintf("👑 *%s* — _%d см_\n", u.FirstName+" "+u.LastName, u.DickSize)
+			} else {
+				result += fmt.Sprintf("%d. %s — %d см\n", i+1, u.FirstName+" "+u.LastName, u.DickSize)
+			}
 		}
 	}
 	return result, nil

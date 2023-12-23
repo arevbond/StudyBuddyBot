@@ -226,7 +226,11 @@ func getAuctionPlayers(chatID int) string {
 	message := "Текущие игроки аукциона:\n"
 
 	for _, p := range players {
-		message += fmt.Sprintf("%s - %d см\n", p.u.FirstName, p.deposit)
+		message += fmt.Sprintf("%s:\n8", p.u.FirstName+" "+p.u.LastName)
+		for i := 0; i < p.deposit/5; i++ {
+			message += "="
+		}
+		message += "=Ð\n"
 	}
 	return message
 }
