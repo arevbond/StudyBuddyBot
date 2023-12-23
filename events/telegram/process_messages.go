@@ -159,6 +159,7 @@ func fetchType(upd telegram.Update) events.Type {
 	return events.Unknown
 }
 
+// isAdmin проверяет является ли телеграм пользователь админом бота.
 func (p *Processor) isAdmin(userID int) bool {
 	for _, id := range p.tg.AdminsID {
 		if userID == id {

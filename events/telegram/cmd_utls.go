@@ -15,7 +15,7 @@ func (a helpExec) Exec(p *Processor, inMessage string, user *telegram.User, chat
 
 	message := msgHelp
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+	return &Response{message: message, method: mthd, replyMessageId: -1, parseMode: telegram.Markdown}, nil
 }
 
 // chatIDExec предоставляет метод Exec для выполнения /chat_id.

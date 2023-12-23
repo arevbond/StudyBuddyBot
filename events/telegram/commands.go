@@ -38,4 +38,9 @@ const (
 	// admins commands
 	ChangeDickCmd         = "/change_dick"
 	SendMessageByAdminCmd = "/send_message"
+
+	StartAuctionCmd  = "/start_auction"
+	FinishAuctionCmd = "/finish_auction"
+	AddDepositCmd    = "/deposit"
+	AuctionCmd       = "/auction"
 )
