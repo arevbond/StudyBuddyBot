@@ -78,30 +78,30 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 		return msgErrorDepositCmd, nil
 	}
 
-	amount, err := strconv.Atoi(strs[1])
+	deposit, err := strconv.Atoi(strs[1])
 	if err != nil {
 		return msgErrorDepositCmd, nil
 	}
 	player := getPlayer(dbUser)
 
-	if !p.canDeposit(amount, dbUser, player) {
+	if !p.canDeposit(deposit, dbUser, player) {
 		return msgErrorDeposit, nil
 	}
 	player.amount++
 
-	err = p.changeDickSize(dbUser, -amount)
+	err = p.changeDickSize(dbUser, -deposit)
 	if err != nil {
 		return "", err
 	}
-	player.deposit += amount
+	player.deposit += deposit
 
-	return fmt.Sprintf(msgSuccessDeposit, amount), nil
+	return fmt.Sprintf(msgSuccessDeposit, deposit), nil
 }
 
 // canDeposit проверяет может ли участник положить столько см пениса в аукцион.
-func (p *Processor) canDeposit(amount int, user *storage.DBUser, player *AuctionPlayer) bool {
+func (p *Processor) canDeposit(deposit int, user *storage.DBUser, player *AuctionPlayer) bool {
 	dickSize := user.DickSize
-	return amount <= MAX_DEPOSIT && dickSize-amount >= 1 && player.amount+1 <= MAX_DEPOSIT_AMOUNT
+	return deposit >= 1 && deposit <= MAX_DEPOSIT && dickSize-deposit >= 1 && player.amount+1 <= MAX_DEPOSIT_AMOUNT
 }
 
 // getPlayer возвращает игрока аукциона.
@@ -223,14 +223,16 @@ func getAuctionPlayers(chatID int) string {
 		return msgZeroPlayers
 	}
 
-	message := "Текущие игроки аукциона:\n"
+	message := "Текущие игроки аукциона:\n\n"
 
 	for _, p := range players {
-		message += fmt.Sprintf("%s:\n8", p.u.FirstName+" "+p.u.LastName)
-		for i := 0; i < p.deposit/5; i++ {
-			message += "="
+		if p.deposit > 0 {
+			message += fmt.Sprintf("%s:\n*8", p.u.FirstName+" "+p.u.LastName)
+			for i := 0; i < p.deposit/5; i++ {
+				message += "="
+			}
+			message += "=Ð*\n"
 		}
-		message += "=Ð\n"
 	}
 	return message
 }
