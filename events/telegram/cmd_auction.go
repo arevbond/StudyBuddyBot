@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -33,6 +34,10 @@ type startAuctionExec string
 // Exec: /start_auction - запускает аукцион в чате, в котором указана данная команда.
 func (a startAuctionExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	if !p.isAdmin(user.ID) {
+		return nil, e.Wrap("no admin can't do this cmd (/start_auction)", errors.New("can't do this cmd"))
+	}
 
 	if _, ok := auctions[chat.ID]; ok {
 		return &Response{message: msgAuctionIsStarted, method: sendMessageMethod}, nil
@@ -125,6 +130,10 @@ type finishAuctionExec string
 // Exec: /finish_auction - запускает аукцион в чате, в котором указана данная команда.
 func (a finishAuctionExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	if !p.isAdmin(user.ID) {
+		return nil, e.Wrap("no admin can't do this cmd (/finish_auction)", errors.New("can't do this cmd"))
+	}
 
 	message, err := p.finishAuction(chat.ID)
 	if err != nil {
