@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MAX_DEPOSIT        = 50
+	MAX_DEPOSIT        = 35
 	MAX_DEPOSIT_AMOUNT = 3
 )
 
