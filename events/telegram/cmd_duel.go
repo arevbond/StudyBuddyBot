@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"strconv"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
@@ -17,7 +16,8 @@ import (
 var duels = make(map[string]*storage.DBUser)
 
 const (
-	REWARD_FOR_KILL = 25
+	REWARD_FOR_KILL   = 25
+	MAX_HEALTH_POINTS = 5
 )
 
 // getHpExec предоставляет Exec метод для выполнения /hp.
@@ -27,10 +27,12 @@ type getHpExec string
 func (a getHpExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	message := strconv.Itoa(chat.ID)
+	message, err := p.getHp(user, chat)
+	if err != nil {
+		return nil, err
+	}
 	mthd := sendMessageMethod
-	replyMessageId := messageID
-	return &Response{message: message, method: mthd, replyMessageId: replyMessageId}, nil
+	return &Response{message: message, method: mthd}, nil
 }
 
 // duelExec предоставляет Exec метод для выполнения /duel.
@@ -65,7 +67,7 @@ func (p *Processor) getHp(user *telegram.User, chat *telegram.Chat) (string, err
 	}
 
 	if !p.canGetHp(dbUser) {
-		return fmt.Sprintf(msgCantGetHP, p.hpString(dbUser)), nil
+		return fmt.Sprintf(msgCantGetHP, user.Username, p.hpString(dbUser)), nil
 	}
 
 	dbUser.HpTakedAt = time.Now()
@@ -259,7 +261,7 @@ func (p *Processor) canDuel(user1 *storage.DBUser, user2 *storage.DBUser) bool {
 func (p *Processor) canGetHp(user *storage.DBUser) bool {
 	yearLastTry, monthLastTry, dayLastTry := user.HpTakedAt.Date()
 	year, month, today := time.Now().Date()
-	return (month == monthLastTry && today > dayLastTry) || month > monthLastTry || year > yearLastTry
+	return ((month == monthLastTry && today > dayLastTry) || (month > monthLastTry || year > yearLastTry)) && (user.HealthPoints < MAX_HEALTH_POINTS)
 
 }
 

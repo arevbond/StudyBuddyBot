@@ -119,7 +119,6 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return p.tg.SendMessage(chat.ID, "Пидора ответ", parseMode, messageID)
 	}
 
-	//TODO: переделать механику добавления домашнего задания
 	userWithChat := UserWithChat{chat.ID, user.ID}
 
 	if _, ok := stateHomework[userWithChat]; ok {
