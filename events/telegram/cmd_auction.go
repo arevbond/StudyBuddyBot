@@ -14,8 +14,7 @@ import (
 )
 
 const (
-	MAX_DEPOSIT        = 35
-	MAX_DEPOSIT_AMOUNT = 3
+	MAX_DEPOSIT = 35
 )
 
 type AuctionPlayer struct {
@@ -27,23 +26,25 @@ type AuctionPlayer struct {
 var auctions = make(map[int][]*AuctionPlayer)
 
 // startAuctionExec предоставляет метод Exec для начала аукциона в чате.
-// Только для админов бота.
 type startAuctionExec string
+
+// TODO: Добавить для /start_auction доп. параметр [time] - который будет определять время аукциона
+// и завершаться по истечению этого времени
 
 // Exec: /start_auction - запускает аукцион в чате, в котором указана данная команда.
 func (a startAuctionExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	if !p.isAdmin(user.ID) {
-		return nil, e.Wrap("no admin can't do this cmd (/start_auction)", errors.New("can't do this cmd"))
-	}
+	//if !p.isAdmin(user.ID) {
+	//	return nil, e.Wrap("no admin can't do this cmd (/start_auction)", errors.New("can't do this cmd"))
+	//}
 
 	if _, ok := auctions[chat.ID]; ok {
 		return &Response{message: msgAuctionIsStarted, method: sendMessageMethod}, nil
 	}
 
 	auctions[chat.ID] = make([]*AuctionPlayer, 0)
-	return &Response{message: msgStartAuction, method: sendMessageMethod, parseMode: telegram.Markdown}, nil
+	return &Response{message: fmt.Sprintf(msgStartAuction, MAX_DEPOSIT), method: sendMessageMethod, parseMode: telegram.Markdown}, nil
 }
 
 // addDeposit предоставляет метод Exec для внесения депозита в ауцион.
@@ -223,9 +224,11 @@ func getAuctionPlayers(chatID int) string {
 	}
 
 	message := "Текущие игроки аукциона:\n\n"
+	reward := 0
 
 	for _, p := range players {
 		if p.deposit > 0 {
+			reward += p.deposit
 			message += fmt.Sprintf("%s:\n*8", p.u.FirstName+" "+p.u.LastName)
 			for i := 0; i < p.deposit/5; i++ {
 				message += "="
@@ -233,5 +236,6 @@ func getAuctionPlayers(chatID int) string {
 			message += "=Ð*\n"
 		}
 	}
+	message += fmt.Sprintf("\nТекущий фонд *%d см*!", reward)
 	return message
 }
