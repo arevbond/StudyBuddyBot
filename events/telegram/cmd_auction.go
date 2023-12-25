@@ -82,12 +82,24 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 	if err != nil {
 		return msgErrorDepositCmd, nil
 	}
+
 	player := getPlayer(dbUser)
+	var needAdd bool
+	if player == nil {
+		player = &AuctionPlayer{
+			u:       dbUser,
+			deposit: deposit,
+		}
+		needAdd = true
+	}
 
 	if !p.canDeposit(deposit, dbUser, player) {
 		return msgErrorDeposit, nil
 	}
 
+	if needAdd {
+		auctions[chat.ID] = append(auctions[chat.ID], player)
+	}
 	err = p.changeDickSize(dbUser, -deposit)
 	if err != nil {
 		return "", err
@@ -115,12 +127,7 @@ func getPlayer(user *storage.DBUser) *AuctionPlayer {
 		}
 	}
 
-	player := &AuctionPlayer{
-		u: user,
-	}
-	auctions[chatID] = append(auctions[chatID], player)
-
-	return player
+	return nil
 }
 
 // finishAuctionExec предоставляет метод Exec для завершения аукциона в чате.
@@ -236,6 +243,6 @@ func getAuctionPlayers(chatID int) string {
 			message += "=Ð*\n"
 		}
 	}
-	message += fmt.Sprintf("\nТекущий фонд *%d см*!", reward)
+	message += fmt.Sprintf("\nОбщий фонд *%d см*!", reward)
 	return message
 }
