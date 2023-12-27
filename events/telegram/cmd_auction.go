@@ -22,7 +22,7 @@ type AuctionPlayer struct {
 	deposit int
 }
 
-// auctions
+// auctions мапа всех дейсвуюзих аукционов
 var auctions = make(map[int][]*AuctionPlayer)
 
 // startAuctionExec предоставляет метод Exec для начала аукциона в чате.
@@ -83,12 +83,12 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 		return msgErrorDepositCmd, nil
 	}
 
-	player := getPlayer(dbUser)
 	var needAdd bool
+	player := getPlayer(dbUser)
 	if player == nil {
 		player = &AuctionPlayer{
 			u:       dbUser,
-			deposit: deposit,
+			deposit: 0,
 		}
 		needAdd = true
 	}
@@ -158,6 +158,7 @@ func (p *Processor) finishAuction(chatID int) (string, error) {
 
 	players := auctions[chatID]
 	if len(players) == 0 {
+		delete(auctions, chatID)
 		return msgNotEnoughPlayers, nil
 	}
 
