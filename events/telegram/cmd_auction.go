@@ -59,6 +59,7 @@ func (a addDepositExec) Exec(p *Processor, inMessage string, user *telegram.User
 		return nil, e.Wrap("can't exec /deposit", err)
 	}
 	mthd := sendMessageMethod
+
 	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
@@ -147,7 +148,7 @@ func (a finishAuctionExec) Exec(p *Processor, inMessage string, user *telegram.U
 		return nil, e.Wrap("can't finish duel", err)
 	}
 
-	return &Response{message: message, method: sendMessageMethod, parseMode: telegram.Markdown}, nil
+	return &Response{message: message, method: sendMessageMethod}, nil
 }
 
 // finishAuction случайным образом выбирает победителя из всех игроков аукциона.
@@ -165,7 +166,7 @@ func (p *Processor) finishAuction(chatID int) (string, error) {
 	winner, reward := getAuctionWinnerAndReward(auctions[chatID])
 	delete(auctions, chatID)
 
-	for i := 5; i > 0; i-- {
+	for i := 2; i > 0; i-- {
 		p.tg.SendMessage(chatID, fmt.Sprintf("До результата аукциона: %d!", i), "", -1)
 		time.Sleep(1 * time.Second)
 	}
