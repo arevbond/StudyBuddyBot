@@ -16,8 +16,11 @@ import (
 var duels = make(map[string]*storage.DBUser)
 
 const (
-	REWARD_FOR_KILL   = 25
-	MAX_HEALTH_POINTS = 5
+	RewardForKill = 25
+	HealthPoints  = 5
+
+	HeartEmoji = "❤️"
+	DeathEmoji = "☠️"
 )
 
 // getHpExec предоставляет Exec метод для выполнения /hp.
@@ -142,7 +145,7 @@ func (p *Processor) gameDuel(chat *telegram.Chat, user *telegram.User, targetUse
 				stats1.KillCount++
 				stats2.DieCount++
 
-				reward += REWARD_FOR_KILL
+				reward += RewardForKill
 
 				finishMessage = msgPlayerDie
 			}
@@ -179,7 +182,7 @@ func (p *Processor) gameDuel(chat *telegram.Chat, user *telegram.User, targetUse
 				stats2.KillCount++
 				stats1.DieCount++
 
-				reward += REWARD_FOR_KILL
+				reward += RewardForKill
 
 				finishMessage = msgPlayerDie
 			}
@@ -212,13 +215,13 @@ func (p *Processor) gameDuel(chat *telegram.Chat, user *telegram.User, targetUse
 // hpString возвращает unicode строку, в которой кол-во hp пользователя
 // конвертируется в строку с сердечками.
 func (p *Processor) hpString(user *storage.DBUser) string {
-	heart := "❤️"
+	heart := HeartEmoji
 	result := ""
 	for i := 1; i <= user.HealthPoints; i++ {
 		result += heart
 	}
 	if len(result) == 0 {
-		return "☠️"
+		return DeathEmoji
 	}
 	return result
 }
@@ -261,7 +264,7 @@ func (p *Processor) canDuel(user1 *storage.DBUser, user2 *storage.DBUser) bool {
 func (p *Processor) canGetHp(user *storage.DBUser) bool {
 	yearLastTry, monthLastTry, dayLastTry := user.HpTakedAt.Date()
 	year, month, today := time.Now().Date()
-	return ((month == monthLastTry && today > dayLastTry) || (month > monthLastTry || year > yearLastTry)) && (user.HealthPoints < MAX_HEALTH_POINTS)
+	return ((month == monthLastTry && today > dayLastTry) || (month > monthLastTry || year > yearLastTry)) && (user.HealthPoints < HealthPoints)
 
 }
 

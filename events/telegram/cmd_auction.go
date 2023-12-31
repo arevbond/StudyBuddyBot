@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MAX_DEPOSIT = 35
+	MAX_DEPOSIT = 5
 )
 
 type AuctionPlayer struct {
