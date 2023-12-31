@@ -62,10 +62,10 @@ var allCommands = map[string]CmdExecutor{
 	GetHomeworkCmd + suffix:    getHomeworkExec(GetHomeworkCmd + suffix),
 	DeleteHomeworkCmd + suffix: deleteHomeworkExec(DeleteHomeworkCmd + suffix),
 
-	StartAuctionCmd + suffix:  startAuctionExec(StartAuctionCmd + suffix),
-	FinishAuctionCmd + suffix: finishAuctionExec(FinishAuctionCmd + suffix),
-	AddDepositCmd + suffix:    addDepositExec(AddDepositCmd + suffix),
-	AuctionCmd + suffix:       auctionExec(AuctionCmd + suffix),
+	StartAuctionCmd + suffix: startAuctionExec(StartAuctionCmd + suffix),
+	//FinishAuctionCmd + suffix: finishAuctionExec(FinishAuctionCmd + suffix),
+	AddDepositCmd + suffix: addDepositExec(AddDepositCmd + suffix),
+	AuctionCmd + suffix:    auctionExec(AuctionCmd + suffix),
 }
 
 const (

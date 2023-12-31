@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -14,7 +15,8 @@ import (
 )
 
 const (
-	MAX_DEPOSIT = 5
+	MaxDeposit     = 5
+	DefaultTimeout = 30
 )
 
 type AuctionPlayer struct {
@@ -28,23 +30,43 @@ var auctions = make(map[int][]*AuctionPlayer)
 // startAuctionExec предоставляет метод Exec для начала аукциона в чате.
 type startAuctionExec string
 
-// TODO: Добавить для /start_auction доп. параметр [time] - который будет определять время аукциона
-// и завершаться по истечению этого времени
-
-// Exec: /start_auction - запускает аукцион в чате, в котором указана данная команда.
+// Exec: /start_auction [timeout] - запускает аукцион в чате, в котором указана данная команда.
+// timeout - необязательный параметр времени окончания аукциона.
 func (a startAuctionExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
-
-	//if !p.isAdmin(user.ID) {
-	//	return nil, e.Wrap("no admin can't do this cmd (/start_auction)", errors.New("can't do this cmd"))
-	//}
 
 	if _, ok := auctions[chat.ID]; ok {
 		return &Response{message: msgAuctionIsStarted, method: sendMessageMethod}, nil
 	}
 
 	auctions[chat.ID] = make([]*AuctionPlayer, 0)
-	return &Response{message: fmt.Sprintf(msgStartAuction, MAX_DEPOSIT), method: sendMessageMethod, parseMode: telegram.Markdown}, nil
+
+	timeout := getAuctionTimeout(inMessage)
+	go func() {
+		time.Sleep(time.Duration(timeout) * time.Second)
+		msg, err := p.finishAuction(chat.ID)
+		if err != nil {
+			log.Println("[ERROR] in goroutine /start_auction", err)
+		}
+		p.tg.SendMessage(chat.ID, msg, "", -1)
+	}()
+
+	return &Response{message: fmt.Sprintf(msgStartAuction, MaxDeposit), method: sendMessageMethod, parseMode: telegram.Markdown}, nil
+}
+
+func getAuctionTimeout(inMessage string) int {
+	strs := strings.Fields(inMessage)
+	if len(strs) < 2 {
+		return DefaultTimeout
+	}
+	timeout, err := strconv.Atoi(strs[1])
+	if err != nil {
+		return DefaultTimeout
+	}
+	if timeout < 10 || timeout > 60 {
+		return DefaultTimeout
+	}
+	return timeout
 }
 
 // addDeposit предоставляет метод Exec для внесения депозита в ауцион.
@@ -114,7 +136,7 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 func (p *Processor) canDeposit(deposit int, user *storage.DBUser, player *AuctionPlayer) bool {
 	dickSize := user.DickSize
 	playerDeposit := player.deposit
-	return deposit >= 1 && deposit+playerDeposit <= MAX_DEPOSIT && dickSize-deposit >= 1
+	return deposit >= 1 && deposit+playerDeposit <= MaxDeposit && dickSize-deposit >= 1
 }
 
 // getPlayer возвращает игрока аукциона.
@@ -166,7 +188,7 @@ func (p *Processor) finishAuction(chatID int) (string, error) {
 	winner, reward := getAuctionWinnerAndReward(auctions[chatID])
 	delete(auctions, chatID)
 
-	for i := 2; i > 0; i-- {
+	for i := 5; i > 0; i-- {
 		p.tg.SendMessage(chatID, fmt.Sprintf("До результата аукциона: %d!", i), "", -1)
 		time.Sleep(1 * time.Second)
 	}

@@ -26,9 +26,8 @@ func main() {
 
 	s, err := sqlite.New(storageSQLitePath)
 	if err != nil {
-		log.Fatal("can't find storage")
+		log.Fatal("can't find storage", err)
 	}
-
 
 	eventsProcessor := telegram.New(
 		tgClient.New(tgBotHost, cfg.TelegramToken, cfg.AdminsID),
