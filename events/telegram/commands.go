@@ -43,4 +43,7 @@ const (
 	FinishAuctionCmd = "/finish_auction"
 	AddDepositCmd    = "/deposit"
 	AuctionCmd       = "/auction"
+
+	// HOLIDAY
+	HolidayCmd = "/holiday"
 )

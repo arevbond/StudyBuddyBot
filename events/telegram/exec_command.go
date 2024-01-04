@@ -63,9 +63,10 @@ var allCommands = map[string]CmdExecutor{
 	DeleteHomeworkCmd + suffix: deleteHomeworkExec(DeleteHomeworkCmd + suffix),
 
 	StartAuctionCmd + suffix: startAuctionExec(StartAuctionCmd + suffix),
-	//FinishAuctionCmd + suffix: finishAuctionExec(FinishAuctionCmd + suffix),
-	AddDepositCmd + suffix: addDepositExec(AddDepositCmd + suffix),
-	AuctionCmd + suffix:    auctionExec(AuctionCmd + suffix),
+	AddDepositCmd + suffix:   addDepositExec(AddDepositCmd + suffix),
+	AuctionCmd + suffix:      auctionExec(AuctionCmd + suffix),
+
+	HolidayCmd + suffix: holidayExec(HolidayCmd + suffix),
 }
 
 const (

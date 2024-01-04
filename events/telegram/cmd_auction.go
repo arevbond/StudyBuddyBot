@@ -48,7 +48,9 @@ func (a startAuctionExec) Exec(p *Processor, inMessage string, user *telegram.Us
 		if err != nil {
 			log.Println("[ERROR] in goroutine /start_auction", err)
 		}
-		p.tg.SendMessage(chat.ID, msg, "", -1)
+		if msg != "" {
+			p.tg.SendMessage(chat.ID, msg, "", -1)
+		}
 	}()
 
 	return &Response{message: fmt.Sprintf(msgStartAuction, MaxDeposit), method: sendMessageMethod, parseMode: telegram.Markdown}, nil
@@ -188,7 +190,7 @@ func (p *Processor) finishAuction(chatID int) (string, error) {
 	winner, reward := getAuctionWinnerAndReward(auctions[chatID])
 	delete(auctions, chatID)
 
-	for i := 5; i > 0; i-- {
+	for i := 3; i > 0; i-- {
 		p.tg.SendMessage(chatID, fmt.Sprintf("До результата аукциона: %d!", i), "", -1)
 		time.Sleep(1 * time.Second)
 	}
