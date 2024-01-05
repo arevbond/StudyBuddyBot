@@ -66,7 +66,9 @@ var allCommands = map[string]CmdExecutor{
 	AddDepositCmd + suffix:   addDepositExec(AddDepositCmd + suffix),
 	AuctionCmd + suffix:      auctionExec(AuctionCmd + suffix),
 
-	HolidayCmd + suffix: holidayExec(HolidayCmd + suffix),
+	StartQuizCmd + suffix: startQuizExec(StartQuizCmd + suffix),
+
+	//HolidayCmd + suffix: holidayExec(HolidayCmd + suffix),
 }
 
 const (
@@ -77,6 +79,7 @@ const (
 // doCmd выбирает необходимую логику для выолнения команды.
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
 	dbUser, err := p.storage.GetUser(context.Background(), user.ID, chat.ID) // TODO: добавить cache для dbUser
+
 	if err == storage.ErrUserNotExist {
 		dbUser, err = p.createNewUserInDB(chat.ID, user)
 		if err != nil {
@@ -131,6 +134,10 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		msg := p.addHomeworkCmd(text, userWithChat)
 		replyToMessageID := messageID
 		return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
+	}
+
+	if _, ok := chatToCurrentQuestion[chat.ID]; ok && !isAnswered {
+		p.checkAnswer(chat.ID, user.ID, text, messageID)
 	}
 
 	if utils.IsCommand(text) {

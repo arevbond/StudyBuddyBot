@@ -46,4 +46,7 @@ const (
 
 	// HOLIDAY
 	HolidayCmd = "/holiday"
+
+	// QUIZ
+	StartQuizCmd = "/start_quiz"
 )

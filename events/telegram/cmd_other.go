@@ -7,7 +7,6 @@ import (
 	"tg_ics_useful_bot/clients/xkcd"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
-	"time"
 )
 
 // xkcdExec предоставляет Exec метод для выполнения /xkcd.
@@ -61,7 +60,6 @@ const (
 
 // khinkalnyaOrVSU возвращает URL картини хинкальни или VSU аудитории.
 func khinkalnyaOrVSU() string {
-	rand.Seed(time.Now().UnixNano())
 	n := rand.Intn(2)
 	if n == 1 {
 		return urlImgHink
