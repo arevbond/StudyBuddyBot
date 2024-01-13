@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	timeToAnswer = 20
-	totalAward   = 5000
+	defaultTimeToAnswer = 20
+	award               = 200
 )
 
 var isAnswered bool
@@ -47,32 +47,41 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 		}
 	}
 
-	quiz := quiz.Quizzes[number]
+	quizGame := quiz.Quizzes[number]
 
-	go p.startQuiz(quiz.Questions, chat.ID)
+	go p.startQuiz(quizGame.Questions, chat.ID)
 
-	return &Response{message: fmt.Sprintf(msgStartQuiz, quiz.Theme, len(quiz.Questions)), method: sendMessageMethod,
+	return &Response{message: fmt.Sprintf(msgStartQuiz, quizGame.Theme, quizGame.Level(), len(quizGame.Questions)), method: sendMessageMethod,
 		parseMode: telegram.Markdown}, nil
 }
 
 func (p *Processor) startQuiz(questions []quiz.Question, chatID int) {
 	chatToPlayers[chatID] = make(map[int]int)
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(10 * time.Second)
 
 	for i, question := range questions {
 		isAnswered = false
 		message := fmt.Sprintf("Вопрос №%d\n", i+1)
-		p.tg.SendMessage(chatID, message+question.Question, "", -1)
+		_ = p.tg.SendMessage(chatID, message+question.Question, "", -1)
 		if question.Picture != "" {
-			p.tg.SendPhoto(chatID, question.Picture)
+			_ = p.tg.SendPhoto(chatID, question.Picture)
 		}
 		chatToCurrentQuestion[chatID] = question
+		timeToAnswer := question.TimeToAnswer
+		if timeToAnswer <= 0 {
+			timeToAnswer = defaultTimeToAnswer
+		}
 		time.Sleep(timeToAnswer * time.Second)
+		message = "Правильный ответ:\n"
+		if len(question.Answers) > 0 {
+			_ = p.tg.SendMessage(chatID, message+question.Answers[0], "", -1)
+		}
+		time.Sleep(7 * time.Second)
 	}
 
 	awardMessage := p.awarding(chatID)
-	p.tg.SendMessage(chatID, msgFinishQuiz+"\n"+awardMessage, "", -1)
+	_ = p.tg.SendMessage(chatID, msgFinishQuiz+"\n"+awardMessage, "", -1)
 	delete(chatToPlayers, chatID)
 	delete(chatToCurrentQuestion, chatID)
 }
@@ -83,7 +92,7 @@ func (p *Processor) checkAnswer(chatID int, tgID int, answer string, messageID i
 		chatToPlayers[chatID][tgID]++
 		if !isAnswered {
 			isAnswered = true
-			p.tg.SendMessage(chatID, "👍", "", messageID)
+			_ = p.tg.SendMessage(chatID, "👍", "", messageID)
 		}
 	}
 }
@@ -102,9 +111,7 @@ func (p *Processor) awarding(chatID int) string {
 		return playersToScore[players[i]] > playersToScore[players[j]]
 	})
 
-	result := "Результат:\n"
-
-	award := totalAward
+	result := "Результаты:\n"
 
 	for _, player := range players {
 		dbUser, err := p.storage.GetUser(context.Background(), player, chatID)
@@ -112,14 +119,14 @@ func (p *Processor) awarding(chatID int) string {
 			log.Println("can't get db user", err)
 			continue
 		}
-		dbUser.Points += award
+		dbUser.Points += playersToScore[player] * award
 		err = p.storage.UpdateUser(context.Background(), dbUser)
 		if err != nil {
 			log.Println("can't update points in db user", err)
 			continue
 		}
-		result += fmt.Sprintf("%s: %d + %d очков\n", dbUser.FirstName+" "+dbUser.LastName, playersToScore[player], award)
-		award = award / 2
+		result += fmt.Sprintf("%s: %d п. о. ➕ %d очков\n", dbUser.FirstName+" "+dbUser.LastName, playersToScore[player],
+			playersToScore[player]*award)
 	}
 	return result
 }

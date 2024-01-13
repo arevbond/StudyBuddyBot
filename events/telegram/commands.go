@@ -49,4 +49,7 @@ const (
 
 	// QUIZ
 	StartQuizCmd = "/start_quiz"
+
+	// SHOP
+	ShopCmd = "/shop"
 )

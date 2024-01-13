@@ -49,7 +49,7 @@ func (a startAuctionExec) Exec(p *Processor, inMessage string, user *telegram.Us
 			log.Println("[ERROR] in goroutine /start_auction", err)
 		}
 		if msg != "" {
-			p.tg.SendMessage(chat.ID, msg, "", -1)
+			_ = p.tg.SendMessage(chat.ID, msg, "", -1)
 		}
 	}()
 

@@ -17,6 +17,7 @@ type gayExec string
 // Exec: /gay - определяет случайного пидора в чате среди админов чата.
 func (a gayExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
 	message, err := p.gameGay(chat.ID)
 	if err != nil {
 		return nil, e.Wrap("can't get message from gameGay: ", err)
@@ -53,7 +54,7 @@ func (p *Processor) gameGay(chatID int) (string, error) {
 	} else if err != nil {
 		return "", e.Wrap("can't get gay of day: ", err)
 	}
-	if (gay.CreatedAt.Month() == time.Now().Month() && gay.CreatedAt.Day() < time.Now().Day()) || gay.CreatedAt.Month() < time.Now().Month() {
+	if (gay.CreatedAt.Month() == time.Now().Month() && gay.CreatedAt.Day() < time.Now().Day()) || gay.CreatedAt.Month() < time.Now().Month() || gay.CreatedAt.Year() < time.Now().Year() {
 		err = p.storage.RemoveGayOfDay(context.Background(), chatID)
 		if err != nil {
 			return "", err
