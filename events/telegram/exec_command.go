@@ -67,8 +67,6 @@ var allCommands = map[string]CmdExecutor{
 	AuctionCmd + suffix:      auctionExec(AuctionCmd + suffix),
 
 	StartQuizCmd + suffix: startQuizExec(StartQuizCmd + suffix),
-
-	//HolidayCmd + suffix: holidayExec(HolidayCmd + suffix),
 }
 
 const (

@@ -17,11 +17,11 @@ func CheckYesOrNo(text string) int {
 	var isWord = regexp.MustCompile(`(\w|[а-яА-Я])`)
 
 	isYes := func(word string) bool {
-		var validString = regexp.MustCompile(`(^(Д|д)+(а|a|A|А)+\p{P}+$)|(^(Д|д)+(а|a|A|А)+$)`)
+		var validString = regexp.MustCompile(`(^(Д|д|D|d)+(а|a|A|А)+\p{P}+$)|(^(Д|д|D|d)+(а|a|A|А)+$)`)
 		return validString.MatchString(word)
 	}
 	isNo := func(word string) bool {
-		var validString = regexp.MustCompile(`(^((н|Н)+(e|E|е|Е)+(т|Т)+\p{P}+$))|(^(н|Н)+(e|E|е|Е)+(т|Т)+$)`)
+		var validString = regexp.MustCompile(`(^((н|Н|H|n|N)+(e|E|е|Е)+(т|Т)+\p{P}+$))|(^(н|Н|H|n|N)+(e|E|е|Е)+(т|Т)+$)`)
 		return validString.MatchString(word)
 	}
 
