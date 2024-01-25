@@ -34,7 +34,7 @@ func (a adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegra
 		log.Println("can't send message by admin:", err)
 	}
 	mthd := doNothingMethod
-	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
 // adminChangeDickExec предоставляет метод Exec для выполнения команды /change_dick.

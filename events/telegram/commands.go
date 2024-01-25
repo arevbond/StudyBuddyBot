@@ -4,6 +4,8 @@ const (
 	suffix = "@ics_useful_bot"
 )
 
+const ()
+
 const (
 	HelpCmd = "/help"
 
