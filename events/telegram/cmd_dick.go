@@ -17,6 +17,7 @@ type dickTopExec string
 // Exec: /top_dick - пишет топ всех пенисов в чат.
 func (a dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
 	message, err := p.topDicksCmd(chat.ID)
 	if err != nil {
 		return nil, e.Wrap(fmt.Sprintf("can't get top dics from chat %d: ", chat.ID), err)
@@ -31,6 +32,7 @@ type dickStartExec string
 // Exec: /dick - игра в пенис.
 func (a dickStartExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
 	message, err := p.gameDickCmd(chat, user, userStats)
 	if err != nil {
 		return nil, e.Wrap("can't get message from gameDickCmd: ", err)
@@ -153,7 +155,12 @@ func (p *Processor) canChangeDickSize(user *storage.DBUser) (bool, error) {
 // RandomValue возвращает случайное положительное или отрицательное число в конкретном диапозоне.
 func RandomValue() int {
 	sign := rand.Intn(10)
-	value := rand.Intn(15)
+
+	n := 25
+	if sign <= 1 {
+		n = 10
+	}
+	value := rand.Intn(n)
 
 	if value == 0 {
 		value++
