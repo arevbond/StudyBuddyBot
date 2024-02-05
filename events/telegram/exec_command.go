@@ -76,15 +76,18 @@ const (
 
 // doCmd выбирает необходимую логику для выолнения команды.
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
-	dbUser, err := p.storage.GetUser(context.Background(), user.ID, chat.ID) // TODO: добавить cache для dbUser
-
+	dbUser, err := p.userCache.GetUser(user.ID, chat.ID)
 	if err == storage.ErrUserNotExist {
-		dbUser, err = p.createNewUserInDB(chat.ID, user)
-		if err != nil {
-			return err
+		dbUser, err = p.storage.GetUser(context.Background(), user.ID, chat.ID)
+		if err == storage.ErrUserNotExist {
+			dbUser, err = p.createNewUserInDB(chat.ID, user)
+			if err != nil {
+				return e.Wrap("can't create new user in 'doCmd'", err)
+			}
+		} else if err != nil {
+			return e.Wrap("unknown error in 'doCmd'", err)
 		}
-	} else if err != nil {
-		return err
+		p.userCache.AddUser(dbUser)
 	}
 
 	dbUser, err = p.userChangeInfo(user, dbUser)
@@ -244,6 +247,7 @@ func (p *Processor) userChangeInfo(user *telegram.User, dbUser *storage.DBUser) 
 		if err != nil {
 			return newDbUser, err
 		}
+		p.userCache.AddUser(newDbUser)
 	}
 	return dbUser, nil
 }

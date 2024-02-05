@@ -6,12 +6,14 @@ import (
 	"tg_ics_useful_bot/events"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
+	"tg_ics_useful_bot/storage/cache"
 )
 
 type Processor struct {
-	tg      *telegram.Client
-	offset  int
-	storage storage.Storage
+	tg        *telegram.Client
+	offset    int
+	storage   storage.Storage
+	userCache cache.UserCache
 }
 
 type Meta struct {
@@ -35,10 +37,11 @@ var (
 	ErrUnknownMetaType  = errors.New("unknown meta type")
 )
 
-func New(client *telegram.Client, storage storage.Storage) *Processor {
+func New(client *telegram.Client, storage storage.Storage, userCache cache.UserCache) *Processor {
 	return &Processor{
-		tg:      client,
-		storage: storage,
+		tg:        client,
+		storage:   storage,
+		userCache: userCache,
 	}
 }
 

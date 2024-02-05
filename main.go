@@ -7,6 +7,7 @@ import (
 	"tg_ics_useful_bot/config"
 	"tg_ics_useful_bot/consumer/event-consumer"
 	"tg_ics_useful_bot/events/telegram"
+	"tg_ics_useful_bot/storage/cache"
 	"tg_ics_useful_bot/storage/sqlite"
 )
 
@@ -32,6 +33,7 @@ func main() {
 	eventsProcessor := telegram.New(
 		tgClient.New(tgBotHost, cfg.TelegramToken, cfg.AdminsID),
 		s,
+		cache.NewUserCache(),
 	)
 
 	log.Print("[INFO] service started")
