@@ -35,7 +35,7 @@ func New() *Config {
 	}
 	adminsIdStrings := getEnv("ADMINS_ID", "")
 	adminsID := make([]int, 0)
-	for _, str := range strings.Split(adminsIdStrings, ",") { // TODO: change to strings.Fields()
+	for _, str := range strings.Split(adminsIdStrings, ",") {
 		if str == "" {
 			continue
 		}
