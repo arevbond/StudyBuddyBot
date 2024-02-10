@@ -20,7 +20,7 @@ const (
 	award               = 200
 )
 
-var isAnswered bool
+var isAnswered bool // TODO: refactor this var
 var chatToCurrentQuestion = make(map[int]quiz.Question)
 var chatToPlayers = make(map[int]map[int]int)
 

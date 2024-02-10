@@ -53,7 +53,7 @@ func (p *Processor) chatStats(chatID int) (*storage.DBUserStat, error) {
 			return nil, err
 		}
 		allStats.MessageCount += userStats.MessageCount
-		allStats.DickPlusCount += userStats.DickMinusCount
+		allStats.DickPlusCount += userStats.DickPlusCount
 		allStats.DickMinusCount += userStats.DickMinusCount
 		allStats.YesCount += userStats.YesCount
 		allStats.NoCount += userStats.NoCount

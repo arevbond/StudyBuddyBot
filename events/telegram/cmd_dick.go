@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+var (
+	jackpotValue = 10000
+	minValue     = 50
+	maxValue     = 100
+)
+
 // dickTopExec предоставляет метод Exec для выполнения /top_dick.
 type dickTopExec string
 
@@ -102,7 +108,7 @@ func (p *Processor) updateRandomDickAndChangeTime(user *storage.DBUser, userStat
 	}
 
 	if IsJackpot() {
-		value = 100
+		value = jackpotValue
 	}
 
 	if value > 0 {
@@ -154,22 +160,19 @@ func (p *Processor) canChangeDickSize(user *storage.DBUser) (bool, error) {
 
 // RandomValue возвращает случайное положительное или отрицательное число в конкретном диапозоне.
 func RandomValue() int {
-	sign := rand.Intn(10)
+	sign := rand.Intn(20)
 
-	n := 25
+	result := minValue
 	if sign <= 1 {
-		n = 10
+		result = 0
+		maxValue = 5
 	}
-	value := rand.Intn(n)
-
-	if value == 0 {
-		value++
-	}
+	result += rand.Intn(maxValue)
 
 	if sign > 1 {
-		return value
+		return result
 	}
-	return -1 * value
+	return -1 * result
 }
 
 // IsJackpot показывает выиграл ли пользователь джекпот.

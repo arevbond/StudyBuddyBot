@@ -48,7 +48,3 @@ StudyBuddyBot is a Telegram bot written in Golang using the pure Telegram Bot AP
 
 - To use the bot, create a Telegram bot and obtain its token via BotFather.
 - For Google Calendar integration, create a project on Google Cloud Platform and obtain an API key.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
