@@ -10,9 +10,10 @@ import (
 )
 
 type Config struct {
-	Env           string `yaml:"env"`
-	TelegramToken string `env:"TELEGRAM_TOKEN"`
-	AdminsID      []int
+	Env               string `yaml:"env"`
+	TelegramToken     string `env:"TELEGRAM_TOKEN"`
+	TestTelegramToken string `env:"TEST_TELEGRAM_TOKEN"`
+	AdminsID          []int
 	PostgresSettings
 	PgAdminSettings
 }

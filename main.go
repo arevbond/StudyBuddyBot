@@ -20,18 +20,22 @@ const (
 func main() {
 	cfg := config.New()
 
-	//s, err := postgres.New(cfg)
-	//if err != nil {
-	//	log.Fatalf("can't connect to storage:", err)
-	//}
-
 	s, err := sqlite.New(storageSQLitePath)
 	if err != nil {
 		log.Fatal("can't find storage", err)
 	}
 
+	var telegramToken string
+
+	switch cfg.Env {
+	case "local":
+		telegramToken = cfg.TestTelegramToken
+	case "prod":
+		telegramToken = cfg.TelegramToken
+	}
+
 	eventsProcessor := telegram.New(
-		tgClient.New(tgBotHost, cfg.TelegramToken, cfg.AdminsID),
+		tgClient.New(tgBotHost, telegramToken, cfg.AdminsID),
 		s,
 		cache.NewUserCache(),
 	)
