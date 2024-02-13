@@ -62,6 +62,7 @@ const (
 	AllCmd       = "/all"
 	HelpCmd      = "/help"
 	AnecdotCmd   = "/joke"
+	AufCmd       = "/auf"
 	XkcdCmd      = "/xkcd"
 	FlipCmd      = "/flip"
 	GetChatIDCmd = "/chat_id"

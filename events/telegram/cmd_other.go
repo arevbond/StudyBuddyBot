@@ -1,11 +1,12 @@
 package telegram
 
 import (
-	"math/rand"
 	"tg_ics_useful_bot/clients/jokesrv"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/clients/xkcd"
 	"tg_ics_useful_bot/lib/e"
+	"tg_ics_useful_bot/lib/flip"
+	"tg_ics_useful_bot/lib/motivation"
 	"tg_ics_useful_bot/storage"
 )
 
@@ -23,7 +24,7 @@ func (a xkcdExec) Exec(p *Processor, inMessage string, user *telegram.User, chat
 	}
 	message := comics.Img
 	mthd := sendPhotoMethod
-	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
 // anekdotExec предоставляет Exec метод для выполнения /joke.
@@ -38,7 +39,7 @@ func (a anekdotExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 		return nil, e.Wrap("can't get anecdot: ", err)
 	}
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
 // flipExec предоставляет Exec метод длы выполнения /flip.
@@ -48,21 +49,22 @@ type flipExec string
 func (a flipExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	message := khinkalnyaOrVSU()
+	message := flip.KhinkalnyaOrVSU()
 	mthd := sendPhotoMethod
-	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
-const (
-	urlImgHink = "https://avatars.mds.yandex.net/get-altay/3518606/2a00000179e2472a99931c431d308fd69e09/XXL"
-	urlImgRoom = "https://www.vsu.ru/gallery/photos/study/dept_phys.jpg"
-)
+// aufExec предоставляет Exec метод для выполнения /auf.
+type aufExec string
 
-// khinkalnyaOrVSU возвращает URL картини хинкальни или VSU аудитории.
-func khinkalnyaOrVSU() string {
-	n := rand.Intn(2)
-	if n == 1 {
-		return urlImgHink
+// Exec: /auf - возвращает случайную мотивационную цитату.
+func (a aufExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	message, err := motivation.Quote()
+	if err != nil {
+		return nil, e.Wrap("can't get quote: ", err)
 	}
-	return urlImgRoom
+	mthd := sendMessageMethod
+	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }

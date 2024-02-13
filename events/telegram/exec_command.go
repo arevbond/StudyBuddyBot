@@ -22,6 +22,11 @@ const (
 	doNothingMethod
 )
 
+var (
+	answerOnYes = "Пизда"
+	answerOnNo  = "Пидора ответ"
+)
+
 // CmdExecutor предоставляет интерфейс с методом Exec
 // для процедуры выполнения команды пользователя.
 type CmdExecutor interface {
@@ -55,6 +60,7 @@ var allCommands = map[string]CmdExecutor{
 	ScheduleCmd + suffix:           scheduleExec(ScheduleCmd + suffix),
 	XkcdCmd + suffix:               xkcdExec(XkcdCmd + suffix),
 	AnecdotCmd + suffix:            anekdotExec(AnecdotCmd + suffix),
+	AufCmd + suffix:                aufExec(AufCmd + suffix),
 	FlipCmd + suffix:               flipExec(FlipCmd + suffix),
 	GetChatIDCmd + suffix:          chatIDExec(GetChatIDCmd + suffix),
 
@@ -118,7 +124,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		if err != nil {
 			log.Print(err)
 		}
-		return p.tg.SendMessage(chat.ID, "Пизда", parseMode, messageID)
+		return p.tg.SendMessage(chat.ID, answerOnYes, parseMode, messageID)
 	case utils.IsNoCommand:
 
 		userStats.NoCount++
@@ -126,7 +132,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		if err != nil {
 			log.Print(err)
 		}
-		return p.tg.SendMessage(chat.ID, "Пидора ответ", parseMode, messageID)
+		return p.tg.SendMessage(chat.ID, answerOnNo, parseMode, messageID)
 	}
 
 	userWithChat := UserWithChat{chat.ID, user.ID}
