@@ -105,7 +105,7 @@ func (p *Processor) gameDuel(chat *telegram.Chat, user *telegram.User, targetUse
 	}
 
 	if !p.canDuel(u1, u2) {
-		return fmt.Sprintf(msgCantCreateDuel, u1.Username, u2.Username), nil
+		return fmt.Sprintf(msgCantCreateDuel, u1.Username, p.hpString(u1), u2.Username, p.hpString(u2)), nil
 	}
 
 	stats1, err := p.storage.GetUserStats(context.Background(), u1)
