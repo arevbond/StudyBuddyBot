@@ -143,7 +143,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
 	}
 
-	if _, ok := chatToCurrentQuestion[chat.ID]; ok && !isAnswered {
+	if _, ok := chatToCurrentQuestion[chat.ID]; ok && !isAnswered[chat.ID] {
 		p.checkAnswer(chat.ID, user.ID, text, messageID)
 	}
 

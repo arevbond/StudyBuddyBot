@@ -16,11 +16,11 @@ import (
 )
 
 const (
-	defaultTimeToAnswer = 20
+	defaultTimeToAnswer = 60
 	award               = 200
 )
 
-var isAnswered bool // TODO: refactor this var
+var isAnswered = make(map[int]bool) // TODO: refactor this var
 var chatToCurrentQuestion = make(map[int]quiz.Question)
 var chatToPlayers = make(map[int]map[int]int)
 
@@ -42,11 +42,10 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 	strs := strings.Split(inMessage, " ")
 	if len(strs) >= 2 {
 		num, err := strconv.Atoi(strs[1])
-		if err == nil && len(quiz.Quizzes) <= num {
+		if err == nil && num <= len(quiz.Quizzes) {
 			number = num - 1
 		}
 	}
-
 	quizGame := quiz.Quizzes[number]
 
 	go p.startQuiz(quizGame.Questions, chat.ID)
@@ -58,26 +57,37 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 func (p *Processor) startQuiz(questions []quiz.Question, chatID int) {
 	chatToPlayers[chatID] = make(map[int]int)
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(7 * time.Second)
 
 	for i, question := range questions {
-		isAnswered = false
+		isAnswered[chatID] = false
+		chatToCurrentQuestion[chatID] = question
 		message := fmt.Sprintf("Вопрос №%d\n", i+1)
 		_ = p.tg.SendMessage(chatID, message+question.Question, "", -1)
 		if question.Picture != "" {
 			_ = p.tg.SendPhoto(chatID, question.Picture)
 		}
-		chatToCurrentQuestion[chatID] = question
+
 		timeToAnswer := question.TimeToAnswer
 		if timeToAnswer <= 0 {
 			timeToAnswer = defaultTimeToAnswer
 		}
-		time.Sleep(timeToAnswer * time.Second)
-		message = "Правильный ответ:\n"
-		if len(question.Answers) > 0 {
-			_ = p.tg.SendMessage(chatID, message+question.Answers[0], "", -1)
+
+		n := timeToAnswer
+		for i := 0; i < n; i++ {
+			if isAnswered[chatID] {
+				break
+			}
+			time.Sleep(1 * time.Second)
+
 		}
-		time.Sleep(7 * time.Second)
+
+		if !isAnswered[chatID] {
+			message = "Правильный ответ:\n"
+			if len(question.Answers) > 0 {
+				_ = p.tg.SendMessage(chatID, message+question.Answers[0], "", -1)
+			}
+		}
 	}
 
 	awardMessage := p.awarding(chatID)
@@ -89,9 +99,9 @@ func (p *Processor) startQuiz(questions []quiz.Question, chatID int) {
 func (p *Processor) checkAnswer(chatID int, tgID int, answer string, messageID int) {
 	question := chatToCurrentQuestion[chatID]
 	if question.IsCorrect(answer) {
-		chatToPlayers[chatID][tgID]++
-		if !isAnswered {
-			isAnswered = true
+		if !isAnswered[chatID] {
+			chatToPlayers[chatID][tgID]++
+			isAnswered[chatID] = true
 			_ = p.tg.SendMessage(chatID, "👍", "", messageID)
 		}
 	}

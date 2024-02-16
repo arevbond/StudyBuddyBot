@@ -2,14 +2,13 @@ package quiz
 
 import (
 	"strings"
-	"time"
 )
 
 type Question struct {
 	Question     string
 	Picture      string
 	Answers      []string
-	TimeToAnswer time.Duration
+	TimeToAnswer int
 }
 
 func (q Question) IsCorrect(inAnswer string) bool {

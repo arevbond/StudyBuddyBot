@@ -153,7 +153,7 @@ func (s *Storage) RemoveGayOfDay(ctx context.Context, chatID int) error {
 	q := `DELETE FROM gays WHERE chat_id = $1`
 
 	if _, err := s.db.ExecContext(ctx, q, chatID); err != nil {
-		return e.Wrap(fmt.Sprintf("[ERROR] can't remove gay %d %s: ", chatID), err)
+		return e.Wrap(fmt.Sprintf("[ERROR] can't remove gay %d: ", chatID), err)
 	}
 	return nil
 }
