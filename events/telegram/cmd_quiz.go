@@ -88,6 +88,8 @@ func (p *Processor) startQuiz(questions []quiz.Question, chatID int) {
 				_ = p.tg.SendMessage(chatID, message+question.Answers[0], "", -1)
 			}
 		}
+		isAnswered[chatID] = true
+		time.Sleep(20 * time.Second)
 	}
 
 	awardMessage := p.awarding(chatID)
@@ -129,13 +131,13 @@ func (p *Processor) awarding(chatID int) string {
 			log.Println("can't get db user", err)
 			continue
 		}
-		dbUser.Points += playersToScore[player] * award
+		dbUser.DickSize += playersToScore[player] * award
 		err = p.storage.UpdateUser(context.Background(), dbUser)
 		if err != nil {
 			log.Println("can't update points in db user", err)
 			continue
 		}
-		result += fmt.Sprintf("%s: %d п. о. ➕ %d очков\n", dbUser.FirstName+" "+dbUser.LastName, playersToScore[player],
+		result += fmt.Sprintf("%s: %d п. о. ➕ %d см\n", dbUser.FirstName+" "+dbUser.LastName, playersToScore[player],
 			playersToScore[player]*award)
 	}
 	return result
