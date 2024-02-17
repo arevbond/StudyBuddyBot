@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"sort"
-	"strconv"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
@@ -16,7 +15,7 @@ import (
 )
 
 const (
-	defaultTimeToAnswer = 60
+	defaultTimeToAnswer = 75
 	award               = 200
 )
 
@@ -33,24 +32,21 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 		return nil, e.Wrap("no admin can't do this cmd (/star_quiz)", errors.New("can't do this cmd"))
 	}
 
-	if len(quiz.Quizzes) < 1 {
-		return &Response{message: msgZeroQuizzes, replyMessageId: messageID, method: sendMessageMethod}, nil
-	}
-
-	var number int = 0
-
 	strs := strings.Split(inMessage, " ")
-	if len(strs) >= 2 {
-		num, err := strconv.Atoi(strs[1])
-		if err == nil && num <= len(quiz.Quizzes) {
-			number = num - 1
-		}
+	if len(strs) != 2 {
+		return &Response{message: "Введите название quiz", method: sendMessageMethod}, nil
 	}
-	quizGame := quiz.Quizzes[number]
+	filename := strs[1]
+
+	quizGame, err := quiz.New(filename)
+
+	if err != nil {
+		return nil, e.Wrap("can't start quiz", err)
+	}
 
 	go p.startQuiz(quizGame.Questions, chat.ID)
 
-	return &Response{message: fmt.Sprintf(msgStartQuiz, quizGame.Theme, quizGame.Level(), len(quizGame.Questions)), method: sendMessageMethod,
+	return &Response{message: fmt.Sprintf(msgStartQuiz, quizGame.Theme, quizGame.GetLevel(), len(quizGame.Questions)), method: sendMessageMethod,
 		parseMode: telegram.Markdown}, nil
 }
 
