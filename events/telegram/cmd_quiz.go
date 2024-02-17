@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	defaultTimeToAnswer  = 75
+	defaultTimeToAnswer  = 80
 	award                = 250
-	timeBetweenQuestions = 20
+	timeBetweenQuestions = 30
 )
 
 var isAnswered = make(map[int]bool)
@@ -54,7 +54,7 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 func (p *Processor) startQuiz(questions []quiz.Question, chatID int) {
 	chatToPlayers[chatID] = make(map[int]int)
 
-	time.Sleep(7 * time.Second)
+	time.Sleep(timeBetweenQuestions * time.Second)
 
 	for i, question := range questions {
 		isAnswered[chatID] = false

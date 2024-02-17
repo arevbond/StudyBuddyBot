@@ -1,0 +1,111 @@
+theme: "Солянка"
+level: 1
+questions:
+  - question: "Отгадайте игру"
+    picture: "https://cdn.shazoo.ru/148377_DwVpCt7kJS_darksoulsiii_2016_03_25_03_45_00.jpg"
+    answers: ["Dark souls"]
+  - question: "Отгадайте игру"
+    picture: "https://kartinkin.net/pics/uploads/posts/2022-08/1660569479_23-kartinkin-net-p-skairim-oboi-krasivo-25.jpg"
+    answers: ["Skyrim", "TES 5 Skyrim"]
+  - question: "Отгадайте игру"
+    picture: "https://cq.ru/img/f/e/2023/11/08/46057.jpg"
+    answers: [ "Rainbow six Siege" ]
+  - question: "Отгадайте игру"
+    picture: "https://i.pinimg.com/originals/75/91/b7/7591b7a27f7cac9f6de5d35c026e9473.jpg"
+    answers: [ "Helltaker" ]
+  - question: "Назовите марку автомобиля"
+    picture: "https://ivanglazunov.ru/wp-content/uploads/b/a/0/ba0a3e0bc4f81300d5020687de80f2b8.jpeg"
+    answers: [ "Fiat" ]
+  - question: "Назовите марку автомобиля"
+    picture: "https://www.carpixel.net/w/74e3aaeb6d81a0c62ccf96d4d5a86d61/dodge-challenger-srt-392-wallpaper-hd-13021.jpg"
+    answers: [ "Dodge" ]
+  - question: "Назовите марку автомобиля"
+    picture: "https://kuznitsaspb.ru/wp-content/uploads/9/5/f/95fa90f364bc582f14b331bf0863f4f2.jpeg"
+    answers: [ "Alfa Romeo" ]
+  - question: "Назовите марку автомобиля"
+    picture: "https://avatars.mds.yandex.net/i?id=c43e23d11ce66d475902eb516bee94e59749733d-6945470-images-thumbs&n=13"
+    answers: [ "Seat" ]
+  - question: "Назовите марку автомобиля"
+    picture: "https://w.forfun.com/fetch/fe/fea670e508fe58ff5cb2d9573f1f1307.jpeg?w=1800"
+    answers: [ "Maserati" ]
+  - question: "Назовите марку автомобиля"
+    picture: "https://www.drivenn.ru/tilda/img/tild3765-3938-4230-a335-646266303765__60cmx45cm.jpg"
+    answers: [ "Haval" ]
+  - question: "Какую передачу он ведёт?"
+    picture: "https://uchastniki.com/wp-content/uploads/2019/05/ivlev5.jpg"
+    answers: [ "На ножах" ]
+  - question: "Назовите передачу"
+    picture: "https://avatars.mds.yandex.net/i?id=ad3d60aafba595943bd348dd4506ead2_l-3493887-images-thumbs&n=13"
+    answers: [ "Битва экстрасенсов" ]
+  - question: "Назовите передачу"
+    picture: "https://static.1tv.ru/uploads/video/material/splash/2019/10/11/552071/big/552071_big_83279e5114.jpg"
+    answers: [ "Жить здорово" ]
+  - question: "Назовите передачу"
+    picture: "https://sun9-30.userapi.com/impg/9cXIPyvDjqsGVQtzijSdkknKZJchWRqgD-8Jlg/fi4kQFIM-VA.jpg?size=1157x1058&quality=96&sign=4449c2de11feb65a17a776f9d86ff582&c_uniq_tag=7gmFJ2IFXIEPx7ZLoVtoyJ5fGSKhUylvbUd5elsppEY&type=album"
+    answers: [ "Большие гонки" ]
+  - question: "Назовите передачу"
+    picture: "https://cdnstatic.rg.ru/uploads/images/photogallery/2020/06/19/26923e32bb800f0/26923e32bb800f01592577110.jpg"
+    answers: [ "Русский ниндзя" ]
+  - question: "Назовите актрису"
+    picture: "https://avatars.mds.yandex.net/i?id=fc184fffe4f70230f12d48f10c9a42781f476f11-12155438-images-thumbs&n=13"
+    answers: [ "Меган Фокс" ]
+  - question: "Назовите актёра"
+    picture: "https://avatars.mds.yandex.net/i?id=2a0000018da8a85db844166351eb90adca0f-1749611-fast-images&n=13"
+    answers: [ "джаред лето" ]
+  - question: "Назовите актрису"
+    picture: "https://tvcenter.ru/wp-content/uploads/2021/02/pmds463.jpg"
+    answers: [ "Саша Бортич", "Александра Бортич" ]
+  - question: "Назовите актрису"
+    picture: "https://avatars.mds.yandex.net/i?id=835d3b18784f1bb28a84741ab000c54a1777ffd8-10695517-images-thumbs&n=13"
+    answers: [ "аня тейлор джой" ]
+  - question: "Назовите актёра"
+    picture: "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_65ce112e18e647057a983242_65ce11862ebcee2369274b25/scale_1200"
+    answers: ["Аль пачино"]
+  - question: "Назовите актрису"
+    picture: "https://mykaleidoscope.ru/uploads/posts/2022-06/1656493313_47-mykaleidoscope-ru-p-emiliya-klark-bez-makiyazha-devushka-krasi-49.jpg"
+    answers: [ "Эмилия Кларк" ]
+  - question: "Я че ребенок, чтоб мульты смотреть?"
+    picture: "https://images.iptv.rt.ru/images/cc31c93ir4ssk11vpom0.jpg"
+    answers: [ "Малышарики" ]
+  - question: "Я че ребенок, чтоб мульты смотреть?"
+    picture: "https://avatars.mds.yandex.net/i?id=c9db3b0bc1a7a5d402d5f687e66399159dc96d77-12146892-images-thumbs&n=13"
+    answers: [ "Головоломка" ]
+  - question: "Я че ребенок, чтоб мульты смотреть?"
+    picture: "https://avatars.dzeninfra.ru/get-zen_doc/1654267/pub_5d9300f2433ecc00b139b3f5_5d9305912fda8600af851c82/scale_1200"
+    answers: [ "Ральф" ]
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=692f25b509f9b62787aa4e69c42e768bd1c6e906-10755803-images-thumbs&n=13"
+    answers: [ "Бельгия" ]
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=80a8a85b9db9e89d677933eec4d8ec60114ad001-12184992-images-thumbs&n=13"
+    answers: [ "Австралия" ]
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=2a00000179e75d1be2ba888b87ddb56cb07f-3563679-images-thumbs&n=13"
+    answers: ["Израиль"]
+  - question: "Отгадайте страну по флагу"
+    picture: "https://image.winudf.com/v2/image1/Y29tLmhkZmxhZ3Muc3dpdHplcmxhbmQud2FsbHBhcGVyLmltYWdlc19zY3JlZW5fNl8xNTg4MTk5NDk0XzA5NA/screen-3.jpg?fakeurl=1&type=.jpg"
+    answers: [ "Швейцария" ]
+  - question: "Сколько градусов по цельсию состовляет температура \"Абсолютного нуля\"?"
+    picture: ""
+    answers: [ "-273" ]
+  - question: "Как называется внешняя поверхность черной дыры? "
+    picture: ""
+    answers: [ "Горизонт событий" ]
+  - question: "Если я скажу \"Сап дваЧ!\" Что вы ответите? (4 слова)"
+    picture: ""
+    answers: [ "Мур мур мур мур" ]
+  - question: "— Давай, Скалли, проверим это дело. — Ты – Скалли! — Я – Малдер, а ты – рыжая баба. (отгадайте сериал)"
+    picture: ""
+    answers: [ "Сверхъестественное" ]
+  - question: "— Меня здесь петухом назначили. Сейчас яблочко доклюю и начну курочек топтать... (назовите фильм)"
+    picture: ""
+    answers: [ "Следующий" ]
+  - question: "Раньше я говорил, что живу гонками по четверть миль за раз. Наверное, поэтому мы и были братьями. Потому что ты тоже так жил.. (назовите фильм)"
+    picture: ""
+    answers: [ "Форсаж" ]
+  - question: "Я отлично жалуюсь. Если бы это стало олимпийским видом спорта, я бы пожаловался, что это глупый вид спорта, и взял бы золото..(назовите сериал)"
+    picture: ""
+    answers: [ "Теория Большого Взрыва" ]
+  - question: "Леген... подожди-подожди... дарно! (назовтие сериал)"
+    picture: ""
+    answers: [ "Как я встретил вашу маму " ]

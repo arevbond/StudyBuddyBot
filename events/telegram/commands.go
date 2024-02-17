@@ -35,6 +35,7 @@ const (
 // quiz
 const (
 	StartQuizCmd = "/start_quiz"
+	// TODO: add command for show all quizzes
 )
 
 // auction

@@ -1,0 +1,127 @@
+theme: Программирование
+level: 3
+questions:
+  - question: "Програмная среда, исполняющая промежуточный машинно-независимый код, что позволяет одной программе запускаться на разных операционных системах."
+    answers: ["Виртуальная машина", "ВМ", "VM", "Virtual Machine"]
+    picture: ""
+    time_to_answer: 30
+  - question: "Вид динимической компиляции, компилирующий код 'на лету' в реальном времени."
+    picture: ""
+    answers: ["Just in Time", "JIT"]
+    time_to_answer: 30
+  - question: "Метод в реактивном программировании позволяющий отсрочить вызов функции, и при каждом вызове перезаписывающий фактический коллбэк, который будет в итоге вызван."
+    picture: ""
+    answers: ["Debounce", "Дебаунс"]
+    time_to_answer: 30
+  - question: "Год выхода первой стабильной версии языка Dart."
+    picture: ""
+    answers: ["2013"]
+    time_to_answer: 30
+  - question: "Язык программирования, работающий в программной среде JVM, выпущенный в 2004 году Лабораторией методов программирования EPFL."
+    picture: ""
+    answers: ["Scala"]
+    time_to_answer: 30
+  - question: "Год выхода первой стабильной версии Kotlin Multiplatform."
+    picture: ""
+    answers: ["2023"]
+    time_to_answer: 30
+  - question: "Аналог Потока в языке Dart, имеющий собственную изолированную область в памяти, независимую Зону и Event Loop."
+    picture: ""
+    answers: ["Изолят", "Isolate"]
+    time_to_answer: 30
+  - question: "Среда выполнения программного кода, хранящая в себе текущее состояние приложения в конкретном его месте."
+    picture: ""
+    answers: ["Контекст", "Context", "Runtime Context", "Рантайм Контекст", "Контекст Выполнения"]
+    time_to_answer: 30
+  - question: "Первое название фреймворка Flutter (2 слова на английском)."
+    picture: ""
+    answers: ["Sky Framework"]
+    time_to_answer: 30
+  - question: "Язык разметки, используемый для проектирования структуры программ, посторянения графических интерфейсов, а также для сетевых запросов (чаще по протоколу SOAP)."
+    picture: ""
+    answers: ["XML"]
+    time_to_answer: 30
+  - question: "Фреймворк для разработки кроссплатформенного программного обеспечения, как пример на нем разрабатываются интерфейсы операционной системы Astra Linux."
+    picture: ""
+    answers: ["Qt", "Кьют"]
+    time_to_answer: 30
+  - question: "Си-подобный язык программирования, за последние 5 лет стабильно входящий в топ 5 по размеру зарплат в РФ и занявший первое место, как самый высокооплачиваемый в 2023, согласно исследованиям Habr."
+    picture: ""
+    answers: ["Objective-C"]
+    time_to_answer: 30
+  - question: "Паттерн проектирования, используемый для преобразования интерфейса интерфейса одного класса в интерфейс другого."
+    picture: ""
+    answers: ["Адаптер"]
+    time_to_answer: 30
+  - question: "Древовидная структура данных, имеющая общее название со структорой данных, с помощью которой реализовано выделение оперативной памяти для приложения."
+    picture: ""
+    answers: ["Куча", "Heap"]
+    time_to_answer: 30
+  - question: "Представление объекта в числовом виде."
+    picture: ""
+    answers: ["Hashcode", "Хэшкод", "Hash Code", "Хэш Код"]
+    time_to_answer: 30
+  - question: "Протокол защищенной передачи информаций в сети, преднозначенный для шифрования данных, проверки авторства передаваемой информации, а также проверки целостности данных."
+    picture: ""
+    answers: ["TLS", "SSL"]
+    time_to_answer: 30
+  - question: "Как зовут первого в России Google Developer Expert?"
+    picture: ""
+    answers: ["Денис Неклюдов", "Неклюдов"]
+    time_to_answer: 30
+  - question: "Язык программирования созданный для разработки OpenGL шейдеров."
+    picture: ""
+    answers: ["GLSL"]
+    time_to_answer: 30
+  - question: "Язык программирования для которого впервые была представлена концепция Reactive Extensions (ReactiveX/RX)."
+    picture: ""
+    answers: ["C#"]
+    time_to_answer: 30
+  - question: "Механизм, созданный для освобождения из памяти недостижимых/'мертвых' объектов."
+    picture: ""
+    answers: ["Сборка Мусора", "Garbage Collection"]
+    time_to_answer: 30
+  - question: "Кроссплатформенная модульная платформа, разрабатываемая компанией Microsoft."
+    picture: ""
+    answers: [".NET"]
+    time_to_answer: 30
+  - question: "Механизм управления памятью языка Swift (три слова на русском или английском языках)."
+    picture: ""
+    answers: ["Automatic Reference Counting", "Автоматический Подсчет Ссылок"]
+    time_to_answer: 30
+  - question: "Название связей между движком Flutter и Dart-рантаймом."
+    picture: ""
+    answers: ["Биндинги", "Bindings"]
+    time_to_answer: 30
+  - question: "Механизм с помощью которого осуществляется вызов методов у программ, написанных на разных языках (3 слова на русском или английском языках)."
+    picture: ""
+    answers: ["Foreign Function Interface", "Интерфейс Внешних Функций"]
+    time_to_answer: 30
+  - question: "Паттерн проектирования, суть которого заключается в создании одного объекта на основе другого."
+    picture: ""
+    answers: ["Прототип", "Prototype"]
+    time_to_answer: 30
+  - question: "Название нового рантайма для JavaScript."
+    picture: ""
+    answers: ["Bun", "Бан"]
+    time_to_answer: 30
+  - question: "Название легковесного потока в языке GO."
+    picture: ""
+    answers: ["Goroutine", "Горутина"]
+    time_to_answer: 30
+  - question: "Популярный в Web-разработке менеджер состояний, основанный на архитектурной концепции Model-View-Intent."
+    picture: ""
+    answers: ["Редакс", "Redux"]
+    time_to_answer: 30
+  - question: "Метод создания объектов в ООП, позволяющий снизить связность компоненотов в программе."
+    picture: ""
+    answers: ["Dependency Injection", "DI", "Внедрение Зависимостей"]
+    time_to_answer: 30
+  - question: "Самый популярный бэкенд фреймворк для JVM платформы."
+    picture: ""
+    answers: ["Spring", "Спринг"]
+    time_to_answer: 30
+
+
+  
+  
