@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	defaultTimeToAnswer = 75
-	award               = 200
+	defaultTimeToAnswer  = 75
+	award                = 200
+	timeBetweenQuestions = 20
 )
 
-var isAnswered = make(map[int]bool) // TODO: refactor this var
+var isAnswered = make(map[int]bool)
 var chatToCurrentQuestion = make(map[int]quiz.Question)
 var chatToPlayers = make(map[int]map[int]int)
 
@@ -85,7 +86,7 @@ func (p *Processor) startQuiz(questions []quiz.Question, chatID int) {
 			}
 		}
 		isAnswered[chatID] = true
-		time.Sleep(20 * time.Second)
+		time.Sleep(timeBetweenQuestions * time.Second)
 	}
 
 	awardMessage := p.awarding(chatID)
