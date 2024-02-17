@@ -35,7 +35,7 @@ StudyBuddyBot is a Telegram bot written in Golang using the pure Telegram Bot AP
 - `/my_stats` - Check your personal statistics in the chat.
 - `/chat_stats` - View overall chat statistics.
 
-### Quizess
+### Quizzess
 
 - `/start_quiz [quiz_name]` - Admin only
 
