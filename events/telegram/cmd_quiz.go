@@ -101,7 +101,7 @@ func (p *Processor) checkAnswer(chatID int, tgID int, answer string, messageID i
 		if !isAnswered[chatID] {
 			chatToPlayers[chatID][tgID]++
 			isAnswered[chatID] = true
-			_ = p.tg.SendMessage(chatID, "👍", "", messageID)
+			_ = p.tg.SendMessage(chatID, msgCorrectAnswer, "", messageID)
 		}
 	}
 }
