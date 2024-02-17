@@ -16,7 +16,7 @@ import (
 
 const (
 	defaultTimeToAnswer  = 75
-	award                = 200
+	award                = 250
 	timeBetweenQuestions = 20
 )
 
