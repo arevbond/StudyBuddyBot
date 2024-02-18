@@ -27,7 +27,8 @@ func Lessons(calendarID string) (map[time.Weekday][]Lesson, error) {
 	items := events.Items
 	for _, item := range items {
 		l := rewLesson(item.Summary, item.Start.DateTime)
-		lessons[l.DateTime.Weekday()] = append(lessons[l.DateTime.Weekday()], l)
+		//lessons[l.DateTime.Weekday()] = append(lessons[l.DateTime.Weekday()], l)
+		lessons[l.DateTime.Weekday()] = append([]Lesson{l}, lessons[l.DateTime.Weekday()]...)
 	}
 	return lessons, nil
 }

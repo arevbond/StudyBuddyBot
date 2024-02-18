@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	defaultTimeToAnswer  = 80
+	defaultTimeToAnswer  = 60
 	award                = 250
-	timeBetweenQuestions = 30
+	timeBetweenQuestions = 20
 )
 
 var isAnswered = make(map[int]bool)
