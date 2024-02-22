@@ -18,10 +18,14 @@ const (
 	Hard         = 3
 )
 
+const (
+	defaultOpenPeriod = 20
+)
+
 type Quiz struct {
-	Theme     string     `json:"theme" yaml:"theme"`
-	Level     level      `json:"level" yaml:"level,omitempty"`
-	Questions []Question `json:"questions" yaml:"questions"`
+	Theme     string      `json:"theme" yaml:"theme"`
+	Level     level       `json:"level" yaml:"level,omitempty"`
+	Questions []*Question `json:"questions" yaml:"questions"`
 }
 
 func (q Quiz) GetLevel() string {
@@ -54,20 +58,29 @@ func New(filename string) (Quiz, error) {
 		if err != nil {
 			return Quiz{}, e.Wrap("can't unmarshall json", err)
 		}
-
 	}
+
+	for _, q := range quiz.Questions {
+		if q.OpenPeriod <= 5 {
+			q.OpenPeriod = defaultOpenPeriod
+		}
+	}
+
 	return quiz, nil
 }
 
 type Question struct {
-	Question     string   `json:"question" yaml:"question"`
-	Picture      string   `json:"picture,omitempty" yaml:"picture,omitempty"`
-	Answers      []string `json:"answers" yaml:"answers"`
-	TimeToAnswer int      `json:"time_to_answer,omitempty" yaml:"time_to_answer,omitempty"`
+	Question              string   `json:"question" yaml:"question"`
+	Picture               string   `json:"picture,omitempty" yaml:"picture,omitempty"`
+	Options               []string `json:"options" yaml:"options"`
+	CorrectOptionID       int      `json:"correct_option_id" yaml:"correct_option_id"`
+	AllowsMultipleAnswers bool     `json:"allows_multiple_answers" yaml:"allows_multiple_answers"`
+	Explanation           string   `json:"explanation" yaml:"explanation"`
+	OpenPeriod            int      `default:"15" json:"open_period" yaml:"open_period"`
 }
 
 func (q Question) IsCorrect(message string) bool {
-	for _, answer := range q.Answers {
+	for _, answer := range q.Options {
 		if strings.TrimSpace(strings.ToLower(message)) == strings.TrimSpace(strings.ToLower(answer)) {
 			return true
 		}

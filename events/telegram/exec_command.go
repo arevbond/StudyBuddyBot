@@ -19,6 +19,7 @@ const (
 	sendMessageMethod
 	sendPhotoMethod
 	sendMessageWithButtonsMethod
+	sendPoll
 	doNothingMethod
 )
 
@@ -40,6 +41,7 @@ type Response struct {
 	method         method
 	parseMode      telegram.ParseMode
 	replyMessageId int
+	poll           telegram.SendPoll
 }
 
 // allCommands список всех возможных команд бота.
@@ -143,10 +145,6 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
 	}
 
-	if _, ok := chatToCurrentQuestion[chat.ID]; ok && !isAnswered[chat.ID] {
-		p.checkAnswer(chat.ID, user.ID, text, messageID)
-	}
-
 	if utils.IsCommand(text) {
 		log.Printf("[INFO] got new command '%s' from '%s' in '%s'", text, user.Username, chat.Title)
 
@@ -178,6 +176,8 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 			return p.tg.SendPhoto(chat.ID, msg)
 		case sendMessageWithButtonsMethod:
 			return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
+		case sendPoll:
+			return p.tg.SendPoll(response.poll)
 		case doNothingMethod:
 			log.Printf("Message: \"%s\" - do nothing", text)
 		}

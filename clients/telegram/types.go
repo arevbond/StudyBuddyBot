@@ -1,5 +1,7 @@
 package telegram
 
+import "tg_ics_useful_bot/lib/quiz"
+
 type ChatMemberAdministratorResponse struct {
 	Ok     bool                      `json:"ok"`
 	Result []ChatMemberAdministrator `json:"result"`
@@ -18,14 +20,16 @@ type Update struct {
 	ID            int              `json:"update_id"`
 	Message       *IncomingMessage `json:"message"`
 	CallbackQuery *CallbackQuery   `json:"callback_query"`
+	PollAnswer    *PollAnswer      `json:"poll_answer"`
 }
 
 type IncomingMessage struct {
-	ID   int    `json:"message_id"`
-	Text string `json:"text"`
-	From User   `json:"from"`
-	Date int    `json:"date"` // Date the message was sent in Unix time
-	Chat Chat   `json:"chat"`
+	ID             int     `json:"message_id"`
+	Text           string  `json:"text"`
+	From           User    `json:"from"`
+	Date           int     `json:"date"` // Date the message was sent in Unix time
+	Chat           Chat    `json:"chat"`
+	ReplyToMessage Message `json:"reply_to_message"`
 }
 
 type CallbackQuery struct {
@@ -72,4 +76,49 @@ type InlineKeyboardMarkup struct {
 type InlineKeyboardButton struct {
 	Text         string `json:"text"`
 	CallbackData string `json:"callback_data"`
+}
+
+type Poll struct {
+	ID                    string   `json:"id"`
+	Type                  string   `json:"type"`
+	IsAnonymous           bool     `json:"is_anonymous"`
+	Question              string   `json:"question"`
+	Options               []string `json:"options"`
+	AllowsMultipleAnswers bool     `json:"allows_multiple_answers"`
+	CorrectOptionID       int      `json:"correct_option_id"`
+	Explanation           string   `json:"explanation"`
+	OpenPeriod            int      `json:"open_period"`
+}
+
+type PollAnswer struct {
+	PollID    string `json:"poll_id"`
+	VoterChat Chat   `json:"voter_chat"`
+	User      User   `json:"user"`
+	OptionIds []int  `json:"option_ids"`
+}
+
+type SendPoll struct {
+	ChatID                int      `json:"chat_id"`
+	Type                  string   `json:"type"`
+	IsAnonymous           bool     `json:"is_anonymous"`
+	Question              string   `json:"question"`
+	Options               []string `json:"options"`
+	AllowsMultipleAnswers bool     `json:"allows_multiple_answers"`
+	CorrectOptionID       int      `json:"correct_option_id"`
+	Explanation           string   `json:"explanation"`
+	OpenPeriod            int      `json:"open_period"`
+}
+
+func NewSendPoll(chatID int, question *quiz.Question) SendPoll {
+	return SendPoll{
+		ChatID:                chatID,
+		Type:                  "quiz",
+		IsAnonymous:           false,
+		Question:              question.Question,
+		Options:               question.Options,
+		AllowsMultipleAnswers: question.AllowsMultipleAnswers,
+		CorrectOptionID:       question.CorrectOptionID,
+		Explanation:           question.Explanation,
+		OpenPeriod:            question.OpenPeriod,
+	}
 }

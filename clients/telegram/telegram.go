@@ -37,6 +37,7 @@ const (
 	deleteMessageMethod         = "deleteMessage"
 	banChatMemberMethod         = "banChatMember"
 	getChatAdministratorsMethod = "getChatAdministrators"
+	sendPoll                    = "sendPoll"
 )
 
 func New(host string, token string, adminsID []int) *Client {
@@ -64,7 +65,6 @@ func (c *Client) Updates(offset int, limit int) (updates []Update, err error) {
 	}
 
 	var res UpdatesResponse
-
 	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
@@ -197,4 +197,17 @@ func (c *Client) doRequestWithBody(method string, message []byte) (data []byte, 
 		return nil, err
 	}
 	return resultBody, nil
+}
+
+func (c *Client) SendPoll(poll SendPoll) error {
+	jsonData, err := json.Marshal(poll)
+	if err != nil {
+		return e.Wrap("can't convert poll to json: ", err)
+	}
+	_, err = c.doRequestWithBody(sendPoll, jsonData)
+	if err != nil {
+		return e.Wrap("can't send message", err)
+	}
+
+	return nil
 }

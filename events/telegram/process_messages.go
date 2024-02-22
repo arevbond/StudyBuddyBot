@@ -30,6 +30,9 @@ type Meta struct {
 	ChatType            string
 	ChatTitle           string
 	ChatActiveUsernames []string
+
+	PollID    string
+	OptionIds []int
 }
 
 var (
@@ -70,9 +73,29 @@ func (p *Processor) Process(event events.Event) error {
 	switch event.Type {
 	case events.Message:
 		return p.processMessage(event)
+	case events.PollAnswer:
+		return p.processPollAnswer(event)
 	default:
 		return e.Wrap("can't process message", ErrUnknownEventType)
 	}
+}
+
+func (p *Processor) processPollAnswer(event events.Event) error {
+	meta, err := meta(event)
+	if err != nil {
+		return e.Wrap("can't process message", err)
+	}
+	userID := meta.TgID
+	optionIds := meta.OptionIds
+	if currentQuestion != nil {
+		for _, id := range optionIds {
+			if currentQuestion.CorrectOptionID == id {
+				currentPlayers[userID]++
+			}
+		}
+	}
+
+	return nil
 }
 
 func (p *Processor) processMessage(event events.Event) error {
@@ -98,6 +121,7 @@ func (p *Processor) processMessage(event events.Event) error {
 		Title:           meta.ChatTitle,
 		ActiveUsernames: meta.ChatActiveUsernames,
 	}
+
 	if chat.Type == "private" && !p.isAdmin(user.ID) {
 		return nil
 	}
@@ -142,8 +166,13 @@ func event(upd telegram.Update) events.Event {
 			ChatTitle:           upd.Message.Chat.Title,
 			ChatActiveUsernames: upd.Message.Chat.ActiveUsernames,
 		}
+	} else if updType == events.PollAnswer {
+		res.Meta = Meta{
+			PollID:    upd.PollAnswer.PollID,
+			TgID:      upd.PollAnswer.User.ID,
+			OptionIds: upd.PollAnswer.OptionIds,
+		}
 	}
-
 	return res
 }
 
@@ -158,6 +187,8 @@ func fetchText(upd telegram.Update) string {
 func fetchType(upd telegram.Update) events.Type {
 	if upd.Message != nil {
 		return events.Message
+	} else if upd.PollAnswer != nil {
+		return events.PollAnswer
 	}
 	return events.Unknown
 }
