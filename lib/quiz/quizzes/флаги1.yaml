@@ -1,0 +1,167 @@
+theme: "Солянка"
+level: 3
+questions:
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.bestfacts.ru/wp-content/uploads/2020/05/malavi.jpg"
+    options: ["Малави", "Монако", "Буркина-Фасо", "Афганистан"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=4387bb665891cab178dd5c207a5ad941f8132cca-6945470-images-thumbs&n=13"
+    options: [ "Ирландия", "Кот-д’Ивуар", "Буркина-Фасо", "Исландия" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://i.pinimg.com/originals/07/11/be/0711be1810f2605d54823f0513658afe.png"
+    options: [ "Испания", "Южный Судан", "Сенегал", "Гвинея" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=3a0966b4bdc7027c31ac79092c2f1dd0590c9dca-7754910-images-thumbs&n=13"
+    options: [ "Бермуды", "Австралия", "Острова Теркс и Кайкос", "Новая Зеландия" ]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=edfbd3f4d505004a19b0e2aba1fb6d97c7a24402-8182659-images-thumbs&n=13"
+    options: [ "Сингапур", "Австрия", "Монако", "Мальта" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=c77bb896e207f32540e223afc86f060b2717e060-11395806-images-thumbs&n=13"
+    options: [ "Боливия", "Фарерские острвоа", "Сент-Китс и Невис", "Триндад и Тобаго" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=bf4eecd28c2de6581577917f1decf6e6-5151471-images-thumbs&n=13"
+    options: [ "Австралия", "Тимор-Лесте", "Фарерские острова", "Папуа-Новая гвинея" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=4f0a085ded0be6818191abc3ac28f78383e13afe-8354186-images-thumbs&n=13"
+    options: [ "Маливи", "Фарерские острова", "Швеция", "Норвегия" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=ba89a05831f049b0024e20899041c86797bd26f1-10895071-images-thumbs&n=13"
+    options: [ "Маливи", "Северная Македония", "Кирибати", "Антигуа и Барбуда" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://ak.picdn.net/shutterstock/videos/1018978375/thumb/1.jpg"
+    options: [ "Того", "Камерун", "Сан-Томе и Принсипи", "Пуэрто-Рико" ]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=bdeff8f92d5adc77af6ecaeadd9231d1db0eeae4-8177627-images-thumbs&n=13"
+    options: [ "Гана", "Гренада", "Того", "Мьянма" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://flagi-1.ru/wp-content/uploads/2016/10/sl-1.png"
+    options: [ "Люксембург", "Южный Судан", "Сьерра-Леоне", "Лесото" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://b.kisscc0.com/20180816/icq/kisscc0-flag-of-south-sudan-national-flag-flag-of-sudan-south-sudan-flag-stamp-5b75031ea914e2.2067420415343951666926.png"
+    options: [ "Республика Конго", "Южный Судан", "Пуэрто-Рико", "Монако" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=3c2311c2ea2bfd975cdb306055f0b5b36c433443-9151021-images-thumbs&n=13"
+    options: [ "Бенин", "Финляндия", "Гвинея-Бисау", "Мозамбик" ]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=4c550d95ce704f7c97a7451656ef8d75d7260d40-6598906-images-thumbs&n=13"
+    options: [ "Камерун", "Испания", "Молдова", "Эквадор" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://s1.bwallpapers.com/wallpapers/2014/05/29/puerto-rico-flag_121400710.jpg"
+    options: [ "Того", "Пуэрто-Рико", "Мализия", "Никарагуа" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://yandex-images.clstorage.net/9gUMm7371/c642f67Fug/o0BMXlUlAMv-9UA9mFXQhK40VIQpk0ZHXRed1JIEQwhQDkndYQ_AJ98yyrIkMGldTh1XFUr1_f5pfa4P8_pGorNHABIWZBqfr7Jdd9RS2YCxf0nMKdRaFVYAhtfJTRwAWglO4V9-swG3G6GfAE5EFUoDEgR2nOSqXyCCaYCnI5iYSVJTYB9tys_fCyO0be65mHd_jR_NWz15FPrF7W9LHBJiDMxhVbwEsDKGrCpRWiBPSDIGSquKjEUIqFCXgCSjlHR3Tn89XdLSzCcmqkPHprFoT6wt0WYCexnV-uJ8TjgIQgj3WHmRFpE_lZUmSlM2c08zJHi5vJ9yI7dvupcXsbdnVX51I0Pe_dApMrpKxLSPcVeZHNFEHlgH-NzIeF4jMkEs9mJJugyYA4O6JkJ8G0BeORdzjKqOYiaid5GyBriTSV5oVgxnyfHPHTWWUeKMp3ZLtCrfXwtCH8PgzEtxPAxWNddtfII3kAG0sSljby1MbiYgb4y1q0ErmU6rpgWDgkdCdk0eet__1z4djHD4p5J0VIAfykw-QTDFxt5RagUuQTfVZlu1EIIkh7UJZm0_WG4tEGC0pqdLNYpcobsFtrZNUVREOHvU_coEFbtx25e1X3-jF8ZaOUUc5efdZ049DXofx3NmtxeLLIu3CENvI2NdIhVkkr23ZDyBXq2AO7Kbcn5wUiBm6MrqNi2YdcGtr19fgxr0SApYEMTP7XRgIgx9GNRCerobrhi0pzRKej1FXTAZYZGyv2M0lnSTkiS7gmt9dmY4Ssrf1Qg1sHnGqYVwabczxnoAYTr55tZYVR0tXxPkWXewFbItoJ8kUUANSUUwP06rkbRsLrxnpowZgpZwWnhIImPD89UdNLRY1bmeeV-lNdZrMHIa6-HUUnYlAUo0zkNJpQqiAJ6ACnNIDmBBATtxiLOoRA-WS5OSHo2SYlZbfS9Zzfz1ODGXfsKPjl9tuxPeRwhEHdH34VM"
+    options: [ "Суринам", "Маврикий", "Центральная Африка", "Ямайка" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=1ee8a3cb5f081716ebd655206addcfec9bbfe7ca-10736367-images-thumbs&n=13"
+    options: [ "Джбибути", "Туркмения", "Багамские Острова", "Филиппины" ]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://yandex-images.clstorage.net/9gUMm7371/c642f67Fug/o0BMXlUlAMv-9UA9mFXQhK40VIQpk0ZHXRedj5MLRVdVWRmKYQ7Bc91mwLByNjkPHx1ZFRD38Kg4f_le8PRNo7dDWhIWZh2er7RacdRS2YCxf0nMKdRaFVYAhtfJTRwAWglO4V9-swG3G6GfAE5EFUoDEgR2nOSqXyCCaYCnI5iYSVJTYB9tys_fCyO0be65mHd_jR_NWz15FPrF7W9LHBJiDMxhVbwEsDKGrCpRWiBPSDIGSquKjEUIqFCXgCSjlHR3Tn89XdLSzCcmqkPHprFoT6wt0WYCexnV-uJ8TjgIQgj3WHmRFpE_lZUmSlM2c08zJHi5vJ9yI7dvupcXsbdnVX51I0Pe_dApMrpKxLSPcVeZHNFEHlgH-NzIeF4jMkEs9mJJugyYA4O6JkJ8G0BeORdzjKqOYiaid5GyBriTSV5oVgxnyfHPHTWWUeKMp3ZLtCrfXwtCH8PgzEtxPAxWNddtfII3kAG0sSljby1MbiYgb4y1q0ErmU6rpgWDgkdCdk0eet__1z4djHD4p5J0VIAfykw-QTDFxt5RagUuQTfVZlu1EIIkh7UJZm0_WG4tEGC0pqdLNYpcobsFtrZNUVREOHvU_coEFbtx25e1X3-jF8ZaOUUc5efdZ049DXofx3NmtxeLLIu3CENvI2NdIhVkkr23ZDyBXq2AO7Kbcn5wUiBm6MrqNi2YdcGtr19fgxr0SApYEMTP7XRgIgx9GNRCerobrhi0pzRKej1FXTAZYZGyv2M0lnSTkiS7gmt9dmY4Ssrf1Qg1sHnGqYVwabczxnoAYTr55tZYVR0tXxPkWXewFbItoJ8kUUANSUUwP06rkbRsLrxnpowZgpZwWnhIImPD89UdNLRY1bmeeV-lNdZrMHIa6-HUUnYlAUo0zkNJpQqiAJ6ACnNIDmBBATtxiLOoRA-WS5OSHo2SYlZbfS9Zzfz1ODGXfsKPjl9tuxPeRwhEHdH34VM"
+    options: [ "Гвинея-Бисау", "Бенин", "Мадагаскар", "Оман" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://w0.peakpx.com/wallpaper/579/569/HD-wallpaper-papua-new-guinea-flag-oceanian-countries-3d-waves-flag-of-papua-new-guinea-national-symbols-papua-new-guinea-3d-flag-art-oceania-papua-new-guinea.jpg"
+    options: [ "Остров Рождества", "Самоа", "Папуа-Новая Гвинея", "Кокосовые острова" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=49f7af6deba9352c09e3e2b6c23bf407-4576013-images-thumbs&n=13"
+    options: [ "Турквенс", "Мальдивы", "Мланове", "Руанда" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "http://ae01.alicdn.com/kf/Hcd42cacfea8346e4bec772bc3ae53925j/ZXZ-3-5.jpg"
+    options: [ "Остоле", "Гондурас", "Никарагуа", "Гватемала" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://avatars.mds.yandex.net/i?id=d3287b50e01cc21d88b9a9cfde44b4933780a2fe-5272099-images-thumbs&n=13"
+    options: [ "Англия", "Шотландия", "Гренада", "Северная Ирландия" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+
+
+
