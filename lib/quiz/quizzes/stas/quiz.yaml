@@ -1,0 +1,156 @@
+theme: Программирование
+level: 3
+questions:
+  - question: "Область оперативной памяти, которая выделяется отдельно для каждого потока. В отличие от кучи хранит сами объекты, а не ссылки на них. Работает в порядке LIFO."
+    picture: ""
+    options: ["Стек", "Куча", "Очередь", "Граф"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+  - question: "Аналог Потока в языке Dart, имеющий собственную изолированную область в памяти, независимую Зону и Event Loop."
+    picture: ""
+    options: ["Isolate", "Thread", "Stream", "Worker"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+  - question: "Вид компиляции, происходящей перед исполнением программы"
+    picture: ""
+    options: ["Just in Time","Ahead of Time"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Год выхода первой стабильной версии языка Kotlin."
+    picture: ""
+    options: ["2011", "2012","2013", "2014", "2015", "2016"]
+    correct_option_id: 5
+    explanation: ""
+    open_period: 20
+  - question: "Метод в реактивном программировании, позволяющий ограничить количество вызовов функции на определенный заданый промежуток времени."
+    picture: ""
+    options: ["Throttle", "Debounce", "Subject"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+  - question: "Сколько потоков требует от эмбеддера Flutter Engine(не считая EventHandlerThread и изолятов, используемых в Dart рантайме)"
+    picture: ""
+    options: ["1","2","3","4","5"]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+  - question: "Дочерняя компания Microsoft, известная разработкой одноименного с ней фреймворка для создания кроссплатформенных приложений на языке C#"
+    picture: ""
+    options: ["React Native","Xamarin",  "Flutter", "Kotlin Multiplatform"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Самый популярный фреймворк для разработки интерфейсов под iOS "
+    picture: ""
+    options: ["SwiftUI", "Jetpack Compose","UIKit"]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+  - question: "Метод, применяемый в бэкенд разработке, для равномерного распределения сетевого трафика по определенному пулу ресурсов"
+    picture: ""
+    options: ["Распределитель потоков", "Балансировщик нагрузки"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Название отдельно создаваемых потоков в JavaScript"
+    picture: ""
+    options: ["Web Worker", "Service Worker","Isolate"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+  - question: "Общее название порядка хранения байтов в памяти (одно слово на английском)"
+    picture: ""
+    options: ["Laziness","Endlessness","Endianness"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Название блока в процессоре, отвечающего за выполнеие арифметических и логических операций"
+    picture: ""
+    options: [ "ПЗУ", "АЛУ","Регистр"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Паттерн проектирования, позволяющий "подписаться" на изменения какого-либо объекта"
+    picture: ""
+    options: ["Фасад", "Строитель","Слушатель","Фабричный метод"]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+  - question: "Механизм запуска нативного (C/C++ и ассемблер) кода на платформе JVM"
+    picture: ""
+    options: ["JNI", "FFI", "Platform Channel"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+  - question: "Алгоритм поиска в графе и дереве, использующий stack"
+    picture: ""
+    options: [ "BFS","Дийкстры","DFS"]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+  - question: "Паттерн проектировани, используемый для постепенного создания сложного объекта"
+    picture: ""
+    options: ["Абстрактная фабрика", "Строитель", "Одиночка", "Стратегия"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Язык программирования созданный для разработки шейдеров графического движка Skia, синтаксически основанный на GLSL."
+    picture: ""
+    options: ["HLSL", "GLSL", "Metal", "SkSL"]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+  - question: "Принцип в объектно ориентированном программировании, согласно которому управление над каким-то объектом или частью программы следует передать некоторому фреймворку или контейнеру. Наиболее частой его реализацией является паттерн Dependency Injection (DI)."
+    picture: ""
+    options: ["Dependency Inversion", "Inversion of Control", "Dependency Injection"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Механизм, созданный для освобождения из памяти недостижимых/'мертвых' объектов."
+    picture: ""
+    options: ["Garbage Collector","Garbahe Cleaner", "Garbage Recycler"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+  - question: "Тип данных, непосредственно связанный с 'ошибкой на миллиард'"
+    picture: ""
+    options: ["undefined","None","null","NaN", "byte"]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+  - question: "Язык, который уже лет 10 не может умереть"
+    picture: ""
+    options: ["Java", "PHP", "Objective-C", "JS", "Python"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Название сущности, отвечающей за построение макета и передачу его на отрисовку во Flutter Engine"
+    picture: ""
+    options: ["Render Object", "Element", "Widget", "Diagnostic Node", "React Native"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+  - question: "Механизм с помощью которого осуществляется вызов методов у программ, написанных на разных языках (3 слова на русском или английском языках)."
+    picture: ""
+    options: ["FFI", "JNI", "Native Bindings"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+  - question: "Легковесные потоки в языке Kotlin"
+    picture: ""
+    options: ["Goroutine", "Coroutine", "Isolate", "Thread"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+  - question: "Набирающий популярность архитектурный паттерн, в основе которого лежат подписки на единый стор"
+    picture: ""
+    options: ["MVVM", "MVVM", "VIPER", "MVI", "Redux"]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  
+  
