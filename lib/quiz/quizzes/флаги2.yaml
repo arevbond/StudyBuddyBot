@@ -1,0 +1,212 @@
+theme: "Флаги"
+level: 2
+questions:
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w320/fi.webp"
+    options: ["Финляндия", "Норвегия", "Исландия", "Королевские острова"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: ""
+    picture: "https://www.flagistrany.ru/data/flags/w320/ec.webp"
+    options: ["Босния и Герцеговина", "Сенегал", "Эквадор", "Буркина-Фасо"]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w320/ck.webp"
+    options: ["Буркина-Фасо", "Восточный-Тимор", "Республика Гаити", "Остров Кука"]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/tr.webp"
+    options: ["Коморы", "Сингапур", "Турция", "Габон"]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/ag.webp"
+    options: ["Американское Самоа", "Оман", "Антигуа и Барбуда", "Малави"]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/gb-wls.webp"
+    options: ["Уэльц", "Уэльс", "Гуам", "Шпицберген и Ян-Майен"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/dm.webp"
+    options: ["Доминика", "Габон", "Гайана", "Фиджи"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/im.webp"
+    options: [ "Новая Календония", "Сан-Марио", "Остров Мэн", "Острова Питкэрн" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/bt.webp"
+    options: [ "Бутан", "Гонконг", "Иордания", "Сан-Томе и Принсипи" ]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/sb.webp"
+    options: [ "Соломоновы Острова", "Таиланд", "Непал", "Виргинскеи Острова" ]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/fk.webp"
+    options: [ "Виргинские Острова", "Папуа-Новая Гвинея", "Фолкендские острова", "Катар" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/tz.webp"
+    options: [ "Бангладеш", "Танзания", "Мальта", "Эритрея" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/gb-eng.webp"
+    options: [ "Американское Самоа", "Ангилья", "Египет", "Англия" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/gb-nir.webp"
+    options: [ "Албания", "Тувалу", "Токелау", "Северная Ирландия" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/mq.webp"
+    options: [ "Гвения-Бисау", "Мартиника", "Чад", "Сент-Китс и Невис" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/gs.webp"
+    options: [ "Гвиана", "Россия", "Северные Марианские Острова", "Южная Георгия и Южные Сандвичевы Острова" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/gu.webp"
+    options: [ "Йемен", "Гуам", "Доминика", "Мозамбик" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/ye.webp"
+    options: [ "Либерия", "Сомали", "Кирабати", "Йемен" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/hm.webp"
+    options: [ "Австралия", "Новая Зеландия", "Остров Херд и острова Макдональд", "Габон" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/sj.webp"
+    options: [ "Кирибати", "Гамбия", "Палау", "Шпицберген и Ян-Майен" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/mr.webp"
+    options: [ "Лаос", "Мавритания", "Того", "Камерун" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/rw.webp"
+    options: [ "Джибути", "Эсватини", "Руанда", "Джибутия" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/ni.webp"
+    options: [ "Никарагуа", "Непал", "Сомали", "Сенегал" ]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/bv.webp"
+    options: [ "Швеция", "Норвегия", "Остров Буве", "Кюрасао" ]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/ga.webp"
+    options: [ "Мальта", "Габон", "Мьянма", "Сомали" ]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/cd.webp"
+    options: [ "Демократическая Республика Конго", "Андора", "Намибия", "Руанда" ]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/tf.webp"
+    options: [ "Французские Северные и Антарктические территории", "Кирибати", "Французские Антарктические территории", "Французские Южные и Антарктические территории" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/vg.webp"
+    options: [ "Республика Гаити", "Сайшельские Острова", "Линхтенштейн", "Виргинские Острова" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: ""
+    options: [ "Сайшельские Острова", "Гуам", "Токалую", "Сан-Томе и Принсипи" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Отгадайте страну по флагу"
+    picture: "https://www.flagistrany.ru/data/flags/w640/cw.webp"
+    options: [ "Сан-Пьер и Микелон", "Остров Рождества", "Остров Кайман", "Кюрасао" ]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20

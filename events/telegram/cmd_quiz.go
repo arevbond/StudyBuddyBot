@@ -67,6 +67,7 @@ func (p *Processor) startQuiz(questions []*quiz.Question, chatID int) {
 	currentQuestion = &quiz.Question{}
 }
 
+// TODO: добавить зависимость награды от уровня квиза
 func (p *Processor) awarding(chatID int) string {
 	players := []int{}
 	for player, _ := range currentPlayers {
@@ -90,7 +91,7 @@ func (p *Processor) awarding(chatID int) string {
 			log.Println("can't update points in db user", err)
 			continue
 		}
-		result += fmt.Sprintf("%s: %d п. о. ➕ %d см\n", dbUser.FirstName+" "+dbUser.LastName, currentPlayers[player],
+		result += fmt.Sprintf("%s: %d  ✅	   ➕ %d см\n", dbUser.FirstName+" "+dbUser.LastName, currentPlayers[player],
 			currentPlayers[player]*award)
 	}
 	return result

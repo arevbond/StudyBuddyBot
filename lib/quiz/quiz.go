@@ -2,6 +2,7 @@ package quiz
 
 import (
 	"encoding/json"
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
@@ -60,10 +61,13 @@ func New(filename string) (Quiz, error) {
 		}
 	}
 
-	for _, q := range quiz.Questions {
-		if q.OpenPeriod <= 5 {
+	n := len(quiz.Questions)
+
+	for i, q := range quiz.Questions {
+		if q.OpenPeriod < 5 {
 			q.OpenPeriod = defaultOpenPeriod
 		}
+		q.Question += fmt.Sprintf(" [%d/%d]", i+1, n)
 	}
 
 	return quiz, nil

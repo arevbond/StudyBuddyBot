@@ -1,0 +1,102 @@
+theme: "Programming"
+level: 2
+questions:
+  - question: "Как называется регистр процессора, который указывает какую команду нужно выполнить следующей?"
+    picture: ""
+    options: ["Счетчик команд", "Определяющий указатель", "Стэк", "Указатель в памяти"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+    
+  - question: "Это порция данных, обрабатываемых ЦП за одну операцию."
+    picture: ""
+    options: ["Команда процессора", "Адрес памяти", "Машинное слово", "Битовая карта"]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 20
+
+  - question: "Отец языка С. Также разрабатывал OC UNIX."
+    picture: ""
+    options: ["Роберт Гриземер", "Дэйв Пресотто", "Денис Путнов", "Деннис Ритчи"]
+    correct_option_id: 3
+    explanation: ""
+    open_period: 20
+
+  - question: "Один из разработчиков Unix, операционных систем Plan 9 и Inferno, создатель языка программирования B, соавтор языка Go, принимал участие в конструировании шахматного компьютера Belle, первой машины, достигшей уровня игры мастера с рейтингом USCF 2250."
+    picture: ""
+    options: ["Кен Томпсон", "Роб Пайк", "Фил Уинтерботт", "Стив Возняк"]
+    correct_option_id: 0
+    explanation: ""
+    open_period: 20
+    
+  - question: "Год рождения языка Си"
+    picture: ""
+    options: ["1969", "1972", "1973", "1970"]
+    correct_option_id: 1
+    explanation: ""
+    open_period: 20
+    
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20
+
+  - question: "Что такое один бит в вычислительной технике?"
+    picture: ""
+    options: ["базовая информационная единица, принимающая 256 возможных состояний (например, от 0 до 255)", "единица информации, соответствующая одной (любой) команде центрального процессора", "базовая информационная единица, принимающая только два состояния (например, 0 и 1)", "единица информации, состоящая из восьми байт"]
+    correct_option_id: 2
+    explanation: ""
+    open_period: 30
+
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20   
+        
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20
+
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20
+
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20   
+        
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20
+
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20
+
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20   
+ 
+    
