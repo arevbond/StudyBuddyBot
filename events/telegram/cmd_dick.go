@@ -56,7 +56,7 @@ func (p *Processor) topDicksCmd(chatID int) (msg string, err error) {
 
 	result := ""
 	for i, u := range users {
-		if u.DickSize > 0 {
+		if u.DickSize > 0 && !u.IsBot {
 			if i == 0 {
 				result += fmt.Sprintf("👑 *%s* — _%d см_\n", u.FirstName+" "+u.LastName, u.DickSize)
 			} else {
