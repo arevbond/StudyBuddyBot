@@ -84,25 +84,8 @@ const (
 
 // doCmd выбирает необходимую логику для выолнения команды.
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
-	dbUser, err := p.userCache.GetUser(user.ID, chat.ID)
-	if err == storage.ErrUserNotExist {
-		dbUser, err = p.storage.GetUser(context.Background(), user.ID, chat.ID)
-		if err == storage.ErrUserNotExist {
-			dbUser, err = p.createNewUserInDB(chat.ID, user)
-			if err != nil {
-				return e.Wrap("can't create new user in 'doCmd'", err)
-			}
-		} else if err != nil {
-			return e.Wrap("unknown error in 'doCmd'", err)
-		}
-		p.userCache.AddUser(dbUser)
-	}
-
-	dbUser, err = p.userChangeInfo(user, dbUser)
-	if err != nil {
-		return e.Wrap("can't update user info in 'doCmd'", err)
-	}
-
+	ctx := context.Background()
+	dbUser, err := p.getUser(ctx, user, chat.ID)
 	userStats, err := p.storage.GetUserStats(context.Background(), dbUser)
 	if err == storage.ErrUserNotExist {
 		return e.Wrap("not find user stats", err)
@@ -116,7 +99,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		log.Print(err)
 	}
 
-	text, parseMode := strings.TrimSpace(text), telegram.ParseMode("")
+	text, parseMode := strings.TrimSpace(text), telegram.WithoutParseMode
 
 	switch utils.CheckYesOrNo(text) {
 	case utils.IsYesCommand:
@@ -146,43 +129,70 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	}
 
 	if utils.IsCommand(text) {
-		log.Printf("[INFO] got new command '%s' from '%s' in '%s'", text, user.Username, chat.Title)
+		return p.handleCommand(text, chat, user, messageID, userStats)
+	}
+	return nil
+}
 
-		strCmd := strings.Split(text, " ")[0]
-		cmd := p.getCmd(strCmd)
-		if cmd == nil {
-			return e.Wrap(fmt.Sprintf("can't get command from %s", strCmd), err)
-		}
-
-		response, err := cmd.Exec(p, text, user, chat, userStats, messageID)
-		if err != nil {
-			return e.Wrap(fmt.Sprintf("can't select command from message: %s", text), err)
-		}
-
-		msg, mthd, parseMode, replyToMessageID := response.message, response.method, response.parseMode, response.replyMessageId
-		if replyToMessageID <= 0 {
-			err = p.tg.DeleteMessage(chat.ID, messageID)
+func (p *Processor) getUser(ctx context.Context, user *telegram.User, chatID int) (*storage.DBUser, error) {
+	dbUser, err := p.userCache.GetUser(user.ID, chatID)
+	if err == storage.ErrUserNotExist {
+		dbUser, err = p.storage.GetUser(ctx, user.ID, chatID)
+		if err == storage.ErrUserNotExist {
+			dbUser, err = p.createNewUserInDB(chatID, user)
 			if err != nil {
-				return err
+				return nil, e.Wrap("can't create new user in 'getUser'", err)
 			}
+		} else if err != nil {
+			return nil, e.Wrap("unknown error in 'doCmd'", err)
 		}
+		p.userCache.AddUser(dbUser)
+		log.Printf("[INFO] Get user %d from storage\n", user.ID)
+	}
 
-		switch mthd {
-		case UnsupportedMethod:
-			return e.Wrap("unsupported method:", errors.New("unknown method"))
-		case sendMessageMethod:
-			return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
-		case sendPhotoMethod:
-			return p.tg.SendPhoto(chat.ID, msg)
-		case sendMessageWithButtonsMethod:
-			return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
-		case sendPoll:
-			return p.tg.SendPoll(response.poll)
-		case doNothingMethod:
-			log.Printf("Message: \"%s\" - do nothing", text)
+	dbUser, err = p.userChangeInfo(user, dbUser)
+	if err != nil {
+		return nil, e.Wrap("can't update user info in 'doCmd'", err)
+	}
+	return dbUser, nil
+}
+
+func (p *Processor) handleCommand(text string, chat *telegram.Chat, user *telegram.User, messageID int, userStats *storage.DBUserStat) error {
+	log.Printf("[INFO] got new command '%s' from '%s' in '%s'", text, user.Username, chat.Title)
+
+	strCmd := strings.Split(text, " ")[0]
+	cmd := p.getCmd(strCmd)
+	if cmd == nil {
+		return e.Wrap(fmt.Sprintf("can't get command from %s", strCmd), errors.New("can't get cmd"))
+	}
+
+	response, err := cmd.Exec(p, text, user, chat, userStats, messageID)
+	if err != nil {
+		return e.Wrap(fmt.Sprintf("can't select command from message: %s", text), err)
+	}
+
+	msg, mthd, parseMode, replyToMessageID := response.message, response.method, response.parseMode, response.replyMessageId
+	if replyToMessageID <= 0 {
+		err = p.tg.DeleteMessage(chat.ID, messageID)
+		if err != nil {
+			return err
 		}
 	}
 
+	switch mthd {
+	case UnsupportedMethod:
+		return e.Wrap("unsupported method:", errors.New("unknown method"))
+	case sendMessageMethod:
+		return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
+	case sendPhotoMethod:
+		return p.tg.SendPhoto(chat.ID, msg)
+	case sendMessageWithButtonsMethod:
+		return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
+	case sendPoll:
+		return p.tg.SendPoll(response.poll)
+	case doNothingMethod:
+		log.Printf("Message: \"%s\" - do nothing", text)
+	}
 	return nil
 }
 

@@ -15,7 +15,10 @@ import (
 )
 
 const (
-	award                = 250
+	defaultAward         = 100
+	easyLevelBonus       = 50
+	mediumLevelBonus     = 100
+	hardLevelBonus       = 150
 	timeBetweenQuestions = 5
 )
 
@@ -43,14 +46,16 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 		return nil, e.Wrap("can't start quiz", err)
 	}
 
-	go p.startQuiz(quizGame.Questions, chat.ID)
+	go p.startQuiz(quizGame, chat.ID)
 
 	return &Response{message: fmt.Sprintf(msgStartQuiz, quizGame.Theme, quizGame.GetLevel(), len(quizGame.Questions)), method: sendMessageMethod,
 		parseMode: telegram.Markdown}, nil
 }
 
-func (p *Processor) startQuiz(questions []*quiz.Question, chatID int) {
-	time.Sleep(10 * time.Second)
+func (p *Processor) startQuiz(quizGame quiz.Quiz, chatID int) {
+	time.Sleep(5 * time.Second)
+
+	questions := quizGame.Questions
 
 	for _, question := range questions {
 		currentQuestion = question
@@ -61,14 +66,23 @@ func (p *Processor) startQuiz(questions []*quiz.Question, chatID int) {
 		time.Sleep(time.Duration(question.OpenPeriod+timeBetweenQuestions) * time.Second)
 	}
 
-	awardMessage := p.awarding(chatID)
+	awardMessage := p.awarding(chatID, quizGame.Level)
 	_ = p.tg.SendMessage(chatID, msgFinishQuiz+"\n"+awardMessage, "", -1)
 	currentPlayers = make(map[int]int)
 	currentQuestion = &quiz.Question{}
 }
 
-// TODO: добавить зависимость награды от уровня квиза
-func (p *Processor) awarding(chatID int) string {
+func (p *Processor) awarding(chatID int, level quiz.Level) string {
+	award := defaultAward
+	switch level {
+	case quiz.Easy:
+		award += easyLevelBonus
+	case quiz.Medium:
+		award += mediumLevelBonus
+	case quiz.Hard:
+		award += hardLevelBonus
+	}
+
 	players := []int{}
 	for player, _ := range currentPlayers {
 		players = append(players, player)
@@ -91,7 +105,7 @@ func (p *Processor) awarding(chatID int) string {
 			log.Println("can't update points in db user", err)
 			continue
 		}
-		result += fmt.Sprintf("%s: %d  ✅	   ➕ %d см\n", dbUser.FirstName+" "+dbUser.LastName, currentPlayers[player],
+		result += fmt.Sprintf(" • %d ✔  %s          ➕ %d см\n", currentPlayers[player], dbUser.FirstName+" "+dbUser.LastName,
 			currentPlayers[player]*award)
 	}
 	return result

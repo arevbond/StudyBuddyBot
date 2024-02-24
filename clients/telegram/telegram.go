@@ -22,10 +22,10 @@ type Client struct {
 type ParseMode string
 
 const (
-	Unknown    ParseMode = ""
-	MarkdownV2 ParseMode = "MarkdownV2"
-	HTML       ParseMode = "HTML"
-	Markdown   ParseMode = "Markdown"
+	WithoutParseMode ParseMode = ""
+	MarkdownV2       ParseMode = "MarkdownV2"
+	HTML             ParseMode = "HTML"
+	Markdown         ParseMode = "Markdown"
 )
 
 const timeToBan = 120
