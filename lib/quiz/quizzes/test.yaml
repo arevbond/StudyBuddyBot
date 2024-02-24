@@ -1,5 +1,5 @@
 theme: "Солянка"
-level: 2
+level:
 questions:
   - question: "Сколько языков программирования знает Коровченко"
     picture: ""

@@ -36,19 +36,19 @@ questions:
     explanation: ""
     open_period: 20
     
-  - question: ""
-    picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
-    explanation: ""
-    open_period: 20
-
   - question: "Что такое один бит в вычислительной технике?"
     picture: ""
     options: ["базовая информационная единица, принимающая 256 возможных состояний (например, от 0 до 255)", "единица информации, соответствующая одной (любой) команде центрального процессора", "базовая информационная единица, принимающая только два состояния (например, 0 и 1)", "единица информации, состоящая из восьми байт"]
     correct_option_id: 2
     explanation: ""
     open_period: 30
+
+  - question: ""
+    picture: ""
+    options: ["", "", "", ""]
+    correct_option_id: .
+    explanation: ""
+    open_period: 20
 
   - question: ""
     picture: ""
