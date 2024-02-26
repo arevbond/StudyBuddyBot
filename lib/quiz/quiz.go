@@ -11,12 +11,12 @@ import (
 
 const pathToFile = "lib/quiz/quizzes/"
 
-type level int
+type Level int
 
 const (
-	Easy   level = 1
-	Medium       = 2
-	Hard         = 3
+	Easy   Level = 0
+	Medium       = 1
+	Hard         = 2
 )
 
 const (
@@ -25,7 +25,7 @@ const (
 
 type Quiz struct {
 	Theme     string      `json:"theme" yaml:"theme"`
-	Level     level       `json:"level" yaml:"level,omitempty"`
+	Level     Level       `json:"level" yaml:"level,omitempty"`
 	Questions []*Question `json:"questions" yaml:"questions"`
 }
 
@@ -57,7 +57,7 @@ func New(filename string) (Quiz, error) {
 	case "yaml":
 		err := yaml.Unmarshal(data, &quiz)
 		if err != nil {
-			return Quiz{}, e.Wrap("can't unmarshall json", err)
+			return Quiz{}, e.Wrap("can't unmarshall yaml", err)
 		}
 	}
 
