@@ -1,156 +1,153 @@
-theme: Программирование
+theme: Душный квиз по Flutter
 level: 3
 questions:
-  - question: "Область оперативной памяти, которая выделяется отдельно для каждого потока. В отличие от кучи хранит сами объекты, а не ссылки на них. Работает в порядке LIFO."
+  - question: "Является ли Dart null-безопасным языком?"
     picture: ""
-    options: ["Стек", "Куча", "Очередь", "Граф"]
-    correct_option_id: 0
-    explanation: ""
-    open_period: 20
-  - question: "Аналог Потока в языке Dart, имеющий собственную изолированную область в памяти, независимую Зону и Event Loop."
-    picture: ""
-    options: ["Isolate", "Thread", "Stream", "Worker"]
-    correct_option_id: 0
-    explanation: ""
-    open_period: 20
-  - question: "Вид компиляции, происходящей перед исполнением программы"
-    picture: ""
-    options: ["Just in Time","Ahead of Time"]
+    options: ["Нет","Да","Частично"]
     correct_option_id: 1
-    explanation: ""
+    explanation: "Начиная с марта 2021 и Dart 2.12 соответсвенно, в Dart появилась Sound Null Safety. Ох сколько боли и слез было у тех людей, кому приходилось переписывать старые проекты..."
     open_period: 20
-  - question: "Год выхода первой стабильной версии языка Kotlin."
+  - question: "Интерфейсом для реализации какого паттерна проектирования является абстрактный класс Listner?"
     picture: ""
-    options: ["2011", "2012","2013", "2014", "2015", "2016"]
-    correct_option_id: 5
-    explanation: ""
-    open_period: 20
-  - question: "Метод в реактивном программировании, позволяющий ограничить количество вызовов функции на определенный заданый промежуток времени."
-    picture: ""
-    options: ["Throttle", "Debounce", "Subject"]
-    correct_option_id: 0
-    explanation: ""
-    open_period: 20
-  - question: "Сколько потоков требует от эмбеддера Flutter Engine(не считая EventHandlerThread и изолятов, используемых в Dart рантайме)"
-    picture: ""
-    options: ["1","2","3","4","5"]
-    correct_option_id: 3
-    explanation: ""
-    open_period: 20
-  - question: "Дочерняя компания Microsoft, известная разработкой одноименного с ней фреймворка для создания кроссплатформенных приложений на языке C#"
-    picture: ""
-    options: ["React Native","Xamarin",  "Flutter", "Kotlin Multiplatform"]
-    correct_option_id: 1
-    explanation: ""
-    open_period: 20
-  - question: "Самый популярный фреймворк для разработки интерфейсов под iOS "
-    picture: ""
-    options: ["SwiftUI", "Jetpack Compose","UIKit"]
+    options: ["Фабрика","Стратегия","Наблюдатель","Посетитель"]
     correct_option_id: 2
-    explanation: ""
+    explanation: "Это база"
     open_period: 20
-  - question: "Метод, применяемый в бэкенд разработке, для равномерного распределения сетевого трафика по определенному пулу ресурсов"
+  - question: "Как называется сборщик мусора молодого поколения в Dart?"
     picture: ""
-    options: ["Распределитель потоков", "Балансировщик нагрузки"]
-    correct_option_id: 1
-    explanation: ""
-    open_period: 20
-  - question: "Название отдельно создаваемых потоков в JavaScript"
-    picture: ""
-    options: ["Web Worker", "Service Worker","Isolate"]
-    correct_option_id: 0
-    explanation: ""
-    open_period: 20
-  - question: "Общее название порядка хранения байтов в памяти (одно слово на английском)"
-    picture: ""
-    options: ["Laziness","Endlessness","Endianness"]
-    correct_option_id: 1
-    explanation: ""
-    open_period: 20
-  - question: "Название блока в процессоре, отвечающего за выполнеие арифметических и логических операций"
-    picture: ""
-    options: [ "ПЗУ", "АЛУ","Регистр"]
-    correct_option_id: 1
-    explanation: ""
-    open_period: 20
-  - question: "Паттерн проектирования, позволяющий \"подписаться\" на изменения какого-либо объекта"
-    picture: ""
-    options: ["Фасад", "Строитель","Слушатель","Фабричный метод"]
+    options: ["Scraper","Sweeper","Scavenger","Janitor"]
     correct_option_id: 2
-    explanation: ""
+    explanation: "Scavenger - названия сборщиков молодого мусора в Dart VM и движке V8 для JS, хоть и работают они немного по разному"
     open_period: 20
-  - question: "Механизм запуска нативного (C/C++ и ассемблер) кода на платформе JVM"
+  - question: "Когда в языке Dart объект считается 'мертвым' и подлежит удалению из памяти?"
     picture: ""
-    options: ["JNI", "FFI", "Platform Channel"]
+    options: ["Когда счетчик 'сильных' ссылок становится равным нулю","Когда от корневого объекта на данный объект больше не существует пути по ссылке", "Когда до ноды объекта в графе зависисмотей больше не существует пути"]
+    correct_option_id: 1
+    explanation: "Второе верно. Кому интересно можно почитать официальну доку гугла: https://dart.googlesource.com/sdk/+/refs/tags/2.15.0-99.0.dev/runtime/docs/gc.md или статейку: https://medium.com/flutter/flutter-dont-fear-the-garbage-collector-d69b3ff1ca30"
+    open_period: 20
+  - question: "Сколько поколений имеет Garbage Collector Dart VM?"
+    picture: ""
+    options: ["1", "2", "3", "4"]
+    correct_option_id: 1
+    explanation: "Два поколения: в первом уничтожается короткоживущие объекты - мусор 'молодого' поколения, во втором 'старого' - объекты пережившие цикл сборки мусора. Сборка старого мусора при помощи сборщика mark-sweep всегда после маркировки живых объектов влечет блокировку на изменения объектов в памяти, что в свою очередь блокирует UI Thread (главный изолят). Этот этап происходит в простое, но тем не менее стоит убеждаться, что большая часть мусора очищается на раннем этапе, дабы избежать фризов и утечек памяти"
+    open_period: 20
+  - question: "Что происходит при создании объекта Future?"
+    picture: ""
+    options: ["Создается Timer", "Открывается изолят в который передается callback", "Планируется событие с Future через ```WidgetsBinding.instance.addPostFrameCallback((timeStamp)=> callback())```"]
     correct_option_id: 0
-    explanation: ""
+    explanation: "В конструкторе вызывается Timer с переданным Duration, если был использован конструктор Future.delayed в иныч случаях вызывает Timer.run()"
     open_period: 20
-  - question: "Алгоритм поиска в графе и дереве, использующий stack"
+  - question: "Какая структура данных используется для добавления в очередь таймеров с Duration > 0?"
     picture: ""
-    options: [ "BFS","Дийкстры","DFS"]
+    options: ["HashSet","HashMap", "Двоичная куча", "Односвязный список"]
     correct_option_id: 2
-    explanation: ""
+    explanation: "Таймеры с Duration равным 0 попадают в односвязный список, с ненулевой продолжительностью в двоичную кучу"
     open_period: 20
-  - question: "Паттерн проектировани, используемый для постепенного создания сложного объекта"
+  - question: "Как обрабатываются таймеры с ненулевой задержкой?"
     picture: ""
-    options: ["Абстрактная фабрика", "Строитель", "Одиночка", "Стратегия"]
+    options: ["Фреймворк считает 'тики', поставляемые SchedulerBinding, беря время тика за 8мс, все промежуточные значения Duration меньше одного тика выполняются в текущем фрейме в порядке возрастания Duration, все что больше в postFrameCallbacks", "В EventHandler Thread для данного таймера регистрируется поставляемый системой 'будильник', по истечению времени в переданный sendPort шлется событие завершения будильника и вызывается callback таймера", "Зарегестрированные в куче будильники крутятся в бесконечном цикле, при каждой итерации происходит проверка пора ли освободить таймер сравнивая время с временем поставляемым _$SystemProvidedTimer, в случае если задержки время вышло вызывается callback зарегестрированного таймера"]
     correct_option_id: 1
-    explanation: ""
+    explanation: "Второе верно, но для тех кому интересно советую прочитать https://habr.com/ru/companies/ligastavok/articles/539782/, там максимально подробно описан процесс работы Future и таймеров"
     open_period: 20
-  - question: "Язык программирования созданный для разработки шейдеров графического движка Skia, синтаксически основанный на GLSL."
-    picture: ""
-    options: ["HLSL", "GLSL", "Metal", "SkSL"]
+  - question: "Какие два сообщения выведутся последними?"
+    picture: "https://i.ibb.co/w6Mp1T5/2024-02-25-20-33-46.png"
+    options: ["Fifth и Ended","Second и Third","Third и Ended","Fifth и Fourth","Third и Fifth"]
     correct_option_id: 3
-    explanation: ""
+    explanation: "Ключевое слово await говорит о том, что необходимо дождаться результата выполнения Future прежде чем перейти к следующей строчке. Future.microtask же имеют более высокий приоритет в Цикле Событий. Советую прочитать как работает механизм Event Loop для Dart или JS, да и в целом очень полезный паттерн даже вне этих языков)"
     open_period: 20
-  - question: "Принцип в объектно ориентированном программировании, согласно которому управление над каким-то объектом или частью программы следует передать некоторому фреймворку или контейнеру. Наиболее частой его реализацией является паттерн Dependency Injection (DI)."
+  - question: "Нужна ли виртуальная машина Dart для собранного в AOT режиме приложения?"
     picture: ""
-    options: ["Dependency Inversion", "Inversion of Control", "Dependency Injection"]
-    correct_option_id: 1
-    explanation: ""
-    open_period: 20
-  - question: "Механизм, созданный для освобождения из памяти недостижимых/'мертвых' объектов."
-    picture: ""
-    options: ["Garbage Collector","Garbahe Cleaner", "Garbage Recycler"]
+    options: ["Нужна","Не нужна", "Зависит от ситуации, VM может динамически подключаться"]
     correct_option_id: 0
-    explanation: ""
+    explanation: "Да, нужна. Как без нее все вещи из вопросов выше работать будут?)"
     open_period: 20
-  - question: "Тип данных, непосредственно связанный с 'ошибкой на миллиард'"
-    picture: ""
-    options: ["undefined","None","null","NaN", "byte"]
-    correct_option_id: 3
-    explanation: ""
+  - question: "Что делает метод runApp?"
+    picture: "https://i.ibb.co/r2fpkr9/2024-02-25-20-55-59.png"
+    options: ["Устанавливает связь с Flutter Engine, инициализируея биндинги", "Добавляет в дерево Корневой Виджет и Элемент, в child этому виджету отдает переданный аргументом виджет","Запускает процесс сборки и отрисовки", "Планирует отрисовку первого фрейма как можно быстрее", "Все вышеперечисленное"]
+    correct_option_id: 4
+    explanation: "Все утверждения верны. Подробнее тут: https://api.flutter.dev/flutter/widgets/runApp.html."
     open_period: 20
-  - question: "Язык, который уже лет 10 не может умереть"
+  - question: "Тип компонентов, отвечающих за управление состоянием и жизненным циклом виджетов (и не только) во Flutter"
     picture: ""
-    options: ["Java", "PHP", "Objective-C", "JS", "Python"]
-    correct_option_id: 1
-    explanation: ""
-    open_period: 20
-  - question: "Название сущности, отвечающей за построение макета и передачу его на отрисовку во Flutter Engine"
-    picture: ""
-    options: ["Render Object", "Element", "Widget", "Diagnostic Node", "React Native"]
+    options: ["Element", "Widget", "Render Object", "Semantics", "Diagnosticable"]
     correct_option_id: 0
-    explanation: ""
+    explanation: "Element. Создается при помощи вызова createElement у любого виджета, ссылается на RenderObject (либо свой, если данный элемент является RenderObjectElement либо транзитивно ссылается на рендер объект первого RenderObjectElement среди своих потомков). Как и было сказано управляет жизненным циклом виджетов и рендер объектов."
     open_period: 20
-  - question: "Механизм с помощью которого осуществляется вызов методов у программ, написанных на разных языках (3 слова на русском или английском языках)."
+  - question: "Как фреймворк понимает, что данный участок дерева нуждается в перерисовке?"
     picture: ""
-    options: ["FFI", "JNI", "Native Bindings"]
+    options: ["setState вызывает функцию билд и состояния виджетов автоматически обновляются", "Корневой элемент по подписке уведомляется о том, что состояние одного из потомков изменилось, после чего передает движку макет и положение измененного виджета для перерисовки","Элемент в дереве помечается как dirty, и передается в список _dirtyElements у BuildOwner, все элементы из этого списка, соотвествующие им виджеты и рендер объекты будут перерисованы при следующем вызове WidgetsBinding.drawFrame"]
+    correct_option_id: 2
+    explanation: "Третье) https://habr.com/ru/articles/501862/ - первая из цикла статей Михаила Зотьева 'Flutter под капотом'"
+    open_period: 20
+  - question: "Что произойдет если внутри функции build вызывать метод setState?"
+    picture: "https://i.ibb.co/Rb4R4rY/2024-02-26-19-27-48.png"
+    options: ["Ничего, приложение продолжит работать. Ошибок не будет.", "Упадет предупреждение в логах, приложение продолжит работать.", "Произойдет бесконечный цикл перерисовки. Приложение крашнется.", "Произойдет утечка памяти. Приложение крашнется"]
     correct_option_id: 0
-    explanation: ""
+    explanation: "Приложение продолжит работать и не возникнет бесконечного цикла, так как при вызове markNeedsRebuld, вызываемой setState происходит проверка, является ли элемент dirty, если является (что происходит когда элемент уже был отмечен для перерисовки), то функция просто досрочно завершится."
     open_period: 20
-  - question: "Легковесные потоки в языке Kotlin"
+  - question: "Может ли неактивный элемент быть встроен заново в дерево?"
     picture: ""
-    options: ["Goroutine", "Coroutine", "Isolate", "Thread"]
+    options: ["Нет, он будет удален из памяти при следующем запуске цикла сборки мусора", "Да, он снова появится в дереве как только у его виджета будет вызван setState","Да, он может снова появится в дереве если у него или у его родительского элемента есть глобальный ключ, но только в течение текущего фрейма"]
+    correct_option_id: 2
+    explanation: "Все из той же оперы, что и вопрос выше, читайте статью Зотьева)"
+    open_period: 20
+  - question: "Есть ли во Flutter возможность подписаться на изменения виджета, находящегося выше по дереву?"
+    picture: ""
+    options: ["Нет, только использовать StreamBuilder","Да, подписаться на InheritedWidget", "Да, использовать ChangeNotifier"]
     correct_option_id: 1
-    explanation: ""
+    explanation: "Это база, используем Inherited Widget"
     open_period: 20
-  - question: "Набирающий популярность архитектурный паттерн, в основе которого лежат подписки на единый стор"
+  - question: "Как можно 'достучаться' из Flutter приложения до нативного функционала платформы?"
     picture: ""
-    options: ["MVVM", "MVVM", "VIPER", "MVI", "Redux"]
-    correct_option_id: 3
-    explanation: ""
+    options: ["Создать канал платформы на стороне Flutter приложения и плагинов", "Написать FFI интерфейс", "Запустить изолят между Flutter приложением и платформой", "Никак"]
+    correct_option_id: 0
+    explanation: "Для этих целей создан механизм каналов платформы, чаще всего можно и нужно использовать MethodChannel. Статейка про это https://habr.com/ru/articles/666272/"
     open_period: 20
-
-  
-  
+  - question: "Как называется новый движок во Flutter?"
+    picture: ""
+    options: [ "Skia","Skiko","Impeller", "Implier"]
+    correct_option_id: 2
+    explanation: "Impeller. Implier - это вообще локальный мем. У нас в компании половина разрабов почему-то называла импеллер имплаером)))"
+    open_period: 20
+  - question: "Какую проблему призван решить Impeller"
+    picture: ""
+    options: ["Проблема прекомпиляции шейдеров и поддержки современных графических API", "Как таковой проблемы не было, команда Flutter хотела отгородиться от стороннего графического решения", "Проблему обрыва биндингов между движком и Dart рантаймом из-за чего происходили неожиданные краши"]
+    correct_option_id: 0
+    explanation: "Верный первый. При старте приложения могли подтормаживать анимации, особенно на iOS, а также Skia уже просто морально устаревала и не поддерживала ни Vulcan, ни Metal (что было опять таки особенно больно на iOS)"
+    open_period: 20
+  - question: "Какого типа виджетов НЕ существует во Flutter?"
+    picture: ""
+    options: ["Stateless Widget", "Inherited Widget", "Stateful Widget", "Semantics", "Все существуют"]
+    correct_option_id: 4
+    explanation: "База, существуют все"
+    open_period: 20
+  - question: "Название протокола расчета макета для НЕ СКРОЛЯЩИХСЯ рендер объектов во Flutter"
+    picture: ""
+    options: ["Basic Protocol", "Bundle Protocol", "Box Protocol", "Render Protocol"]
+    correct_option_id: 2
+    explanation: "Box Protocol. Подробнее тут: https://api.flutter.dev/flutter/rendering/RenderBox-class.html"
+    open_period: 20
+  - question: "Название протокола расчета макета для СКРОЛЯЩИХСЯ рендер объектов во Flutter"
+    picture: ""
+    options: ["Sliver Protocol","Slider Protocol", "Scroll Protocol"]
+    correct_option_id: 0
+    explanation: "Sliver Protocol. Подробнее тут: https://api.flutter.dev/flutter/rendering/RenderSliver-class.html"
+    open_period: 20
+  - question: "Выберете НЕВЕРНОЕ утверждение. В рамках верстки Flutter..."
+    picture: ""
+    options: ["Ограничения спускаются от родительских виджетов к потомкам", "Виджеты-потомки сами устанавливают свое местоположение", "Виджеты-потомки сами устанавливают свой желаемый размер", "Все утверждения верны"]
+    correct_option_id: 1
+    explanation: "Три правила отрисовки во Flutter: 1) Ограничения передаются от родителя к ребенку. 2) Родитель устанавливает положение ребенка. 3) Ребенок сам устанавливает свой желаемый размер."
+    open_period: 20
+  - question: "Какая асимптотическая сложность получения ближайшего InheritedWidget, например, через context.getInheritedWidgetOfExactType<T>()?"
+    picture: ""
+    options: ["O(1)", "O(log(n))", "O(n)", "O(nlog(n))"]
+    correct_option_id: 0
+    explanation: "Сложность получения Inherited Widget'a через контекст - O(1), так как при создании каждого нового Элемента, ему передается HashMap, содержащая все инхеритед виджеты находящиеся выше по дереву"
+    open_period: 20
+  - question: "Есть ли во Flutter возможность подключения 'нативных' экранов, написанных на Kotlin и Swift?"
+    picture: ""
+    options: ["Нету", "Есть, через FlutterToNativeViewAdapter", "Есть, через через механизм PlatformView"]
+    correct_option_id: 2
+    explanation: "Для этих целей существует PlatformView (AndroidView, AndroidViewSurface и UIKitView). Эти решения имеют определенные определенные недостатки, в частности дополнительные накладные расходы, более низкий FPS и определенные проблемы на Android с версиями до андроид 10, но тем не менее зачастую используются для каких-то сложных специфических целей, например, для отображения карт (Yandex MapKit)."
+    open_period: 20
