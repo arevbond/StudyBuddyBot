@@ -16,9 +16,6 @@ import (
 
 const (
 	defaultAward         = 100
-	easyLevelBonus       = 50
-	mediumLevelBonus     = 100
-	hardLevelBonus       = 150
 	timeBetweenQuestions = 5
 )
 
@@ -36,13 +33,14 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 
 	strs := strings.Split(inMessage, " ")
 	if len(strs) != 2 {
-		return &Response{message: "Введите название quiz", method: sendMessageMethod}, nil
+		return &Response{message: msgWriteQuizName, method: sendMessageMethod}, nil
 	}
 	filename := strs[1]
 
 	quizGame, err := quiz.New(filename)
 
 	if err != nil {
+		_ = p.tg.SendMessage(chat.ID, fmt.Sprintf(msgErrorQuiz, filename), telegram.WithoutParseMode, messageID)
 		return nil, e.Wrap("can't start quiz", err)
 	}
 
@@ -55,9 +53,7 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 func (p *Processor) startQuiz(quizGame quiz.Quiz, chatID int) {
 	time.Sleep(5 * time.Second)
 
-	questions := quizGame.Questions
-
-	for _, question := range questions {
+	for _, question := range quizGame.Questions {
 		currentQuestion = question
 		if question.Picture != "" {
 			_ = p.tg.SendPhoto(chatID, question.Picture)
@@ -74,23 +70,9 @@ func (p *Processor) startQuiz(quizGame quiz.Quiz, chatID int) {
 
 func (p *Processor) awarding(chatID int, level quiz.Level) string {
 	award := defaultAward
-	switch level {
-	case quiz.Easy:
-		award += easyLevelBonus
-	case quiz.Medium:
-		award += mediumLevelBonus
-	case quiz.Hard:
-		award += hardLevelBonus
-	}
+	award += level.Bonus()
 
-	players := []int{}
-	for player, _ := range currentPlayers {
-		players = append(players, player)
-	}
-	sort.Slice(players, func(i, j int) bool {
-		return currentPlayers[players[i]] > currentPlayers[players[j]]
-	})
-
+	players := getSortedQuizPlayers()
 	result := "Результаты:\n"
 
 	for _, player := range players {
@@ -109,4 +91,15 @@ func (p *Processor) awarding(chatID int, level quiz.Level) string {
 			currentPlayers[player]*award)
 	}
 	return result
+}
+
+func getSortedQuizPlayers() []int {
+	players := []int{}
+	for player, _ := range currentPlayers {
+		players = append(players, player)
+	}
+	sort.Slice(players, func(i, j int) bool {
+		return currentPlayers[players[i]] > currentPlayers[players[j]]
+	})
+	return players
 }

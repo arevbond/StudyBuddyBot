@@ -1,5 +1,5 @@
 theme: "Солянка"
-level:
+level: 4
 questions:
   - question: "Сколько языков программирования знает Коровченко"
     picture: ""
@@ -13,18 +13,4 @@ questions:
     options: [ "Builder", "Singleton", "Memento", "Decorator" ]
     correct_option_id: 1
     picture: "https://i.postimg.cc/VsSKLBjB/image.png"
-    open_period: 5
-
-  - question: "Как называется регистр процессора, который указывает какую команду нужно выполнить следующей?"
-    explanation: "также PC = program counter, IP = instruction pointer, IAR = instruction address register, СчАК = счётчик адреса (машинных) команд"
-    options: ["Счетчик команд", "Определяющий указатель", "Стэковый указатель", "Счетчик стэка"]
-    correct_option_id: 0
-    picture: ""
-    open_period: 5
-
-  - question: "Это порция данных, обрабатываемых ЦП за одну операцию."
-    explanation: "Машинное слово есть фрагмент данных фиксированного размера, обрабатываемый как единое целое с помощью набора команд или аппаратного обеспечения процессора."
-    options: ["Команда процессора", "Адрес памяти", "Машинное слово", "Битовая команда"]
-    correct_option_id: 2
-    picture: ""
     open_period: 5

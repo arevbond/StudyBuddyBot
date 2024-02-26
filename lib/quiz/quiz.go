@@ -14,6 +14,18 @@ const pathToFile = "lib/quiz/quizzes/"
 type Level int
 
 const (
+	defaultBonus = 50
+)
+
+func (l Level) Bonus() int {
+	switch l {
+	case Easy, Medium, Hard, VeryHard:
+		return int(l) * defaultBonus
+	}
+	return 0
+}
+
+const (
 	Easy     Level = 1
 	Medium         = 2
 	Hard           = 3
