@@ -1,102 +1,213 @@
 theme: "Programming"
 level: 2
 questions:
-  - question: "Как называется регистр процессора, который указывает какую команду нужно выполнить следующей?"
-    picture: ""
-    options: ["Счетчик команд", "Определяющий указатель", "Стэк", "Указатель в памяти"]
-    correct_option_id: 0
+  - question: "Какой паттерн проектирования изображён на скриншоте?"
     explanation: ""
+    options: [ "Builder", "Singleton", "Memento", "Decorator" ]
+    correct_option_id: 1
+    picture: "https://i.postimg.cc/VsSKLBjB/image.png"
+    open_period: 35
+
+  - question: "Как называется регистр процессора, который указывает какую команду нужно выполнить следующей?"
+    explanation: "также PC = program counter, IP = instruction pointer, IAR = instruction address register, СчАК = счётчик адреса (машинных) команд"
+    options: ["Счетчик команд", "Определяющий указатель", "Стэковый указатель", "Счетчик стэка"]
+    correct_option_id: 0
+    picture: ""
     open_period: 20
     
   - question: "Это порция данных, обрабатываемых ЦП за одну операцию."
-    picture: ""
-    options: ["Команда процессора", "Адрес памяти", "Машинное слово", "Битовая карта"]
+    explanation: "Машинное слово есть фрагмент данных фиксированного размера, обрабатываемый как единое целое с помощью набора команд или аппаратного обеспечения процессора."
+    options: ["Команда процессора", "Адрес памяти", "Машинное слово", "Битовая команда"]
     correct_option_id: 2
-    explanation: ""
+    picture: ""
     open_period: 20
 
   - question: "Отец языка С. Также разрабатывал OC UNIX."
-    picture: ""
-    options: ["Роберт Гриземер", "Дэйв Пресотто", "Денис Путнов", "Деннис Ритчи"]
+    explanation: "Да, сам недавно узнал, что не Денис Путнов."
+    options: ["Роберт Гриземер", "Дэйв Пресотто", "Денис Путнов", "Деннис Ритчи", "Кен Томпсон", "Роб Пайк", "Фил Уинтерботт", "Стив Возняк"]
     correct_option_id: 3
-    explanation: ""
-    open_period: 20
+    picture: ""
+    open_period: 25
 
   - question: "Один из разработчиков Unix, операционных систем Plan 9 и Inferno, создатель языка программирования B, соавтор языка Go, принимал участие в конструировании шахматного компьютера Belle, первой машины, достигшей уровня игры мастера с рейтингом USCF 2250."
-    picture: ""
-    options: ["Кен Томпсон", "Роб Пайк", "Фил Уинтерботт", "Стив Возняк"]
-    correct_option_id: 0
     explanation: ""
-    open_period: 20
+    options: ["Роберт Гриземер", "Дэйв Пресотто", "Денис Путнов", "Деннис Ритчи", "Кен Томпсон", "Роб Пайк", "Фил Уинтерботт", "Стив Возняк"]
+    picture: ""
+    correct_option_id: 4
+    open_period: 25
     
   - question: "Год рождения языка Си"
-    picture: ""
-    options: ["1969", "1972", "1973", "1970"]
-    correct_option_id: 1
     explanation: ""
+    options: ["1967", "1972", "1983", "1990"]
+    correct_option_id: 1
+    picture: ""
     open_period: 20
     
   - question: "Что такое один бит в вычислительной технике?"
-    picture: ""
+    explanation: "Ноу коментс (фундамент базы)"
     options: ["базовая информационная единица, принимающая 256 возможных состояний (например, от 0 до 255)", "единица информации, соответствующая одной (любой) команде центрального процессора", "базовая информационная единица, принимающая только два состояния (например, 0 и 1)", "единица информации, состоящая из восьми байт"]
     correct_option_id: 2
-    explanation: ""
+    picture: ""
     open_period: 30
 
-  - question: ""
+  - question: "Как называется аппаратный контроллер, присутствующий у большинства систем, который помогает обрабатывать прерывания на ввод-вывод, но делает это намного медленее, чем ЦП."
+    explanation: "DMA используется как режим обмена данными между устройствами компьютера или же между устройством и основной памятью, в котором центральный процессор не участвует. Так как данные не пересылаются в ЦП и обратно, скорость передачи увеличивается. https://habr.com/ru/articles/37455/"
+    options: ["DMA", "PIO", "LSO", "SSI"]
+    correct_option_id: 0
     picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
-    explanation: ""
-    open_period: 20
+    open_period: 30
 
-  - question: ""
+  - question: "Как называется сегмент, обеспечивающий передачу данных между двумя соседними узлами в компьютерных сетях."
+    explanation: "Или по другому link"
+    options: ["Звено", "Линия связи", "Составной канал", "Первичный канал"]
+    correct_option_id: 0
     picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
-    explanation: ""
-    open_period: 20   
+    open_period: 25
         
-  - question: ""
+  - question: "Какой тип кабеля практически не применяется в компьютерных сетях?"
+    explanation: "омедненный алюминий это даже на 20-ти метровом отркзке 10 мегабит. Кабель проходит тестирование только на 3-ю категорию."
+    options: ["Витая пара", "Опто-волокно", "Коаксильный кабеь", "Омедненный алюминий"]
+    correct_option_id: 3
     picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
-    explanation: ""
-    open_period: 20
+    open_period: 25
 
-  - question: ""
-    picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
+  - question: "Сколько файлов содержит репозиторий ядра Linux?"
     explanation: ""
-    open_period: 20
+    options: ["~1k", "~80k", "~450k", ">3.5m"]
+    correct_option_id: 1
+    picture: ""
+    open_period: 25
 
-  - question: ""
-    picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
+  - question: "Сколько весит репозиторий ядра Linux?"
     explanation: ""
-    open_period: 20   
+    options: ["~5 Гб", "~25 Гб", "~100 Гб", "~300 Гб"]
+    correct_option_id: 0
+    picture: ""
+    open_period: 25
+
+  - question: "Сколько файлов содержит кодовая база репозитория Windows?"
+    explanation: "Сам охуел. Но вроде бы это не такой уж и нонсанс. Репозитории современных игрк имеют примерно столько же файлов."
+    options: ["~1k", "~80k", "~450k", ">3.5m"]
+    correct_option_id: 3
+    picture: ""
+    open_period: 25
         
-  - question: ""
+
+  - question: "Сколько весит репозиторий Windows?"
+    explanation: "Тоже не биг дил. На момент января 2022 года, вес репозитория Ubuntu для основных дистрибутивов (например, Ubuntu Desktop или Server) составлял несколько сотен гигабайт."
+    options: ["~5 Гб", "~25 Гб", "~100 Гб", "~300 Гб"]
+    correct_option_id: 3
     picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
+    open_period: 25
+
+  - question: "Как и в сетевой модели OSI, программное обеспеченние ввода-вывода организовано в виде четырех взаимосвязных уровней. Выберите правильную псоледовательность, начиная с самого низшего уровня."
     explanation: ""
-    open_period: 20
+    options: ["Драйверы устройтсв - Обработчик прерываний - Устроство независмое ПО ОС - ПО уровня пользователя", "Драйверы устройтсв - Обработчик прерываний - ПО уровня пользователя - Устроство независмое ПО ОС", "Драйверы устройтсв - Устроство независмое ПО ОС - Обработчик прерываний - ПО уровня пользователя", "Обработчик прерываний - Драйверы устройтсв - Устроство независмое ПО ОС - ПО уровня пользователя"]
+    correct_option_id: 3
+    picture: ""
+    open_period: 40
 
   - question: ""
-    picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
     explanation: ""
-    open_period: 20
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
 
   - question: ""
-    picture: ""
-    options: ["", "", "", ""]
-    correct_option_id: .
     explanation: ""
-    open_period: 20   
- 
-    
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
