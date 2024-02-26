@@ -14,9 +14,10 @@ const pathToFile = "lib/quiz/quizzes/"
 type Level int
 
 const (
-	Easy   Level = 0
-	Medium       = 1
-	Hard         = 2
+	Easy     Level = 1
+	Medium         = 2
+	Hard           = 3
+	VeryHard       = 4
 )
 
 const (
@@ -37,15 +38,27 @@ func (q Quiz) GetLevel() string {
 		return "Medium"
 	case Hard:
 		return "Hard"
+	case VeryHard:
+		return "VeryHard"
 	}
 	return "Unknown"
 }
 
 func New(filename string) (Quiz, error) {
+	quiz, err := readQuizFromFile(filename)
+	if err != nil {
+		return Quiz{}, e.Wrap("can't read quiz", err)
+	}
+	addIndexes(quiz.Questions)
+	return quiz, nil
+}
+
+func readQuizFromFile(filename string) (Quiz, error) {
 	data, err := os.ReadFile(pathToFile + filename)
 	if err != nil {
 		return Quiz{}, e.Wrap("can't read file", err)
 	}
+
 	var quiz Quiz
 
 	switch strings.Split(filename, ".")[1] {
@@ -60,17 +73,18 @@ func New(filename string) (Quiz, error) {
 			return Quiz{}, e.Wrap("can't unmarshall yaml", err)
 		}
 	}
+	return quiz, nil
+}
 
-	n := len(quiz.Questions)
+func addIndexes(questions []*Question) {
+	n := len(questions)
 
-	for i, q := range quiz.Questions {
+	for i, q := range questions {
 		if q.OpenPeriod < 5 {
 			q.OpenPeriod = defaultOpenPeriod
 		}
 		q.Question += fmt.Sprintf(" [%d/%d]", i+1, n)
 	}
-
-	return quiz, nil
 }
 
 type Question struct {
@@ -81,13 +95,4 @@ type Question struct {
 	AllowsMultipleAnswers bool     `json:"allows_multiple_answers" yaml:"allows_multiple_answers"`
 	Explanation           string   `json:"explanation" yaml:"explanation"`
 	OpenPeriod            int      `default:"15" json:"open_period" yaml:"open_period"`
-}
-
-func (q Question) IsCorrect(message string) bool {
-	for _, answer := range q.Options {
-		if strings.TrimSpace(strings.ToLower(message)) == strings.TrimSpace(strings.ToLower(answer)) {
-			return true
-		}
-	}
-	return false
 }

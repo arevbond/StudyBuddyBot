@@ -8,23 +8,23 @@ questions:
     explanation: "Это факт"
     open_period: 5
 
-#  - question: "Для решения проблемы противоричивости файловых систем на многих компьютерах имеются служебные программы проверяющие их непротиворечивость. В Windows это - sfc. А в Unix?"
-#    picture: ""
-#    options: [ "fsck", "fuck", "у unix такой нету", "ebola" ]
-#    correct_option_id: 0
-#    explanation: ""
-#    open_period: 5
-#
-#  - question: "Первые четыре уровня модели OSI?"
-#    picture: ""
-#    options: [ "Физический Канальный Трансопртный Сетевой", "Физический Прикладной Трансопртный Сетевой", "Физический Канальный Сетевой Транспортный", "Канальный Физический Сетевой Транспортный" ]
-#    correct_option_id: 2
-#    explanation: "База"
-#    open_period: 5
-#
-#  - question: "Сколько бревен запостил Рома до 15:00 (в это время я начал писать этот квиз)"
-#    picture: ""
-#    options: [ "27", "25", "26", "28" ]
-#    correct_option_id: 0
-#    explanation: "База"
-#    open_period: 5
+  - question: "Какой паттерн проектирования изображён на скриншоте?"
+    explanation: ""
+    options: [ "Builder", "Singleton", "Memento", "Decorator" ]
+    correct_option_id: 1
+    picture: "https://i.postimg.cc/VsSKLBjB/image.png"
+    open_period: 5
+
+  - question: "Как называется регистр процессора, который указывает какую команду нужно выполнить следующей?"
+    explanation: "также PC = program counter, IP = instruction pointer, IAR = instruction address register, СчАК = счётчик адреса (машинных) команд"
+    options: ["Счетчик команд", "Определяющий указатель", "Стэковый указатель", "Счетчик стэка"]
+    correct_option_id: 0
+    picture: ""
+    open_period: 5
+
+  - question: "Это порция данных, обрабатываемых ЦП за одну операцию."
+    explanation: "Машинное слово есть фрагмент данных фиксированного размера, обрабатываемый как единое целое с помощью набора команд или аппаратного обеспечения процессора."
+    options: ["Команда процессора", "Адрес памяти", "Машинное слово", "Битовая команда"]
+    correct_option_id: 2
+    picture: ""
+    open_period: 5
