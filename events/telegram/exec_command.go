@@ -87,9 +87,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	ctx := context.Background()
 	dbUser, err := p.getUser(ctx, user, chat.ID)
 	userStats, err := p.storage.GetUserStats(context.Background(), dbUser)
-	if err == storage.ErrUserNotExist {
-		return e.Wrap("not find user stats", err)
-	} else if err != nil {
+	if err != nil {
 		return e.Wrap("not user stats", err)
 	}
 
@@ -105,7 +103,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	case utils.IsYesCommand:
 
 		userStats.YesCount++
-		err = p.storage.UpdateUserStats(context.Background(), userStats)
+		err = p.storage.UpdateUserStats(ctx, userStats)
 		if err != nil {
 			log.Print(err)
 		}
@@ -113,7 +111,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	case utils.IsNoCommand:
 
 		userStats.NoCount++
-		err = p.storage.UpdateUserStats(context.Background(), userStats)
+		err = p.storage.UpdateUserStats(ctx, userStats)
 		if err != nil {
 			log.Print(err)
 		}
