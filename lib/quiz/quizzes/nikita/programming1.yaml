@@ -107,107 +107,107 @@ questions:
     picture: ""
     open_period: 40
 
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
