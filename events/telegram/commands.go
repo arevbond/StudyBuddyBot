@@ -35,6 +35,7 @@ const (
 // quiz
 const (
 	StartQuizCmd = "/quiz"
+	StopQuizCmd  = "/stop"
 )
 
 // auction

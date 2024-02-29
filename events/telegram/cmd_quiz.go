@@ -1,5 +1,7 @@
 package telegram
 
+// TODO: add index in /quiz namequiz.yaml {index_question}
+// TODO: add /pause && /continue
 import (
 	"context"
 	"errors"
@@ -21,6 +23,7 @@ const (
 
 var currentQuestion = &quiz.Question{}
 var currentPlayers = make(map[int]int)
+var quit = make(chan bool)
 
 type startQuizExec string
 
@@ -54,12 +57,19 @@ func (p *Processor) startQuiz(quizGame quiz.Quiz, chatID int) {
 	time.Sleep(5 * time.Second)
 
 	for _, question := range quizGame.Questions {
-		currentQuestion = question
-		if question.Picture != "" {
-			_ = p.tg.SendPhoto(chatID, question.Picture)
+		select {
+		case <-quit:
+			currentPlayers = make(map[int]int)
+			currentQuestion = &quiz.Question{}
+			return
+		default:
+			currentQuestion = question
+			if question.Picture != "" {
+				_ = p.tg.SendPhoto(chatID, question.Picture)
+			}
+			_ = p.tg.SendPoll(telegram.NewSendPoll(chatID, question))
+			time.Sleep(time.Duration(question.OpenPeriod+timeBetweenQuestions) * time.Second)
 		}
-		_ = p.tg.SendPoll(telegram.NewSendPoll(chatID, question))
-		time.Sleep(time.Duration(question.OpenPeriod+timeBetweenQuestions) * time.Second)
 	}
 
 	awardMessage := p.awarding(chatID, quizGame.Level)
@@ -102,4 +112,14 @@ func getSortedQuizPlayers() []int {
 		return currentPlayers[players[i]] > currentPlayers[players[j]]
 	})
 	return players
+}
+
+type stopQuizExec string
+
+func (s stopQuizExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	quit <- true
+
+	return &Response{message: msgStoppedQuiz, method: sendMessageMethod, replyMessageId: messageID}, nil
 }
