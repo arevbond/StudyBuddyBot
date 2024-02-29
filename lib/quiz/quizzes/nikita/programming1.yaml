@@ -24,22 +24,22 @@ questions:
 
   - question: "Отец языка С. Также разрабатывал OC UNIX."
     explanation: "Да, сам недавно узнал, что не Денис Путнов."
-    options: ["Роберт Гриземер", "Дэйв Пресотто", "Денис Путнов", "Деннис Ритчи", "Кен Томпсон", "Роб Пайк", "Фил Уинтерботт", "Стив Возняк"]
-    correct_option_id: 3
+    options: ["Денис Путнов", "Кен Томпсон", "Роберт Гриземер", "Стив Возняк", "Дэйв Пресотто", "Роб Пайк", "Фил Уинтерботт", "Деннис Ритчи"]
+    correct_option_id: 7
     picture: ""
     open_period: 25
 
   - question: "Один из разработчиков Unix, операционных систем Plan 9 и Inferno, создатель языка программирования B, соавтор языка Go, принимал участие в конструировании шахматного компьютера Belle, первой машины, достигшей уровня игры мастера с рейтингом USCF 2250."
     explanation: ""
-    options: ["Роберт Гриземер", "Дэйв Пресотто", "Денис Путнов", "Деннис Ритчи", "Кен Томпсон", "Роб Пайк", "Фил Уинтерботт", "Стив Возняк"]
+    options: ["Денис Путнов", "Кен Томпсон", "Роберт Гриземер", "Стив Возняк", "Дэйв Пресотто", "Роб Пайк", "Фил Уинтерботт", "Деннис Ритчи"]
     picture: ""
-    correct_option_id: 4
-    open_period: 25
+    correct_option_id: 1
+    open_period: 30
     
   - question: "Год рождения языка Си"
     explanation: ""
-    options: ["1967", "1972", "1983", "1990"]
-    correct_option_id: 1
+    options: ["1972", "1975", "1983", "1990"]
+    correct_option_id: 0
     picture: ""
     open_period: 20
     
@@ -51,7 +51,7 @@ questions:
     open_period: 30
 
   - question: "Как называется аппаратный контроллер, присутствующий у большинства систем, который помогает обрабатывать прерывания на ввод-вывод, но делает это намного медленее, чем ЦП."
-    explanation: "DMA используется как режим обмена данными между устройствами компьютера или же между устройством и основной памятью, в котором центральный процессор не участвует. Так как данные не пересылаются в ЦП и обратно, скорость передачи увеличивается. https://habr.com/ru/articles/37455/"
+    explanation: "Так как данные не пересылаются в ЦП и обратно, скорость передачи увеличивается. https://habr.com/ru/articles/37455/"
     options: ["DMA", "PIO", "LSO", "SSI"]
     correct_option_id: 0
     picture: ""
@@ -69,7 +69,7 @@ questions:
     options: ["Витая пара", "Опто-волокно", "Коаксильный кабеь", "Омедненный алюминий"]
     correct_option_id: 3
     picture: ""
-    open_period: 25
+    open_period: 20
 
   - question: "Сколько файлов содержит репозиторий ядра Linux?"
     explanation: ""
@@ -102,112 +102,112 @@ questions:
 
   - question: "Как и в сетевой модели OSI, программное обеспеченние ввода-вывода организовано в виде четырех взаимосвязных уровней. Выберите правильную псоледовательность, начиная с самого низшего уровня."
     explanation: ""
-    options: ["Драйверы устройтсв - Обработчик прерываний - Устроство независмое ПО ОС - ПО уровня пользователя", "Драйверы устройтсв - Обработчик прерываний - ПО уровня пользователя - Устроство независмое ПО ОС", "Драйверы устройтсв - Устроство независмое ПО ОС - Обработчик прерываний - ПО уровня пользователя", "Обработчик прерываний - Драйверы устройтсв - Устроство независмое ПО ОС - ПО уровня пользователя"]
+    options: ["Драйверы устройтсв - Обработчик прерываний - Устроство независмое ПО ОС - ПО уровня пользователя", "Обработчик прерываний - Обработчик прерываний - ПО уровня пользователя - Устроство независмое ПО ОС", "Драйверы устройтсв - Устроство независмое ПО ОС - Обработчик прерываний - ПО уровня пользователя", "Обработчик прерываний - Драйверы устройтсв - Устроство независмое ПО ОС - ПО уровня пользователя"]
     correct_option_id: 3
     picture: ""
     open_period: 40
 
-  - question: ""
+  - question: "Этот паттерн проектирования означает отделение абстракции от реализации, чтобы их обе можно было изменять независимо друг от друга."
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Мост", "Адаптер", "Декоратор", "Заместитель" ]
+    correct_option_id: 0
     picture: ""
     open_period: 25
 
-  - question: ""
+  - question: "Этот паттерн проектирования позволяет подключать к объекту дополнительное поведение (статически или динамически), не влияя на поведение других объектов того же класса."
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Заместитель", "Фасад", "Компоновщик", "Декоратор" ]
+    correct_option_id: 3
     picture: ""
     open_period: 25
 
-  - question: ""
+  - question: "Этот паттерн проектирования зачастую является объектом, который предоставляет упрощённый интерфейс для более крупного кода."
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Прототип", "Хранитель", "Посредник", "Фасад" ]
+    correct_option_id: 3
     picture: ""
     open_period: 25
 
-  - question: ""
+  - question: "Этот объект из структурных паттернов, минимизирующий использование памяти за счёт общего с другими, такими же объектами использования как можно большего объёма данных."
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Flyweight", "Builder", "Composite", "Adapter" ]
+    correct_option_id: 0
     picture: ""
     open_period: 25
 
-  - question: ""
+  - question: "Данный паттер предоставляет объект для контроля доступа к другому объекту, реализуя тот же самый интерфейс."
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Adapter", "Proxy", "Decorator", "Singleton" ]
+    correct_option_id: 1
     picture: ""
     open_period: 25
 
-  - question: ""
+  - question: "Данный поведенческий шаблон  это способ доступа к элементам объекта без раскрытия базового представлени"
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Цепочка ответственности", "Команда", "Заместитель", "Итератор" ]
+    correct_option_id: 3
     picture: ""
     open_period: 25
 
-  - question: ""
+  - question: "Какой шаблон определяет объект, который инкапсулирует способ взаимодействия набора объектов."
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Mediator", "Composite", "Builder", "Bridge" ]
+    correct_option_id: 0
     picture: ""
     open_period: 25
 
-  - question: ""
+  - question: "Какой паттерн можно описать такой аналогией:  люди, ищущие работу, подписываются на публикации на сайтах вакансий и получают уведомления, когда появляются вакансии, подходящие по параметрам."
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Watcher", "Warder", "Getter", "Observer" ]
+    correct_option_id: 3
     picture: ""
     open_period: 25
 
-  - question: ""
+  - question: "Данный паттерн определяет каркас выполнения определённого алгоритма, но реализацию самих этапов делегирует дочерним классам."
     explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
+    options: [ "Шаблонный метод", "Стратегия", "Состояние", "Наблюдатель" ]
+    correct_option_id: 0
     picture: ""
     open_period: 25
 
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
-
-  - question: ""
-    explanation: ""
-    options: [ "", "", "", "" ]
-    correct_option_id: .
-    picture: ""
-    open_period: 25
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25
+#
+#  - question: ""
+#    explanation: ""
+#    options: [ "", "", "", "" ]
+#    correct_option_id: .
+#    picture: ""
+#    open_period: 25

@@ -33,7 +33,9 @@ const (
 )
 
 const (
-	defaultOpenPeriod = 20
+	maxLenQuestion    = 300
+	maxLenExplanation = 200
+	maxLenOption      = 100
 )
 
 type Quiz struct {
@@ -62,6 +64,7 @@ func New(filename string) (Quiz, error) {
 		return Quiz{}, e.Wrap("can't read quiz", err)
 	}
 	addIndexes(quiz.Questions)
+	formatFields(quiz.Questions)
 	return quiz, nil
 }
 
@@ -92,11 +95,29 @@ func addIndexes(questions []*Question) {
 	n := len(questions)
 
 	for i, q := range questions {
-		if q.OpenPeriod < 5 {
-			q.OpenPeriod = defaultOpenPeriod
-		}
 		q.Question += fmt.Sprintf(" [%d/%d]", i+1, n)
 	}
+}
+
+func formatFields(questions []*Question) {
+	for i, q := range questions {
+		if len([]rune(q.Question)) > maxLenQuestion {
+			questions[i].Question = format(q.Question, maxLenQuestion)
+		}
+		if len([]rune(q.Explanation)) > maxLenExplanation {
+			questions[i].Explanation = format(q.Explanation, maxLenExplanation)
+		}
+		for j, option := range q.Options {
+			if len([]rune(option)) > maxLenOption {
+				questions[i].Options[j] = format(option, maxLenOption)
+			}
+		}
+	}
+}
+
+func format(str string, maxLen int) string {
+	chars := strings.Split(str, "")
+	return strings.Join(chars[:maxLen], "")
 }
 
 type Question struct {
