@@ -75,8 +75,8 @@ func (p *Processor) getHp(user *telegram.User, chat *telegram.Chat) (string, err
 
 	dbUser.HpTakedAt = time.Now()
 
-	if dbUser.HealthPoints < DefaultHpUser {
-		dbUser.HealthPoints += DefaultHpUser
+	if dbUser.HealthPoints < defaultHpUser {
+		dbUser.HealthPoints += defaultHpUser
 	} else {
 		dbUser.HealthPoints += 1
 	}

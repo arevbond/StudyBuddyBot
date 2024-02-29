@@ -22,8 +22,8 @@ const (
 	sendPoll
 	doNothingMethod
 
-	MaxDickChangeCount = 1
-	DefaultHpUser      = 3
+	maxDickChangeCount = 1
+	defaultHpUser      = 3
 
 	answerOnYes = "Пизда"
 	answerOnNo  = "Пидора ответ"
@@ -187,8 +187,8 @@ func (p *Processor) createNewUserInDB(chatID int, user *telegram.User) (*storage
 		LastName:           user.LastName,
 		Username:           user.Username,
 		UserStatId:         dbUserStatID,
-		MaxDickChangeCount: MaxDickChangeCount,
-		HealthPoints:       DefaultHpUser,
+		MaxDickChangeCount: maxDickChangeCount,
+		HealthPoints:       defaultHpUser,
 	}
 	err = p.storage.CreateUser(context.Background(), dbUser)
 
