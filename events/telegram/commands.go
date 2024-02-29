@@ -10,55 +10,40 @@ const (
 	DickTopCmd  = "/top_dick"
 	DickDuelCmd = "/duel"
 	GetHPCmd    = "/hp"
-)
 
-// gay
-const (
+	// gay
 	GayStartCmd = "/gay"
 	GayTopCmd   = "/top_gay"
-)
 
-// calendar
-const (
+	// calendar
 	AddCalendarIDCmd = "/add_calendar"
 	ScheduleCmd      = "/schedule"
-)
 
-// homework
-const (
+	// homework
 	AddHomeworkCmd    = "/add"
 	GetHomeworkCmd    = "/get"
 	DeleteHomeworkCmd = "/delete"
 	CancelHomeworkCmd = "/cancel"
-)
 
-// quiz
-const (
-	StartQuizCmd = "/quiz"
-)
+	// quit
+	StartQuizCmd = "/quit"
+	StopQuizCmd  = "/stop"
 
-// auction
-const (
+	// auction
 	StartAuctionCmd  = "/start_auction"
 	FinishAuctionCmd = "/finish_auction"
 	AddDepositCmd    = "/deposit"
 	AuctionCmd       = "/auction"
-)
 
-// stats
-const (
+	// stats
 	GetMyStatsCmd   = "/my_stats"
 	GetChatStatsCmd = "/chat_stats"
-)
 
-// admins
-const (
+	// admins
 	ChangeDickCmd         = "/change_dick"
 	SendMessageByAdminCmd = "/send_message"
-)
 
-// utils
-const (
+	// utils
 	AllCmd       = "/all"
 	HelpCmd      = "/help"
 	AnecdotCmd   = "/joke"
@@ -66,10 +51,44 @@ const (
 	XkcdCmd      = "/xkcd"
 	FlipCmd      = "/flip"
 	GetChatIDCmd = "/chat_id"
-)
 
-// other
-const (
+	// other
 	// HOLIDAY
 	HolidayCmd = "/holiday"
 )
+
+// TODO: отрефакторить функцию; сделать админские команды более явными
+func getAllCommands() map[string]CmdExecutor {
+	return map[string]CmdExecutor{
+		AllCmd + suffix:                allUsernamesExec(AllCmd + suffix),
+		GayTopCmd + suffix:             topGaysExec(GayTopCmd + suffix),
+		GayStartCmd + suffix:           gayExec(GayStartCmd + suffix),
+		DickTopCmd + suffix:            dickTopExec(DickTopCmd + suffix),
+		DicStartCmd + suffix:           dickStartExec(DicStartCmd + suffix),
+		GetHPCmd + suffix:              getHpExec(GetHPCmd + suffix),
+		DickDuelCmd + suffix:           duelExec(DickDuelCmd + suffix),
+		HelpCmd + suffix:               helpExec(HelpCmd + suffix),
+		GetMyStatsCmd + suffix:         myStatsExec(GetMyStatsCmd + suffix),
+		GetChatStatsCmd + suffix:       chatStatsExec(GetChatStatsCmd + suffix),
+		ChangeDickCmd + suffix:         adminChangeDickExec(ChangeDickCmd + suffix),
+		SendMessageByAdminCmd + suffix: adminSendMessageExec(SendMessageByAdminCmd + suffix),
+		AddCalendarIDCmd + suffix:      addCalendarExec(AddCalendarIDCmd + suffix),
+		ScheduleCmd + suffix:           scheduleExec(ScheduleCmd + suffix),
+		XkcdCmd + suffix:               xkcdExec(XkcdCmd + suffix),
+		AnecdotCmd + suffix:            anekdotExec(AnecdotCmd + suffix),
+		AufCmd + suffix:                aufExec(AufCmd + suffix),
+		FlipCmd + suffix:               flipExec(FlipCmd + suffix),
+		GetChatIDCmd + suffix:          chatIDExec(GetChatIDCmd + suffix),
+
+		AddHomeworkCmd + suffix:    addHomeworkExec(AddHomeworkCmd + suffix),
+		GetHomeworkCmd + suffix:    getHomeworkExec(GetHomeworkCmd + suffix),
+		DeleteHomeworkCmd + suffix: deleteHomeworkExec(DeleteHomeworkCmd + suffix),
+
+		StartAuctionCmd + suffix: startAuctionExec(StartAuctionCmd + suffix),
+		AddDepositCmd + suffix:   addDepositExec(AddDepositCmd + suffix),
+		AuctionCmd + suffix:      auctionExec(AuctionCmd + suffix),
+
+		StartQuizCmd + suffix: startQuizExec(StartQuizCmd + suffix),
+		StopQuizCmd + suffix:  stopQuizExec(StopQuizCmd + suffix),
+	}
+}
