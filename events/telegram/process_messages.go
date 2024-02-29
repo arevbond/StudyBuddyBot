@@ -5,6 +5,7 @@ import (
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/events"
 	"tg_ics_useful_bot/lib/e"
+	"tg_ics_useful_bot/lib/quiz"
 	"tg_ics_useful_bot/storage"
 	"tg_ics_useful_bot/storage/cache"
 )
@@ -14,6 +15,23 @@ type Processor struct {
 	offset    int
 	storage   storage.Storage
 	userCache cache.UserCache
+	quiz      *quizState
+	commands  map[string]CmdExecutor
+}
+
+type quizState struct {
+	currentQuestion *quiz.Question
+	currentPlayers  map[int]int
+	quit            chan bool
+	allCommands     map[string]CmdExecutor
+}
+
+func newQuizState() *quizState {
+	return &quizState{
+		currentQuestion: &quiz.Question{},
+		currentPlayers:  make(map[int]int),
+		quit:            make(chan bool),
+	}
 }
 
 type Meta struct {
@@ -45,6 +63,8 @@ func New(client *telegram.Client, storage storage.Storage, userCache cache.UserC
 		tg:        client,
 		storage:   storage,
 		userCache: userCache,
+		quiz:      newQuizState(),
+		commands:  getAllCommands(),
 	}
 }
 
@@ -87,10 +107,10 @@ func (p *Processor) processPollAnswer(event events.Event) error {
 	}
 	userID := meta.TgID
 	optionIds := meta.OptionIds
-	if currentQuestion != nil {
+	if p.quiz.currentQuestion != nil {
 		for _, id := range optionIds {
-			if currentQuestion.CorrectOptionID == id {
-				currentPlayers[userID]++
+			if p.quiz.currentQuestion.CorrectOptionID == id {
+				p.quiz.currentPlayers[userID]++
 			}
 		}
 	}

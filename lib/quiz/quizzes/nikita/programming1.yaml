@@ -91,7 +91,6 @@ questions:
     correct_option_id: 3
     picture: ""
     open_period: 25
-        
 
   - question: "Сколько весит репозиторий Windows?"
     explanation: "Тоже не биг дил. На момент января 2022 года, вес репозитория Ubuntu для основных дистрибутивов (например, Ubuntu Desktop или Server) составлял несколько сотен гигабайт."

@@ -1,6 +1,6 @@
 package telegram
 
-// TODO: add index in /quiz namequiz.yaml {index_question}
+// TODO: add index in /quit namequiz.yaml {index_question}
 // TODO: add /pause && /continue
 import (
 	"context"
@@ -21,10 +21,6 @@ const (
 	timeBetweenQuestions = 5
 )
 
-var currentQuestion = &quiz.Question{}
-var currentPlayers = make(map[int]int)
-var quit = make(chan bool)
-
 type startQuizExec string
 
 func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
@@ -44,7 +40,7 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 
 	if err != nil {
 		_ = p.tg.SendMessage(chat.ID, fmt.Sprintf(msgErrorQuiz, filename), telegram.WithoutParseMode, messageID)
-		return nil, e.Wrap("can't start quiz", err)
+		return nil, e.Wrap("can't start quit", err)
 	}
 
 	go p.startQuiz(quizGame, chat.ID)
@@ -58,12 +54,12 @@ func (p *Processor) startQuiz(quizGame quiz.Quiz, chatID int) {
 
 	for _, question := range quizGame.Questions {
 		select {
-		case <-quit:
-			currentPlayers = make(map[int]int)
-			currentQuestion = &quiz.Question{}
+		case <-p.quiz.quit:
+			p.quiz.currentPlayers = make(map[int]int)
+			p.quiz.currentQuestion = &quiz.Question{}
 			return
 		default:
-			currentQuestion = question
+			p.quiz.currentQuestion = question
 			if question.Picture != "" {
 				_ = p.tg.SendPhoto(chatID, question.Picture)
 			}
@@ -72,38 +68,38 @@ func (p *Processor) startQuiz(quizGame quiz.Quiz, chatID int) {
 		}
 	}
 
-	awardMessage := p.awarding(chatID, quizGame.Level)
+	awardMessage := p.awarding(chatID, quizGame.Level, p.quiz.currentPlayers)
 	_ = p.tg.SendMessage(chatID, msgFinishQuiz+"\n"+awardMessage, "", -1)
-	currentPlayers = make(map[int]int)
-	currentQuestion = &quiz.Question{}
+	p.quiz.currentPlayers = make(map[int]int)
+	p.quiz.currentQuestion = &quiz.Question{}
 }
 
-func (p *Processor) awarding(chatID int, level quiz.Level) string {
+func (p *Processor) awarding(chatID int, level quiz.Level, players map[int]int) string {
 	award := defaultAward
 	award += level.Bonus()
 
-	players := getSortedQuizPlayers()
+	sortedPlayers := getSortedQuizPlayers(players)
 	result := "Результаты:\n"
 
-	for _, player := range players {
+	for _, player := range sortedPlayers {
 		dbUser, err := p.storage.GetUser(context.Background(), player, chatID)
 		if err != nil {
 			log.Println("can't get db user", err)
 			continue
 		}
-		dbUser.DickSize += currentPlayers[player] * award
+		dbUser.DickSize += p.quiz.currentPlayers[player] * award
 		err = p.storage.UpdateUser(context.Background(), dbUser)
 		if err != nil {
 			log.Println("can't update points in db user", err)
 			continue
 		}
-		result += fmt.Sprintf(" • %d ✔  %s          ➕ %d см\n", currentPlayers[player], dbUser.FirstName+" "+dbUser.LastName,
-			currentPlayers[player]*award)
+		result += fmt.Sprintf(" • %d ✔  %s          ➕ %d см\n", p.quiz.currentPlayers[player], dbUser.FirstName+" "+dbUser.LastName,
+			p.quiz.currentPlayers[player]*award)
 	}
 	return result
 }
 
-func getSortedQuizPlayers() []int {
+func getSortedQuizPlayers(currentPlayers map[int]int) []int {
 	players := []int{}
 	for player, _ := range currentPlayers {
 		players = append(players, player)
@@ -119,7 +115,11 @@ type stopQuizExec string
 func (s stopQuizExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	quit <- true
+	if !p.isAdmin(user.ID) {
+		return nil, e.Wrap("no admin can't do this cmd (/star_quiz)", errors.New("can't do this cmd"))
+	}
+
+	p.quiz.quit <- true
 
 	return &Response{message: msgStoppedQuiz, method: sendMessageMethod, replyMessageId: messageID}, nil
 }

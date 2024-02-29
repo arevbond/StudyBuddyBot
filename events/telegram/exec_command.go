@@ -21,9 +21,10 @@ const (
 	sendMessageWithButtonsMethod
 	sendPoll
 	doNothingMethod
-)
 
-var (
+	MaxDickChangeCount = 1
+	DefaultHpUser      = 3
+
 	answerOnYes = "Пизда"
 	answerOnNo  = "Пидора ответ"
 )
@@ -43,45 +44,6 @@ type Response struct {
 	replyMessageId int
 	poll           telegram.SendPoll
 }
-
-// allCommands список всех возможных команд бота.
-var allCommands = map[string]CmdExecutor{
-	AllCmd + suffix:                allUsernamesExec(AllCmd + suffix),
-	GayTopCmd + suffix:             topGaysExec(GayTopCmd + suffix),
-	GayStartCmd + suffix:           gayExec(GayStartCmd + suffix),
-	DickTopCmd + suffix:            dickTopExec(DickTopCmd + suffix),
-	DicStartCmd + suffix:           dickStartExec(DicStartCmd + suffix),
-	GetHPCmd + suffix:              getHpExec(GetHPCmd + suffix),
-	DickDuelCmd + suffix:           duelExec(DickDuelCmd + suffix),
-	HelpCmd + suffix:               helpExec(HelpCmd + suffix),
-	GetMyStatsCmd + suffix:         myStatsExec(GetMyStatsCmd + suffix),
-	GetChatStatsCmd + suffix:       chatStatsExec(GetChatStatsCmd + suffix),
-	ChangeDickCmd + suffix:         adminChangeDickExec(ChangeDickCmd + suffix),
-	SendMessageByAdminCmd + suffix: adminSendMessageExec(SendMessageByAdminCmd + suffix),
-	AddCalendarIDCmd + suffix:      addCalendarExec(AddCalendarIDCmd + suffix),
-	ScheduleCmd + suffix:           scheduleExec(ScheduleCmd + suffix),
-	XkcdCmd + suffix:               xkcdExec(XkcdCmd + suffix),
-	AnecdotCmd + suffix:            anekdotExec(AnecdotCmd + suffix),
-	AufCmd + suffix:                aufExec(AufCmd + suffix),
-	FlipCmd + suffix:               flipExec(FlipCmd + suffix),
-	GetChatIDCmd + suffix:          chatIDExec(GetChatIDCmd + suffix),
-
-	AddHomeworkCmd + suffix:    addHomeworkExec(AddHomeworkCmd + suffix),
-	GetHomeworkCmd + suffix:    getHomeworkExec(GetHomeworkCmd + suffix),
-	DeleteHomeworkCmd + suffix: deleteHomeworkExec(DeleteHomeworkCmd + suffix),
-
-	StartAuctionCmd + suffix: startAuctionExec(StartAuctionCmd + suffix),
-	AddDepositCmd + suffix:   addDepositExec(AddDepositCmd + suffix),
-	AuctionCmd + suffix:      auctionExec(AuctionCmd + suffix),
-
-	StartQuizCmd + suffix: startQuizExec(StartQuizCmd + suffix),
-	StopQuizCmd + suffix:  stopQuizExec(StopQuizCmd + suffix),
-}
-
-const (
-	MAX_DICK_CHANGE_COUNT = 1
-	DEFAULT_HP_USER       = 3
-)
 
 // doCmd выбирает необходимую логику для выолнения команды.
 func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User, messageID int) error {
@@ -202,7 +164,7 @@ func (p *Processor) getCmd(strCmd string) CmdExecutor {
 	if !strings.Contains(strCmd, "@") {
 		strCmd += suffix
 	}
-	cmd, ok := allCommands[strCmd]
+	cmd, ok := p.commands[strCmd]
 	if !ok {
 		return nil
 	}
@@ -225,8 +187,8 @@ func (p *Processor) createNewUserInDB(chatID int, user *telegram.User) (*storage
 		LastName:           user.LastName,
 		Username:           user.Username,
 		UserStatId:         dbUserStatID,
-		MaxDickChangeCount: MAX_DICK_CHANGE_COUNT,
-		HealthPoints:       DEFAULT_HP_USER,
+		MaxDickChangeCount: MaxDickChangeCount,
+		HealthPoints:       DefaultHpUser,
 	}
 	err = p.storage.CreateUser(context.Background(), dbUser)
 
