@@ -134,7 +134,7 @@ func (p *Processor) topGays(chatID int) (message string, err error) {
 	result := "Рейтинг пидоров: \n\n"
 
 	for i, dbU := range dbUsers {
-		result += fmt.Sprintf("%d. %s %s %d раз \n", i+1, dbU.FirstName, dbU.LastName, dbUsersStats[i].GayCount)
+		result += fmt.Sprintf("%d. %s %s: %d \n", i+1, dbU.FirstName, dbU.LastName, dbUsersStats[i].GayCount)
 	}
 	return result, nil
 }
