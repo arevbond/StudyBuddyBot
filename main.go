@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	tgClient "tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/config"
@@ -25,14 +24,7 @@ func main() {
 		log.Fatal("can't find storage", err)
 	}
 
-	var telegramToken string
-
-	switch cfg.Env {
-	case "local":
-		telegramToken = cfg.TestTelegramToken
-	case "prod":
-		telegramToken = cfg.TelegramToken
-	}
+	telegramToken := getTelegramToken(cfg)
 
 	eventsProcessor := telegram.New(
 		tgClient.New(tgBotHost, telegramToken, cfg.AdminsID),
@@ -49,18 +41,15 @@ func main() {
 	}
 }
 
-func mustToken() string {
-	token := flag.String(
-		"tg-bot-token",
-		"",
-		"token for access to telegram bot",
-	)
+func getTelegramToken(cfg *config.Config) string {
+	var telegramToken string
 
-	flag.Parse()
-
-	if *token == "" {
-		log.Fatal("token is not specified")
+	switch cfg.Env {
+	case "local":
+		telegramToken = cfg.TestTelegramToken
+	case "prod":
+		telegramToken = cfg.TelegramToken
 	}
 
-	return *token
+	return telegramToken
 }
