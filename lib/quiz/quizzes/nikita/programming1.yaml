@@ -187,44 +187,44 @@ questions:
     picture: ""
     open_period: 25
 
-#  - question: ""
-#    explanation: ""
-#    options: [ "", "", "", "" ]
-#    correct_option_id: .
-#    picture: ""
-#    open_period: 25
-#
-#  - question: ""
-#    explanation: ""
-#    options: [ "", "", "", "" ]
-#    correct_option_id: .
-#    picture: ""
-#    open_period: 25
-#
-#  - question: ""
-#    explanation: ""
-#    options: [ "", "", "", "" ]
-#    correct_option_id: .
-#    picture: ""
-#    open_period: 25
-#
-#  - question: ""
-#    explanation: ""
-#    options: [ "", "", "", "" ]
-#    correct_option_id: .
-#    picture: ""
-#    open_period: 25
-#
-#  - question: ""
-#    explanation: ""
-#    options: [ "", "", "", "" ]
-#    correct_option_id: .
-#    picture: ""
-#    open_period: 25
-#
-#  - question: ""
-#    explanation: ""
-#    options: [ "", "", "", "" ]
-#    correct_option_id: .
-#    picture: ""
-#    open_period: 25
+  - question: "Какое значение будет принимать переменная res?"
+    explanation: "в разных компиляторах разные скобки могут быть выполненые первые, а префиксная операция ++, сразу изменяет переменную size"
+    options: [ "операцию инкремента нельзя использовать совместно с другими арифметическими операциями", "70", "65", "неопределенное (может быть разное в зависимости от используемых компиляторов)" ]
+    correct_option_id: 3
+    picture: "https://i.postimg.cc/zfp7whc0/image.png"
+    open_period: 30
+
+  - question: "Какое значение будет принимать переменная res?"
+    explanation: "size = 11 после выполнения оператора"
+    options: [ "100", "108", " операцию инкремента нельзя использовать совместно с другими арифметическими операциями", " неопределенное (может быть разное в зависимости от используемых компиляторов)" ]
+    correct_option_id: 0
+    picture: "https://i.postimg.cc/Zn0JY61g/image.png"
+    open_period: 30
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
+
+  - question: ""
+    explanation: ""
+    options: [ "", "", "", "" ]
+    correct_option_id: .
+    picture: ""
+    open_period: 25
