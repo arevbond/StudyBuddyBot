@@ -36,17 +36,14 @@ func New() *Config {
 	}
 	adminsIdStrings := getEnv("ADMINS_ID", "")
 	adminsID := make([]int, 0)
-	for _, str := range strings.Split(adminsIdStrings, ",") {
-		if str == "" {
-			continue
-		}
+	for _, str := range strings.Fields(adminsIdStrings) {
 		s := strings.TrimSpace(str)
 		id, err := strconv.Atoi(s)
-		if err == nil {
-			adminsID = append(adminsID, id)
-		} else {
+		if err != nil {
 			log.Printf("[ERROR] can't convert %s to int", s)
+			continue
 		}
+		adminsID = append(adminsID, id)
 	}
 	configPath := getEnv("CONFIG_PATH", "")
 
@@ -61,7 +58,6 @@ func New() *Config {
 	}
 
 	cfg.AdminsID = adminsID
-
 	return &cfg
 }
 
