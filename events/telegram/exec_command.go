@@ -57,7 +57,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	userStats.MessageCount++
 	err = p.storage.UpdateUserStats(context.Background(), userStats)
 	if err != nil {
-		log.Print(err)
+		log.Println("[ERROR] can't update user stats:", err)
 	}
 
 	text, parseMode := strings.TrimSpace(text), telegram.WithoutParseMode
