@@ -24,9 +24,6 @@ type AuctionPlayer struct {
 	deposit int
 }
 
-// auctions мапа всех дейсвуюзих аукционов
-var auctions = make(map[int][]*AuctionPlayer)
-
 // startAuctionExec предоставляет метод Exec для начала аукциона в чате.
 type startAuctionExec string
 
@@ -35,11 +32,11 @@ type startAuctionExec string
 func (a startAuctionExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	if _, ok := auctions[chat.ID]; ok {
+	if _, ok := p.auctions[chat.ID]; ok {
 		return &Response{message: msgAuctionIsStarted, method: sendMessageMethod}, nil
 	}
 
-	auctions[chat.ID] = make([]*AuctionPlayer, 0)
+	p.auctions[chat.ID] = make([]*AuctionPlayer, 0)
 
 	timeout := getAuctionTimeout(inMessage)
 	go func() {
@@ -94,7 +91,7 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 		return "", err
 	}
 
-	if _, ok := auctions[chat.ID]; !ok {
+	if _, ok := p.auctions[chat.ID]; !ok {
 		return msgAuctionNotStarted, nil
 	}
 
@@ -109,7 +106,7 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 	}
 
 	var needAdd bool
-	player := getPlayer(dbUser)
+	player := getPlayer(dbUser, p.auctions)
 	if player == nil {
 		player = &AuctionPlayer{
 			u:       dbUser,
@@ -123,7 +120,7 @@ func (p *Processor) addDeposit(inMessage string, user *telegram.User, chat *tele
 	}
 
 	if needAdd {
-		auctions[chat.ID] = append(auctions[chat.ID], player)
+		p.auctions[chat.ID] = append(p.auctions[chat.ID], player)
 	}
 	err = p.changeDickSize(dbUser, -deposit)
 	if err != nil {
@@ -142,7 +139,7 @@ func (p *Processor) canDeposit(deposit int, user *storage.DBUser, player *Auctio
 }
 
 // getPlayer возвращает игрока аукциона.
-func getPlayer(user *storage.DBUser) *AuctionPlayer {
+func getPlayer(user *storage.DBUser, auctions map[int][]*AuctionPlayer) *AuctionPlayer {
 	chatID := user.ChatID
 	players := auctions[chatID]
 
@@ -177,18 +174,18 @@ func (a finishAuctionExec) Exec(p *Processor, inMessage string, user *telegram.U
 
 // finishAuction случайным образом выбирает победителя из всех игроков аукциона.
 func (p *Processor) finishAuction(chatID int) (string, error) {
-	if _, ok := auctions[chatID]; !ok {
+	if _, ok := p.auctions[chatID]; !ok {
 		return msgAuctionNotStarted, nil
 	}
 
-	players := auctions[chatID]
+	players := p.auctions[chatID]
 	if len(players) == 0 {
-		delete(auctions, chatID)
+		delete(p.auctions, chatID)
 		return msgNotEnoughPlayers, nil
 	}
 
-	winner, reward := getAuctionWinnerAndReward(auctions[chatID])
-	delete(auctions, chatID)
+	winner, reward := getAuctionWinnerAndReward(p.auctions[chatID])
+	delete(p.auctions, chatID)
 
 	for i := 3; i > 0; i-- {
 		p.tg.SendMessage(chatID, fmt.Sprintf("До результата аукциона: %d!", i), "", -1)
@@ -239,17 +236,17 @@ func (a auctionExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 	mthd := sendMessageMethod
 	parseMode := telegram.Markdown
 
-	if _, ok := auctions[chat.ID]; !ok {
+	if _, ok := p.auctions[chat.ID]; !ok {
 		return &Response{message: msgAuctionNotStarted, method: mthd, parseMode: parseMode}, nil
 	}
 
-	message = getAuctionPlayers(chat.ID)
+	message = getAuctionPlayers(chat.ID, p.auctions)
 
 	return &Response{message: message, method: mthd, parseMode: parseMode}, nil
 }
 
 // getAuctionPlayers возвращает список текущих участников аукциона.
-func getAuctionPlayers(chatID int) string {
+func getAuctionPlayers(chatID int, auctions map[int][]*AuctionPlayer) string {
 	players := auctions[chatID]
 
 	if len(players) == 0 {

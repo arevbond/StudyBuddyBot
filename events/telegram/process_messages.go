@@ -17,6 +17,7 @@ type Processor struct {
 	userCache cache.UserCache
 	quiz      *quizState
 	commands  map[string]CmdExecutor
+	auctions  map[int][]*AuctionPlayer
 }
 
 type quizState struct {
@@ -65,6 +66,7 @@ func New(client *telegram.Client, storage storage.Storage, userCache cache.UserC
 		userCache: userCache,
 		quiz:      newQuizState(),
 		commands:  getAllCommands(),
+		auctions:  make(map[int][]*AuctionPlayer),
 	}
 }
 

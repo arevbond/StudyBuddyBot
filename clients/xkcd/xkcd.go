@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"strconv"
 	"tg_ics_useful_bot/lib/e"
-	"time"
 )
 
 const (
@@ -47,7 +46,6 @@ func RandomComics() (Comics, error) {
 }
 
 func randomComicsNumber() int {
-	rand.Seed(time.Now().UnixNano())
 	number := rand.Intn(maxComicsNumber)
 	if number == 0 || number == NotExistsComicsNumber {
 		number++
