@@ -47,31 +47,75 @@ func (p *Processor) gameGay(chatID int) (string, error) {
 		return "", e.Wrap("can't get chat administrators: ", err)
 	}
 
+	gay, isCreated, err := p.gayOfDay(chatID, admins)
+	if err != nil {
+		return "", e.Wrap("can't initial gameGay", err)
+	}
+	name, hasUsername, err := p.getGayName(gay)
+	if err != nil {
+		return "", e.Wrap("can't get gay name", err)
+	}
+	if isCreated {
+		if hasUsername {
+			return fmt.Sprintf(msgNewGayOfDayUsername, name), nil
+		} else {
+			return fmt.Sprintf(msgNewGayOfDayFullName, name), nil
+		}
+	}
+	if hasUsername {
+		return fmt.Sprintf(msgCurrentGayOfDayUsername, name), nil
+	}
+	return fmt.Sprintf(msgCurrentGayOfDayFullName, name), nil
+}
+
+func (p *Processor) gayOfDay(chatID int, admins []telegram.User) (*storage.DBGay, bool, error) {
 	gay, err := p.storage.GetGayOfDay(context.Background(), chatID)
 	if err == storage.ErrUserNotExist {
 		gay, err = p.createNewGayOfDay(chatID, admins)
-		return fmt.Sprintf(msgNewGayOfDay, gay.Username), nil
+		return gay, true, nil
 	} else if err != nil {
-		return "", e.Wrap("can't get gay of day: ", err)
+		return nil, false, e.Wrap("can't get gay of day: ", err)
 	}
-	if (gay.CreatedAt.Month() == time.Now().Month() && gay.CreatedAt.Day() < time.Now().Day()) || gay.CreatedAt.Month() < time.Now().Month() || gay.CreatedAt.Year() < time.Now().Year() {
+	if gayIsOld(gay) {
 		err = p.storage.RemoveGayOfDay(context.Background(), chatID)
 		if err != nil {
-			return "", err
+			return nil, false, err
 		}
 		gay, err = p.createNewGayOfDay(chatID, admins)
-		return fmt.Sprintf(msgNewGayOfDay, gay.Username), nil
+		return gay, true, nil
 	}
-	return fmt.Sprintf(msgCurrentGayOfDay, gay.Username), nil
+	return gay, false, nil
+}
+
+func gayIsOld(gay *storage.DBGay) bool {
+	return (gay.CreatedAt.Month() == time.Now().Month() && gay.CreatedAt.Day() < time.Now().Day()) || gay.CreatedAt.Month() < time.Now().Month() || gay.CreatedAt.Year() < time.Now().Year()
+}
+
+func (p *Processor) getGayName(gay *storage.DBGay) (string, bool, error) {
+	dbUser, err := p.storage.GetUser(context.Background(), gay.TgID, gay.ChatID)
+	if dbUser.Username != "" {
+		return dbUser.Username, true, nil
+	}
+	if err != nil {
+		return "", false, e.Wrap("can't gay user from storage", err)
+	}
+	return dbUser.FirstName + " " + dbUser.LastName, false, nil
 }
 
 // createNewGayOfDay создаёт пидора дня.
 func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*storage.DBGay, error) {
-	n := rand.Intn(len(admins))
-	u := &admins[n]
-	dbUser, err := p.storage.GetUser(context.Background(), u.ID, chatID)
+	var user *telegram.User
+	for {
+		n := rand.Intn(len(admins))
+		u := &admins[n]
+		if !u.IsBot {
+			user = u
+			break
+		}
+	}
+	dbUser, err := p.storage.GetUser(context.Background(), user.ID, chatID)
 	if err == storage.ErrUserNotExist {
-		dbUser, err = p.createNewUserInDB(chatID, u)
+		dbUser, err = p.createNewUserInDB(chatID, user)
 		if err != nil {
 			return nil, e.Wrap("can't create new user in db; in 'createNewGayOfDay'", err)
 		}
@@ -134,7 +178,7 @@ func (p *Processor) topGays(chatID int) (message string, err error) {
 	result := "Рейтинг пидоров: \n\n"
 
 	for i, dbU := range dbUsers {
-		result += fmt.Sprintf("%d. %s %s: %d \n", i+1, dbU.FirstName, dbU.LastName, dbUsersStats[i].GayCount)
+		result += fmt.Sprintf("%d. %s %s: %d раз(а)\n", i+1, dbU.FirstName, dbU.LastName, dbUsersStats[i].GayCount)
 	}
 	return result, nil
 }

@@ -26,7 +26,7 @@ const (
 	CancelHomeworkCmd = "/cancel"
 
 	// quit
-	StartQuizCmd = "/quit"
+	StartQuizCmd = "/quiz"
 	StopQuizCmd  = "/stop"
 
 	// auction
@@ -57,7 +57,7 @@ const (
 	HolidayCmd = "/holiday"
 )
 
-// TODO: отрефакторить функцию; сделать админские команды более явными
+// TODO: отрефакторить функцию; сделать админские команды более явными с помощью фабрик
 func getAllCommands() map[string]CmdExecutor {
 	return map[string]CmdExecutor{
 		AllCmd + suffix:                allUsernamesExec(AllCmd + suffix),

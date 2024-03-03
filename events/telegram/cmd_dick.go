@@ -83,6 +83,7 @@ func (p *Processor) gameDickCmd(chat *telegram.Chat, user *telegram.User, userSt
 		return "", err
 	}
 
+	name, hasUsername := getName(dbUser)
 	if canChange {
 		oldDickSize := dbUser.DickSize
 		err = p.updateRandomDickAndChangeTime(dbUser, userStats)
@@ -90,11 +91,27 @@ func (p *Processor) gameDickCmd(chat *telegram.Chat, user *telegram.User, userSt
 			return "", err
 		}
 		if oldDickSize == 0 {
-			return fmt.Sprintf(msgCreateUser, dbUser.Username) + fmt.Sprintf(msgDickSize, dbUser.DickSize), nil
+			if hasUsername {
+				return fmt.Sprintf(msgCreateUserWithUsername, name) + fmt.Sprintf(msgDickSize, dbUser.DickSize), nil
+			}
+			return fmt.Sprintf(msgCreateUserWithFullName, name) + fmt.Sprintf(msgDickSize, dbUser.DickSize), nil
 		}
-		return fmt.Sprintf(msgChangeDickSize, dbUser.Username, oldDickSize, dbUser.DickSize), nil
+		if hasUsername {
+			return fmt.Sprintf(msgChangeDickSizeWithUsername, name, oldDickSize, dbUser.DickSize), nil
+		}
+		return fmt.Sprintf(msgChangeDickSizeWithFullName, name, oldDickSize, dbUser.DickSize), nil
 	}
-	return fmt.Sprintf(msgAlreadyPlays, dbUser.Username), nil
+	if hasUsername {
+		return fmt.Sprintf(msgAlreadyPlaysWithUsername, name), nil
+	}
+	return fmt.Sprintf(msgAlreadyPlaysWithFullName, name), nil
+}
+
+func getName(dbUser *storage.DBUser) (string, bool) {
+	if dbUser.Username != "" {
+		return dbUser.Username, true
+	}
+	return dbUser.FirstName + " " + dbUser.LastName, false
 }
 
 // updateRandomDickAndChangeTime изменяет значение пениса на слуайное число и время его изменения в базе данных.
