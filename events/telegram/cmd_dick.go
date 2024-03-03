@@ -78,33 +78,51 @@ func (p *Processor) gameDickCmd(chat *telegram.Chat, user *telegram.User, userSt
 		return "", err
 	}
 
+	message, err := p.processDickChange(dbUser, userStats)
+	if err != nil {
+		return "", e.Wrap("can't work game dick cmd", err)
+	}
+	return message, nil
+}
+
+func (p *Processor) processDickChange(dbUser *storage.DBUser, userStats *storage.DBUserStat) (string, error) {
 	canChange, err := p.canChangeDickSize(dbUser)
 	if err != nil {
 		return "", err
 	}
 
+	if !canChange {
+		return p.formatAlreadyPlaying(dbUser), nil
+	}
+
+	oldDickSize := dbUser.DickSize
+	err = p.updateRandomDickAndChangeTime(dbUser, userStats)
+	if err != nil {
+		return "", err
+	}
+	return formatOutputMessage(dbUser, oldDickSize), nil
+}
+
+func formatOutputMessage(dbUser *storage.DBUser, oldDickSize int) string {
 	name, hasUsername := getName(dbUser)
-	if canChange {
-		oldDickSize := dbUser.DickSize
-		err = p.updateRandomDickAndChangeTime(dbUser, userStats)
-		if err != nil {
-			return "", err
-		}
-		if oldDickSize == 0 {
-			if hasUsername {
-				return fmt.Sprintf(msgCreateUserWithUsername, name) + fmt.Sprintf(msgDickSize, dbUser.DickSize), nil
-			}
-			return fmt.Sprintf(msgCreateUserWithFullName, name) + fmt.Sprintf(msgDickSize, dbUser.DickSize), nil
-		}
+	if oldDickSize == 0 {
 		if hasUsername {
-			return fmt.Sprintf(msgChangeDickSizeWithUsername, name, oldDickSize, dbUser.DickSize), nil
+			return fmt.Sprintf(msgCreateUserWithUsername, name) + fmt.Sprintf(msgDickSize, dbUser.DickSize)
 		}
-		return fmt.Sprintf(msgChangeDickSizeWithFullName, name, oldDickSize, dbUser.DickSize), nil
+		return fmt.Sprintf(msgCreateUserWithFullName, name) + fmt.Sprintf(msgDickSize, dbUser.DickSize)
 	}
 	if hasUsername {
-		return fmt.Sprintf(msgAlreadyPlaysWithUsername, name), nil
+		return fmt.Sprintf(msgChangeDickSizeWithUsername, name, oldDickSize, dbUser.DickSize)
 	}
-	return fmt.Sprintf(msgAlreadyPlaysWithFullName, name), nil
+	return fmt.Sprintf(msgChangeDickSizeWithFullName, name, oldDickSize, dbUser.DickSize)
+}
+
+func (p *Processor) formatAlreadyPlaying(dbUser *storage.DBUser) string {
+	name, hasUsername := getName(dbUser)
+	if hasUsername {
+		return fmt.Sprintf(msgAlreadyPlaysWithUsername, name)
+	}
+	return fmt.Sprintf(msgAlreadyPlaysWithFullName, name)
 }
 
 func getName(dbUser *storage.DBUser) (string, bool) {
