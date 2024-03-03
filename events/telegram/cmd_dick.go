@@ -100,10 +100,10 @@ func (p *Processor) processDickChange(dbUser *storage.DBUser, userStats *storage
 	if err != nil {
 		return "", err
 	}
-	return formatOutputMessage(dbUser, oldDickSize), nil
+	return formatOutputGameDick(dbUser, oldDickSize), nil
 }
 
-func formatOutputMessage(dbUser *storage.DBUser, oldDickSize int) string {
+func formatOutputGameDick(dbUser *storage.DBUser, oldDickSize int) string {
 	name, hasUsername := getName(dbUser)
 	if oldDickSize == 0 {
 		if hasUsername {

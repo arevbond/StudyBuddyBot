@@ -55,17 +55,21 @@ func (p *Processor) gameGay(chatID int) (string, error) {
 	if err != nil {
 		return "", e.Wrap("can't get gay name", err)
 	}
+	return formatOutputGay(hasUsername, isCreated, name), nil
+}
+
+func formatOutputGay(hasUsername bool, isCreated bool, name string) string {
 	if isCreated {
 		if hasUsername {
-			return fmt.Sprintf(msgNewGayOfDayUsername, name), nil
+			return fmt.Sprintf(msgNewGayOfDayUsername, name)
 		} else {
-			return fmt.Sprintf(msgNewGayOfDayFullName, name), nil
+			return fmt.Sprintf(msgNewGayOfDayFullName, name)
 		}
 	}
 	if hasUsername {
-		return fmt.Sprintf(msgCurrentGayOfDayUsername, name), nil
+		return fmt.Sprintf(msgCurrentGayOfDayUsername, name)
 	}
-	return fmt.Sprintf(msgCurrentGayOfDayFullName, name), nil
+	return fmt.Sprintf(msgCurrentGayOfDayFullName, name)
 }
 
 func (p *Processor) gayOfDay(chatID int, admins []telegram.User) (*storage.DBGay, bool, error) {
