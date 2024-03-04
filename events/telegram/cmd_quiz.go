@@ -119,7 +119,9 @@ func (s stopQuizExec) Exec(p *Processor, inMessage string, user *telegram.User, 
 		return nil, e.Wrap("no admin can't do this cmd (/star_quiz)", errors.New("can't do this cmd"))
 	}
 
-	p.quiz.quit <- true
-
-	return &Response{message: msgStoppedQuiz, method: sendMessageMethod, replyMessageId: messageID}, nil
+	if len(p.quiz.currentQuestion.Options) > 0 {
+		p.quiz.quit <- true
+		return &Response{message: msgStoppedQuiz, method: sendMessageMethod, replyMessageId: messageID}, nil
+	}
+	return &Response{message: msgQuizNotAvailable, method: sendMessageMethod, replyMessageId: messageID}, nil
 }
