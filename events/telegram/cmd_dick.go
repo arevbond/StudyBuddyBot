@@ -78,21 +78,21 @@ func (p *Processor) gameDickCmd(chat *telegram.Chat, user *telegram.User, userSt
 		return "", err
 	}
 
-	message, err := p.processDickChange(dbUser, userStats)
+	message, err := p.proccessDickGame(dbUser, userStats)
 	if err != nil {
 		return "", e.Wrap("can't work game dick cmd", err)
 	}
 	return message, nil
 }
 
-func (p *Processor) processDickChange(dbUser *storage.DBUser, userStats *storage.DBUserStat) (string, error) {
+func (p *Processor) proccessDickGame(dbUser *storage.DBUser, userStats *storage.DBUserStat) (string, error) {
 	canChange, err := p.canChangeDickSize(dbUser)
 	if err != nil {
 		return "", err
 	}
 
 	if !canChange {
-		return p.formatAlreadyPlaying(dbUser), nil
+		return formatAlreadyPlaying(dbUser), nil
 	}
 
 	oldDickSize := dbUser.DickSize
@@ -117,7 +117,7 @@ func formatOutputGameDick(dbUser *storage.DBUser, oldDickSize int) string {
 	return fmt.Sprintf(msgChangeDickSizeWithFullName, name, oldDickSize, dbUser.DickSize)
 }
 
-func (p *Processor) formatAlreadyPlaying(dbUser *storage.DBUser) string {
+func formatAlreadyPlaying(dbUser *storage.DBUser) string {
 	name, hasUsername := getName(dbUser)
 	if hasUsername {
 		return fmt.Sprintf(msgAlreadyPlaysWithUsername, name)
