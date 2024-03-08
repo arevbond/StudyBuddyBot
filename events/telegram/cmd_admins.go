@@ -57,7 +57,7 @@ func (a adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram
 	}
 	message := msgSuccessAdminChangeDickSize
 	mthd := sendMessageMethod
-	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
+	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
 // changeDickByAdminCmd админская ручка, позволяющая изменить пенис любому пользователю.
