@@ -150,15 +150,20 @@ func (p *Processor) createNewGayOfDay(chatID int, admins []telegram.User) (*stor
 	return gay, nil
 }
 
-// FIXME: refactor this code
 // topGaysExec возвращает список всех админов и сколько раз они были пидорами.
 func (p *Processor) topGays(chatID int) (message string, err error) {
 	admins, err := p.tg.ChatAdministrators(chatID)
+
 	if err != nil {
 		return "", e.Wrap("[ERROR] can't get chat administrators: ", err)
 	}
-	dbUsers := []*storage.DBUser{}
-	dbUsersStats := []*storage.DBUserStat{}
+
+	type userWithCount struct {
+		name  string
+		count int
+	}
+	users := []userWithCount{}
+
 	for _, u := range admins {
 		dbUser, err := p.storage.GetUser(context.Background(), u.ID, chatID)
 		if err == storage.ErrUserNotExist {
@@ -171,19 +176,19 @@ func (p *Processor) topGays(chatID int) (message string, err error) {
 		if err != nil {
 			return "", err
 		}
-		dbUsersStats = append(dbUsersStats, dbUserStat)
-		dbUsers = append(dbUsers, dbUser)
+		users = append(users, userWithCount{
+			name:  dbUser.FirstName + " " + dbUser.LastName,
+			count: dbUserStat.GayCount,
+		})
 	}
-	sort.Slice(dbUsers, func(i, j int) bool {
-		return dbUsersStats[i].GayCount > dbUsersStats[j].GayCount
-	})
-	sort.Slice(dbUsersStats, func(i, j int) bool {
-		return dbUsersStats[i].GayCount > dbUsersStats[j].GayCount
-	})
-	result := "Рейтинг пидоров: \n\n"
 
-	for i, dbU := range dbUsers {
-		result += fmt.Sprintf("%d. %s %s: %d раз(а)\n", i+1, dbU.FirstName, dbU.LastName, dbUsersStats[i].GayCount)
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].count > users[j].count
+	})
+	
+	result := "Рейтинг пидоров: \n\n"
+	for i, user := range users {
+		result += fmt.Sprintf("%d. %s %d раз(а)\n", i+1, user.name, user.count)
 	}
 	return result, nil
 }
