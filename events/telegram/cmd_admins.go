@@ -51,7 +51,7 @@ func (a adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram
 
 	strs := strings.Split(inMessage, " ")
 	chatIDStr, userIDStr, valueStr := strs[1], strs[2], strs[3]
-	err := p.changeDickByAdminCmd(chatIDStr, userIDStr, valueStr)
+	err := a.changeDickByAdmin(chatIDStr, userIDStr, valueStr, p.storage)
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +60,8 @@ func (a adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram
 	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
-// changeDickByAdminCmd админская ручка, позволяющая изменить пенис любому пользователю.
-func (p *Processor) changeDickByAdminCmd(chatIDStr, userIDStr, valueStr string) error {
+// changeDickByAdmin админская ручка, позволяющая изменить пенис любому пользователю.
+func (a adminChangeDickExec) changeDickByAdmin(chatIDStr, userIDStr, valueStr string, db storage.Storage) error {
 	chatID, err := strconv.Atoi(chatIDStr)
 	if err != nil {
 		return err
@@ -74,12 +74,12 @@ func (p *Processor) changeDickByAdminCmd(chatIDStr, userIDStr, valueStr string) 
 	if err != nil {
 		return err
 	}
-	dbUser, err := p.storage.GetUser(context.Background(), userID, chatID)
+	dbUser, err := db.GetUser(context.Background(), userID, chatID)
 	if err != nil {
 		return err
 	}
 	dbUser.DickSize += value
-	err = p.storage.UpdateUser(context.Background(), dbUser)
+	err = db.UpdateUser(context.Background(), dbUser)
 	if err != nil {
 		log.Print(err)
 		return err
