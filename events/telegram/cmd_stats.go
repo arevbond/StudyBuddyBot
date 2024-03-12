@@ -12,7 +12,7 @@ import (
 type myStatsExec string
 
 // Exec: /my_stats - возвращает статистику пользователя в данном чате.
-func (a myStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (m myStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	message := fmt.Sprintf(msgUserStats, userStats.MessageCount, userStats.DickPlusCount,
 		userStats.DickMinusCount, userStats.YesCount, userStats.NoCount, userStats.DuelsCount,
@@ -26,9 +26,9 @@ func (a myStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 type chatStatsExec string
 
 // Exec: /chat_stats - возвращает всю статистику данного чата.
-func (a chatStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (c chatStatsExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
-	userStats, err := p.chatStats(chat.ID)
+	userStats, err := c.chatStats(chat.ID, p.storage)
 	if err != nil {
 		return nil, e.Wrap("can't get chat stats: ", err)
 	}
@@ -41,14 +41,14 @@ func (a chatStatsExec) Exec(p *Processor, inMessage string, user *telegram.User,
 }
 
 // chatStats формирует статистику чата, суммирая все статистики пользователей данного чата.
-func (p *Processor) chatStats(chatID int) (*storage.DBUserStat, error) {
-	users, err := p.storage.UsersByChat(context.Background(), chatID)
+func (c chatStatsExec) chatStats(chatID int, db storage.Storage) (*storage.DBUserStat, error) {
+	users, err := db.UsersByChat(context.Background(), chatID)
 	if err != nil {
 		return nil, err
 	}
 	allStats := &storage.DBUserStat{}
 	for _, u := range users {
-		userStats, err := p.storage.GetUserStats(context.Background(), u)
+		userStats, err := db.GetUserStats(context.Background(), u)
 		if err != nil {
 			return nil, err
 		}

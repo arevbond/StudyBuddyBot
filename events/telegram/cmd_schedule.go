@@ -43,7 +43,7 @@ func (a addCalendarExec) Exec(p *Processor, inMessage string, user *telegram.Use
 type scheduleExec string
 
 // Exec: /schedule - возвращает расписание из Google Calender.
-func (a scheduleExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (s scheduleExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 	var message string
 	var parseMode telegram.ParseMode
