@@ -33,7 +33,9 @@ func (a adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegra
 	if err != nil {
 		log.Println("can't send message by admin:", err)
 	}
-	mthd := doNothingMethod
+
+	message = msgSuccess
+	mthd := sendMessageMethod
 	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
@@ -55,7 +57,7 @@ func (a adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram
 	if err != nil {
 		return nil, err
 	}
-	message := msgSuccessAdminChangeDickSize
+	message := msgSuccess
 	mthd := sendMessageMethod
 	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
