@@ -43,13 +43,13 @@ func (s startQuizExec) Exec(p *Processor, inMessage string, user *telegram.User,
 		return nil, e.Wrap("can't start quit", err)
 	}
 
-	go p.startQuiz(quizGame, chat.ID)
+	go s.startQuiz(quizGame, chat.ID, p)
 
 	return &Response{message: fmt.Sprintf(msgStartQuiz, quizGame.Theme, quizGame.GetLevel(), len(quizGame.Questions)), method: sendMessageMethod,
 		parseMode: telegram.Markdown}, nil
 }
 
-func (p *Processor) startQuiz(quizGame quiz.Quiz, chatID int) {
+func (s startQuizExec) startQuiz(quizGame quiz.Quiz, chatID int, p *Processor) {
 	time.Sleep(5 * time.Second)
 
 	for _, question := range quizGame.Questions {
@@ -68,13 +68,13 @@ func (p *Processor) startQuiz(quizGame quiz.Quiz, chatID int) {
 		}
 	}
 
-	awardMessage := p.awarding(chatID, quizGame.Level, p.quiz.currentPlayers)
+	awardMessage := s.awarding(chatID, quizGame.Level, p.quiz.currentPlayers, p)
 	_ = p.tg.SendMessage(chatID, msgFinishQuiz+"\n"+awardMessage, "", -1)
 	p.quiz.currentPlayers = make(map[int]int)
 	p.quiz.currentQuestion = &quiz.Question{}
 }
 
-func (p *Processor) awarding(chatID int, level quiz.Level, players map[int]int) string {
+func (s startQuizExec) awarding(chatID int, level quiz.Level, players map[int]int, p *Processor) string {
 	award := defaultAward
 	award += level.Bonus()
 

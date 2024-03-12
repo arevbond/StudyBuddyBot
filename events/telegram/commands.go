@@ -6,10 +6,10 @@ const (
 
 // dick
 const (
-	DicStartCmd = "/dick"
-	DickTopCmd  = "/top_dick"
-	DickDuelCmd = "/duel"
-	GetHPCmd    = "/hp"
+	DicStartCmd    = "/dick"
+	dickTopCommand = "/top_dick"
+	DickDuelCmd    = "/duel"
+	GetHPCmd       = "/hp"
 
 	// gay
 	GayStartCmd = "/gay"
@@ -57,13 +57,12 @@ const (
 	HolidayCmd = "/holiday"
 )
 
-// TODO: отрефакторить функцию; сделать админские команды более явными с помощью фабрик
 func getAllCommands() map[string]CmdExecutor {
 	return map[string]CmdExecutor{
 		AllCmd + suffix:                allUsernamesExec(AllCmd + suffix),
 		GayTopCmd + suffix:             topGaysExec(GayTopCmd + suffix),
 		GayStartCmd + suffix:           gayExec(GayStartCmd + suffix),
-		DickTopCmd + suffix:            dickTopExec(DickTopCmd + suffix),
+		dickTopCommand + suffix:        dickTopExec(dickTopCommand + suffix),
 		DicStartCmd + suffix:           dickStartExec(DicStartCmd + suffix),
 		GetHPCmd + suffix:              getHpExec(GetHPCmd + suffix),
 		DickDuelCmd + suffix:           duelExec(DickDuelCmd + suffix),

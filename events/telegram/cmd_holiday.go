@@ -14,7 +14,7 @@ var holidays = make(map[int]struct{})
 
 type holidayExec string
 
-func (a holidayExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (h holidayExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	mthd := sendMessageMethod
@@ -36,7 +36,7 @@ func (a holidayExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 	}
 
 	oldDickSize := dbUser.DickSize
-	if isWin() {
+	if h.isWin() {
 		err = p.changeDickSize(dbUser, oldDickSize)
 		message = msgWinHoliday
 		if err != nil {
@@ -53,6 +53,6 @@ func (a holidayExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
 }
 
-func isWin() bool {
+func (h holidayExec) isWin() bool {
 	return rand.Intn(5) > 1
 }

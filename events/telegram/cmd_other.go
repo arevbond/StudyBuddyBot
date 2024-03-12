@@ -14,7 +14,7 @@ import (
 type xkcdExec string
 
 // Exec: /xkcd - возвращает случайный xkcd комикс.
-func (a xkcdExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (x xkcdExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	var comics xkcd.Comics
@@ -46,7 +46,7 @@ func (a anekdotExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 type flipExec string
 
 // Exec: /flip - возвращает случайную картинку из двух предоставленных ниже.
-func (a flipExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+func (f flipExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	message := flip.KhinkalnyaOrVSU()
