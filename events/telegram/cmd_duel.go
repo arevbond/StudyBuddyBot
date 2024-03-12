@@ -228,6 +228,7 @@ func (p *Processor) hpString(user *storage.DBUser) string {
 
 // changeDickSize изменяет размер пениса после дуели.
 // Не позволяет размеру пениса быть меньше 1.
+// Оставить как метод процессора!
 func (p *Processor) changeDickSize(user *storage.DBUser, value int) error {
 	user.DickSize += value
 	if user.DickSize <= 0 {
