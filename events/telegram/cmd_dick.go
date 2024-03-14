@@ -13,7 +13,7 @@ import (
 
 const (
 	jackpotValue = 50000
-	maxValue     = 3000
+	minValue     = 500
 )
 
 // dickTopExec предоставляет метод Exec для выполнения /top_dick.
@@ -135,7 +135,7 @@ func (d dickStartExec) getName(dbUser *storage.DBUser) (string, bool) {
 func (d dickStartExec) updateRandomDickAndChangeTime(user *storage.DBUser, userStats *storage.DBUserStat, db storage.Storage) error {
 	var value int
 	for {
-		value = d.randomValue()
+		value = d.randomValue(user.DickSize)
 		if user.DickSize+value > 0 {
 			break
 		}
@@ -193,10 +193,12 @@ func (d dickStartExec) canChangeDickSize(user *storage.DBUser, db storage.Storag
 }
 
 // randomValue возвращает случайное положительное или отрицательное число в конкретном диапозоне.
-func (d dickStartExec) randomValue() int {
+func (d dickStartExec) randomValue(dickSize int) int {
 	isPlus := d.isPlus()
 
-	result := rand.Intn(maxValue)
+	maxValueDick := max(minValue, (dickSize/100)*5)
+
+	result := rand.Intn(maxValueDick)
 
 	if !isPlus {
 		return -1 * result
