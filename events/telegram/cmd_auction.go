@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MaxDeposit     = 5
+	MaxDeposit     = 1000
 	DefaultTimeout = 30
 )
 

@@ -196,7 +196,7 @@ func (d dickStartExec) canChangeDickSize(user *storage.DBUser, db storage.Storag
 func (d dickStartExec) randomValue(dickSize int) int {
 	isPlus := d.isPlus()
 
-	maxValueDick := max(minValue, (dickSize/100)*5)
+	maxValueDick := (dickSize/100)*5 + minValue
 
 	result := rand.Intn(maxValueDick)
 
