@@ -239,7 +239,7 @@ func (a auctionExec) getAuctionPlayers(chatID int, auctions map[int][]*AuctionPl
 		if p.deposit > 0 {
 			reward += p.deposit
 			message += fmt.Sprintf("%s:\n*8", p.u.FirstName+" "+p.u.LastName)
-			for i := 0; i < p.deposit/5; i++ {
+			for i := 0; i < p.deposit/100; i++ {
 				message += "="
 			}
 			message += "=Ð*\n"
