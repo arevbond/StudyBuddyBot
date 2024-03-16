@@ -16,7 +16,7 @@ import (
 var duels = make(map[string]*storage.DBUser) // TODO: remove global var
 
 const (
-	RewardForKill = 25
+	RewardForKill = 1500
 	HealthPoints  = 5
 
 	HeartEmoji = "❤️"
