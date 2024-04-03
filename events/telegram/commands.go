@@ -7,6 +7,7 @@ const (
 // dick
 const (
 	DicStartCmd    = "/dick"
+	DickStartCmd2  = "/хуй"
 	dickTopCommand = "/top_dick"
 	DickDuelCmd    = "/duel"
 	GetHPCmd       = "/hp"
@@ -64,6 +65,7 @@ func getAllCommands() map[string]CmdExecutor {
 		GayStartCmd + suffix:           gayExec(GayStartCmd + suffix),
 		dickTopCommand + suffix:        dickTopExec(dickTopCommand + suffix),
 		DicStartCmd + suffix:           dickStartExec(DicStartCmd + suffix),
+		DickStartCmd2 + suffix:         dickStartExec(DicStartCmd + suffix),
 		GetHPCmd + suffix:              getHpExec(GetHPCmd + suffix),
 		DickDuelCmd + suffix:           duelExec(DickDuelCmd + suffix),
 		HelpCmd + suffix:               helpExec(HelpCmd + suffix),
