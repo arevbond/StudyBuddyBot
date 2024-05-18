@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	defaultAward         = 100
+	defaultAward         = 1
 	timeBetweenQuestions = 5
 )
 
@@ -76,7 +76,6 @@ func (s startQuizExec) startQuiz(quizGame quiz.Quiz, chatID int, p *Processor) {
 
 func (s startQuizExec) awarding(chatID int, level quiz.Level, players map[int]int, p *Processor) string {
 	award := defaultAward
-	award += level.Bonus()
 
 	sortedPlayers := getSortedQuizPlayers(players)
 	result := "Результаты:\n"
