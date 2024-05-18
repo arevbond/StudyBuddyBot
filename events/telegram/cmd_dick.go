@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	jackpotValue = 50000
-	minValue     = 500
+	jackpotValue = 100
+	maxReward    = 20
+	minReward    = 5
 )
 
 // dickTopExec предоставляет метод Exec для выполнения /top_dick.
@@ -95,14 +96,14 @@ func (d dickStartExec) proccessDickGame(dbUser *storage.DBUser, userStats *stora
 	}
 
 	oldDickSize := dbUser.DickSize
-	reward, diaposon, err := d.updateRandomDickAndChangeTime(dbUser, userStats, db)
+	err = d.updateRandomDickAndChangeTime(dbUser, userStats, db)
 	if err != nil {
 		return "", err
 	}
-	return d.formatOutputGameDick(dbUser, oldDickSize, diaposon, reward), nil
+	return d.formatOutputGameDick(dbUser, oldDickSize), nil
 }
 
-func (d dickStartExec) formatOutputGameDick(dbUser *storage.DBUser, oldDickSize int, diaposon *dickDiaposonReward, reward int) string {
+func (d dickStartExec) formatOutputGameDick(dbUser *storage.DBUser, oldDickSize int) string {
 	name, hasUsername := d.getName(dbUser)
 	if oldDickSize == 0 {
 		if hasUsername {
@@ -111,9 +112,9 @@ func (d dickStartExec) formatOutputGameDick(dbUser *storage.DBUser, oldDickSize 
 		return fmt.Sprintf(msgCreateUserWithFullName, name) + fmt.Sprintf(msgDickSize, dbUser.DickSize)
 	}
 	if hasUsername {
-		return fmt.Sprintf(msgChangeDickSizeWithUsername, name, oldDickSize, dbUser.DickSize, reward, -(diaposon.basic + diaposon.maxAdditional), diaposon.basic+diaposon.maxAdditional, diaposon.chance)
+		return fmt.Sprintf(msgChangeDickSizeWithUsername, name, oldDickSize, dbUser.DickSize)
 	}
-	return fmt.Sprintf(msgChangeDickSizeWithFullName, name, oldDickSize, dbUser.DickSize, reward, -(diaposon.basic + diaposon.maxAdditional), diaposon.basic+diaposon.maxAdditional, diaposon.chance)
+	return fmt.Sprintf(msgChangeDickSizeWithFullName, name, oldDickSize, dbUser.DickSize)
 }
 
 func (d dickStartExec) formatAlreadyPlaying(dbUser *storage.DBUser) string {
@@ -132,21 +133,8 @@ func (d dickStartExec) getName(dbUser *storage.DBUser) (string, bool) {
 }
 
 // updateRandomDickAndChangeTime изменяет значение пениса на слуайное число и время его изменения в базе данных.
-func (d dickStartExec) updateRandomDickAndChangeTime(user *storage.DBUser, userStats *storage.DBUserStat, db storage.Storage) (int, *dickDiaposonReward, error) {
-	var reward int
-	var diaposon *dickDiaposonReward
-	for {
-		diaposon = d.reward(user.DickSize)
-		reward = diaposon.getReward()
-		if user.DickSize+reward > 0 {
-			break
-		}
-	}
-
-	// TODO: add jackpot
-	//if d.IsJackpot() {
-	//	reward = jackpotValue
-	//}
+func (d dickStartExec) updateRandomDickAndChangeTime(user *storage.DBUser, userStats *storage.DBUserStat, db storage.Storage) error {
+	reward := d.calculateReward(user)
 
 	if reward > 0 {
 		userStats.DickPlusCount++
@@ -162,110 +150,64 @@ func (d dickStartExec) updateRandomDickAndChangeTime(user *storage.DBUser, userS
 	user.ChangeDickAt = time.Now()
 	err = db.UpdateUser(context.Background(), user)
 	if err != nil {
-		return reward, nil, e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size or change dick at: ", user.ChatID, user.Username), err)
+		return e.Wrap(fmt.Sprintf("chat id %d, user %s can't change dick size or change dick at: ", user.ChatID, user.Username), err)
 	}
-	return reward, diaposon, nil
+	return nil
+}
+
+func (d dickStartExec) calculateReward(user *storage.DBUser) int {
+	var reward int
+	for {
+		reward = d.reward()
+		if reward > 0 || (reward < 0 && user.DickSize+reward > 0) {
+			break
+		}
+	}
+	if d.isJackpot() {
+		reward = jackpotValue
+	}
+	return reward
 }
 
 // canChangeDickSize - может ли пользователь изменить пенис сегодня. (остались ли у него попытки)
 // Обновляет попытки каждый день до 0.
 func (d dickStartExec) canChangeDickSize(user *storage.DBUser, db storage.Storage) (bool, error) {
-	yearLastTry, monthLastTry, dayLastTry := user.ChangeDickAt.Date()
-	year, month, today := time.Now().Date()
-	if (month == monthLastTry && today > dayLastTry) || month > monthLastTry || year > yearLastTry {
+	if d.isNewDay(user.ChangeDickAt) {
 		user.CurDickChangeCount = 0
-		err := db.UpdateUser(context.Background(), user)
-		if err != nil {
-			return false, e.Wrap("can't update user in 'canChangeDickSize'", err)
+		if err := db.UpdateUser(context.Background(), user); err != nil {
+			return false, fmt.Errorf("can't update user in 'canChangeDickSize': %w", err)
 		}
 	}
-	if user.CurDickChangeCount+1 <= user.MaxDickChangeCount {
+	if user.CurDickChangeCount < user.MaxDickChangeCount {
 		user.CurDickChangeCount++
-		err := db.UpdateUser(context.Background(), user)
-		if err != nil {
-			return false, e.Wrap("can't update user in 'canChangeDickSize'", err)
+		if err := db.UpdateUser(context.Background(), user); err != nil {
+			return false, fmt.Errorf("can't update user in 'canChangeDickSize': %w", err)
 		}
 		return true, nil
 	}
-
 	return false, nil
 }
 
-// reward возвращает случайное положительное или отрицательное число в конкретном диапозоне.
-func (d dickStartExec) reward(dickSize int) *dickDiaposonReward {
-	reward := d.getRewardByDickSize(dickSize)
+func (d dickStartExec) isNewDay(lastChange time.Time) bool {
+	yearLastTry, monthLastTry, dayLastTry := lastChange.Date()
+	year, month, today := time.Now().Date()
+	return (month == monthLastTry && today > dayLastTry) || month > monthLastTry || year > yearLastTry
+}
 
-	reward.isPlus = d.isPlus()
+// reward возвращает случайное положительное или отрицательное число в конкретном диапозоне.
+func (d dickStartExec) reward() int {
+	reward := minReward + rand.Intn(maxReward)
+	if !d.isPlus() {
+		reward = -reward
+	}
 	return reward
 }
 
-type dickLevel int
-
-const (
-	lowDick dickLevel = iota
-	highDick
-)
-
-type dickDiaposonReward struct {
-	basic         int
-	maxAdditional int
-	chance        int
-	isPlus        bool
-}
-
-func (d dickDiaposonReward) getReward() int {
-	result := d.basic + rand.Intn(d.maxAdditional)
-	if d.isPlus {
-		return result
-	}
-	return -1 * result
-}
-
-func (d dickStartExec) getDickReward(dickSize int, level dickLevel) *dickDiaposonReward {
-	if level == lowDick {
-		return &dickDiaposonReward{basic: 10, maxAdditional: 100, chance: 100}
-	}
-	n := rand.Intn(101)
-	switch {
-	case n > 0 && n < 80:
-		return &dickDiaposonReward{basic: 100, maxAdditional: dickSize / 10, chance: 80}
-	case n >= 80 && n < 95:
-		return &dickDiaposonReward{basic: 100, maxAdditional: dickSize / 5, chance: 14}
-	case n >= 95 && n < 100:
-		return &dickDiaposonReward{basic: 100, maxAdditional: dickSize, chance: 5}
-	case n == 100:
-		return &dickDiaposonReward{basic: 100, maxAdditional: 2 * dickSize, chance: 1}
-	default:
-		return &dickDiaposonReward{1, 100, 100, true}
-	}
-}
-
-func (d dickStartExec) getRewardByDickSize(dickSize int) *dickDiaposonReward {
-	level := d.DickLevel(dickSize)
-	return d.getDickReward(dickSize, level)
-}
-
-func (d dickStartExec) DickLevel(dickSize int) dickLevel {
-	switch {
-	case dickSize < 100:
-		return lowDick
-	default:
-		return highDick
-	}
-}
-
 func (d dickStartExec) isPlus() bool {
-	sign := rand.Intn(20)
-	if sign <= 7 {
-		return false
-	}
-	return true
+	return rand.Intn(100) > 35
 }
 
 // IsJackpot показывает выиграл ли пользователь джекпот.
-func (d dickStartExec) IsJackpot() bool {
-	if value := rand.Intn(100); value == 77 {
-		return true
-	}
-	return false
+func (d dickStartExec) isJackpot() bool {
+	return rand.Intn(100) == 69
 }

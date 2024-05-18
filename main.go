@@ -32,12 +32,12 @@ func main() {
 		cache.NewUserCache(),
 	)
 
-	log.Print("[INFO] service started")
+	log.Print("[INFO] bot started")
 
 	consumer := event_consumer.New(eventsProcessor, eventsProcessor, batchSize)
 
 	if err = consumer.Start(); err != nil {
-		log.Fatal("[ERROR] service is stopped", err)
+		log.Fatal("[ERROR] bot is stopped", err)
 	}
 }
 
