@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	MaxDeposit     = 1000
-	DefaultTimeout = 30
+	maxDeposit     = 5
+	defaultTimeout = 30
 )
 
 type AuctionPlayer struct {
@@ -49,20 +49,20 @@ func (a startAuctionExec) Exec(p *Processor, inMessage string, user *telegram.Us
 		}
 	}()
 
-	return &Response{message: fmt.Sprintf(msgStartAuction, MaxDeposit), method: sendMessageMethod, parseMode: telegram.Markdown}, nil
+	return &Response{message: fmt.Sprintf(msgStartAuction, maxDeposit), method: sendMessageMethod, parseMode: telegram.Markdown}, nil
 }
 
 func getAuctionTimeout(inMessage string) int {
 	strs := strings.Fields(inMessage)
 	if len(strs) < 2 {
-		return DefaultTimeout
+		return defaultTimeout
 	}
 	timeout, err := strconv.Atoi(strs[1])
 	if err != nil {
-		return DefaultTimeout
+		return defaultTimeout
 	}
 	if timeout < 10 || timeout > 60 {
-		return DefaultTimeout
+		return defaultTimeout
 	}
 	return timeout
 }
@@ -134,7 +134,7 @@ func (a addDepositExec) addDeposit(inMessage string, user *telegram.User, chat *
 func (a addDepositExec) canDeposit(deposit int, user *storage.DBUser, player *AuctionPlayer) bool {
 	dickSize := user.DickSize
 	playerDeposit := player.deposit
-	return deposit >= 1 && deposit+playerDeposit <= MaxDeposit && dickSize-deposit >= 1
+	return deposit >= 1 && deposit+playerDeposit <= maxDeposit && dickSize-deposit >= 1
 }
 
 // getPlayer возвращает игрока аукциона.
