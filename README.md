@@ -37,7 +37,7 @@ StudyBuddyBot is a Telegram bot written in Golang using the pure Telegram Bot AP
 
 ### Quizzess
 
-- `/start_quiz [quiz_filename]` - Admin only
+- `/start_quiz [quiz_filename]` - Admin command only
 
 ## Installation and Execution
 
