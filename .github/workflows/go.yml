@@ -22,4 +22,4 @@ jobs:
             cd /root/StuddyBuddyBot
             git pull origin main
             go build
-            ./tg_ics_useful_bot >> LogFile.txt 2>>LogError.txt
+            systemctl restart tg_ics_useful_bot.service
