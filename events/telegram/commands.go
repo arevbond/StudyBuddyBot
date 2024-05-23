@@ -76,7 +76,7 @@ func getAllCommands() map[string]CmdExecutor {
 		AddCalendarIDCmd + suffix:      addCalendarExec(AddCalendarIDCmd + suffix),
 		ScheduleCmd + suffix:           scheduleExec(ScheduleCmd + suffix),
 		XkcdCmd + suffix:               xkcdExec(XkcdCmd + suffix),
-		AnecdotCmd + suffix:            xkcdExec(AnecdotCmd + suffix),
+		AnecdotCmd + suffix:            anekdotExec(AnecdotCmd + suffix),
 		AufCmd + suffix:                aufExec(AufCmd + suffix),
 		FlipCmd + suffix:               flipExec(FlipCmd + suffix),
 		GetChatIDCmd + suffix:          chatIDExec(GetChatIDCmd + suffix),

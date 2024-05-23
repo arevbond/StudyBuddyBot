@@ -1,9 +1,10 @@
 package telegram
 
 import (
-	"tg_ics_useful_bot/clients/jokesrv"
+	"errors"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/clients/xkcd"
+	"tg_ics_useful_bot/lib/anecdots"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/lib/flip"
 	"tg_ics_useful_bot/lib/motivation"
@@ -30,16 +31,27 @@ func (x xkcdExec) Exec(p *Processor, inMessage string, user *telegram.User, chat
 // anekdotExec предоставляет Exec метод для выполнения /joke.
 type anekdotExec string
 
-// Exec: /joke - возвращает случайный анекдот от @bobuk.
 func (a anekdotExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	message, err := jokesrv.Anecdot()
+	message, err := anecdots.RandomAnecdot()
 	if err != nil {
 		return nil, e.Wrap("can't get anecdot: ", err)
 	}
 	mthd := sendMessageMethod
 	return &Response{message: message, method: mthd, replyMessageId: messageID}, nil
+}
+
+type addAnecdotExec string
+
+func (a addAnecdotExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	if !p.isAdmin(user.ID) {
+		return nil, e.Wrap("no admin can't do this cmd (/add_anecdot)", errors.New("can't do this cmd"))
+	}
+
+	return nil, nil
 }
 
 // flipExec предоставляет Exec метод длы выполнения /flip.
