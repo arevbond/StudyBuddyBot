@@ -2,9 +2,12 @@ package telegram
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
+	"strconv"
+	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
@@ -24,7 +27,7 @@ type dickTopExec string
 func (d dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	message, err := d.getTopDicks(chat.ID, p)
+	message, err := getTopDicks(chat.ID, p)
 	if err != nil {
 		return nil, e.Wrap(fmt.Sprintf("can't get top dics from chat %d: ", chat.ID), err)
 	}
@@ -33,7 +36,7 @@ func (d dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 }
 
 // getTopDicks возвращает string сообщение со списком всех dick > 0 в чате.
-func (d dickTopExec) getTopDicks(chatID int, p *Processor) (msg string, err error) {
+func getTopDicks(chatID int, p *Processor) (msg string, err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chatID)
 	if err != nil {
 		return "", e.Wrap("[ERROR] can't get users: ", err)
@@ -210,4 +213,67 @@ func (d dickStartExec) isPlus() bool {
 // IsJackpot показывает выиграл ли пользователь джекпот.
 func (d dickStartExec) isJackpot() bool {
 	return rand.Intn(100) == 69
+}
+
+type finishSeasonExec string
+
+func (f finishSeasonExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
+	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+
+	strs := strings.Split(inMessage, " ")
+	if len(strs) < 2 {
+		return nil, errors.New("invalid input message")
+	}
+	chatIDStr := strs[1]
+	chatID, err := strconv.Atoi(chatIDStr)
+	if err != nil {
+		log.Print(err)
+		return nil, e.Wrap("invalid chat ID", err)
+	}
+
+	users, err := p.storage.UsersByChat(context.Background(), chatID)
+	if err != nil {
+		return nil, e.Wrap("[ERROR] can't get users: ", err)
+	}
+
+	topDicksMessage, err := getTopDicks(chatID, p)
+	if err != nil {
+		return nil, e.Wrap("can't get top dics", err)
+	}
+
+	if topDicksMessage == "" {
+		return &Response{message: msgErrorZeroUsersInSeason, method: sendMessageMethod, parseMode: telegram.Markdown, replyMessageId: messageID}, nil
+	}
+
+	winner := users[0]
+
+	err = f.processFinishSeason(p, users, winner)
+	if err != nil {
+		return nil, e.Wrap("can't proccess finish season", err)
+	}
+
+	resultMessages := []string{msgEndSeason, fmt.Sprintf(msgSeasonResult, topDicksMessage), msgStartSeason}
+
+	resultMessage := strings.Join(resultMessages, "\n")
+
+	err = p.tg.SendMessage(chatID, resultMessage, telegram.Markdown, -1)
+	if err != nil {
+		log.Printf("can't send message in finish season command: %w", err)
+		return &Response{message: msgError, method: sendMessageMethod, parseMode: telegram.Markdown, replyMessageId: messageID}, nil
+	}
+	return &Response{message: msgSuccess, method: sendMessageMethod, parseMode: telegram.Markdown, replyMessageId: messageID}, nil
+}
+
+func (f finishSeasonExec) processFinishSeason(p *Processor, users []*storage.DBUser, winner *storage.DBUser) error {
+	winner.MaxDickChangeCount++
+
+	for _, user := range users {
+		user.DickSize = 0
+		err := p.storage.UpdateUser(context.Background(), user)
+		if err != nil {
+			return e.Wrap(fmt.Sprintf("can't update user %s", user.Username), err)
+		}
+	}
+
+	return nil
 }

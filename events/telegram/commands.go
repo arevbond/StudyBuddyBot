@@ -11,6 +11,7 @@ const (
 	dickTopCommand = "/top_dick"
 	DickDuelCmd    = "/duel"
 	GetHPCmd       = "/hp"
+	FinishSeason   = "/finish_season"
 
 	// gay
 	GayStartCmd = "/gay"
@@ -91,5 +92,6 @@ func getAllCommands() map[string]CmdExecutor {
 
 		StartQuizCmd + suffix: startQuizExec(StartQuizCmd + suffix),
 		StopQuizCmd + suffix:  stopQuizExec(StopQuizCmd + suffix),
+		FinishSeason + suffix: finishSeasonExec(FinishSeason + suffix),
 	}
 }
