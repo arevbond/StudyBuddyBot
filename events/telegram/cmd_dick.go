@@ -269,6 +269,7 @@ func (f finishSeasonExec) processFinishSeason(p *Processor, users []*storage.DBU
 
 	for _, user := range users {
 		user.DickSize = 0
+		user.ChangeDickAt = time.Now().Add(-24 * time.Hour)
 		err := p.storage.UpdateUser(context.Background(), user)
 		if err != nil {
 			return e.Wrap(fmt.Sprintf("can't update user %s", user.Username), err)
