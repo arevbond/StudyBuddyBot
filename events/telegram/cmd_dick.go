@@ -220,6 +220,10 @@ type finishSeasonExec string
 func (f finishSeasonExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
+	if !p.isAdmin(user.ID) {
+		return nil, e.Wrap("no admin can't do this cmd (/send_message)", errors.New("can't do this cmd"))
+	}
+
 	strs := strings.Split(inMessage, " ")
 	if len(strs) < 2 {
 		return nil, errors.New("invalid input message")
