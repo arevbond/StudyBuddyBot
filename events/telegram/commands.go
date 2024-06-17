@@ -58,7 +58,7 @@ const (
 	// HOLIDAY
 	HolidayCmd = "/holiday"
 
-	AiCmd = "Аркаш,"
+	AiCmd = "/bot"
 )
 
 func getAllCommands() map[string]CmdExecutor {
