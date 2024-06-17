@@ -21,5 +21,6 @@ jobs:
           script: |
             cd /root/StuddyBuddybot
             git pull origin main
+            export PATH=$PATH:/usr/local/go/bin  # Добавляем путь к Go в переменные окружения
             go build
             systemctl restart tg-ics-useful-bot.service
