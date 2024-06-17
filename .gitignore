@@ -7,3 +7,4 @@ clients/google-calendar/credentials.json
 config/config.yml
 lib/quiz/quizzes/
 venv/
+__pychache__/

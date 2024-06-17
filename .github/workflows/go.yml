@@ -19,7 +19,7 @@ jobs:
           username: ${{ secrets.REMOTE_USERNAME }}
           password: ${{ secrets.REMOTE_PASSWORD }}
           script: |
-            cd /root/StuddyBuddyBot
+            cd /root/StuddyBuddybot
             git pull origin main
             go build
-            systemctl restart tg_ics_useful_bot.service
+            systemctl restart tg-ics-useful-bot.service
