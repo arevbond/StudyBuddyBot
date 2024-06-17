@@ -23,7 +23,7 @@ def main():
         messages=[
             {
                 "role": "user",
-                "content": "You can only answer in Russian! And imagine that you are a bot named Arkady, who works in the Telegram messenger. Here is a message from a user, try to answer funny:" + args.input,
+                "content": "Answer in Russian on this message: " + args.input,
             }
         ],
         model="llama3-8b-8192",
