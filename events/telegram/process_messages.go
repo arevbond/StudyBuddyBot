@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"errors"
-	"log"
+	"log/slog"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/events"
 	"tg_ics_useful_bot/lib/e"
@@ -12,6 +12,7 @@ import (
 )
 
 type Processor struct {
+	logger    *slog.Logger
 	tg        *telegram.Client
 	offset    int
 	storage   storage.Storage
@@ -58,10 +59,13 @@ type Meta struct {
 var (
 	ErrUnknownEventType = errors.New("unknown event type")
 	ErrUnknownMetaType  = errors.New("unknown meta type")
+
+	ErrNotAdmin = errors.New("not admin")
 )
 
-func New(client *telegram.Client, storage storage.Storage, userCache cache.UserCache) *Processor {
+func New(client *telegram.Client, storage storage.Storage, userCache cache.UserCache, logger *slog.Logger) *Processor {
 	return &Processor{
+		logger:    logger,
 		tg:        client,
 		storage:   storage,
 		userCache: userCache,
@@ -146,7 +150,8 @@ func (p *Processor) processMessage(event events.Event) error {
 	}
 
 	if chat.Type == "private" && !p.isAdmin(user.ID) {
-		return nil
+		p.logger.Info("user send private message", slog.Int("tg id", user.ID))
+		return e.Wrap("can't process private not admin message", ErrNotAdmin)
 	}
 
 	if err = p.doCmd(event.Text, chat, user, messageID); err != nil {
@@ -230,7 +235,7 @@ func (p *Processor) isAdmin(userID int) bool {
 func (p *Processor) isChatAdmin(user *telegram.User, chatID int) bool {
 	admins, err := p.tg.ChatAdministrators(chatID)
 	if err != nil {
-		log.Printf("can't get admins in chat #%d: %v", chatID, err)
+		p.logger.Error("can't get admins", slog.Any("error", err), slog.Int("chat id", chatID))
 	}
 	for _, admin := range admins {
 		if user.ID == admin.ID {

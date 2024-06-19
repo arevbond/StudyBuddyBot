@@ -1,13 +1,16 @@
 package main
 
 import (
-	"log"
+	"github.com/lmittmann/tint"
+	"log/slog"
+	"os"
 	tgClient "tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/config"
 	"tg_ics_useful_bot/consumer/event-consumer"
 	"tg_ics_useful_bot/events/telegram"
 	"tg_ics_useful_bot/storage/cache"
 	"tg_ics_useful_bot/storage/sqlite"
+	"time"
 )
 
 const (
@@ -19,9 +22,12 @@ const (
 func main() {
 	cfg := config.New()
 
-	s, err := sqlite.New(storageSQLitePath)
+	logger := setupLogger(cfg)
+
+	s, err := sqlite.New(storageSQLitePath, logger)
 	if err != nil {
-		log.Fatal("can't find storage", err)
+		logger.Error("can't find storage", slog.Any("err", err))
+		os.Exit(1)
 	}
 
 	telegramToken := getTelegramToken(cfg)
@@ -30,14 +36,16 @@ func main() {
 		tgClient.New(tgBotHost, telegramToken, cfg.AdminsID),
 		s,
 		cache.NewUserCache(),
+		logger,
 	)
 
-	log.Print("[INFO] bot started")
+	consumer := event_consumer.New(eventsProcessor, eventsProcessor, batchSize, logger)
 
-	consumer := event_consumer.New(eventsProcessor, eventsProcessor, batchSize)
+	logger.Info("bot started")
 
 	if err = consumer.Start(); err != nil {
-		log.Fatal("[ERROR] bot is stopped", err)
+		logger.Error("bot is stopped", slog.Any("err", err))
+		os.Exit(1)
 	}
 }
 
@@ -52,4 +60,18 @@ func getTelegramToken(cfg *config.Config) string {
 	}
 
 	return telegramToken
+}
+
+func setupLogger(cfg *config.Config) *slog.Logger {
+	var logger *slog.Logger
+	switch cfg.Env {
+	case "local":
+		logger = slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+			Level:      slog.LevelDebug,
+			TimeFormat: time.RFC822}))
+		// logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	case "prod":
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+	}
+	return logger
 }

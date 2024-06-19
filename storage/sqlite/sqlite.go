@@ -7,27 +7,28 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
-	"log"
+	"log/slog"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 	"time"
 )
 
 type Storage struct {
-	db *sqlx.DB
+	db     *sqlx.DB
+	logger *slog.Logger
 }
 
 // New creates new SQLite storage.
-func New(path string) (storage *Storage, err error) {
+func New(path string, looger *slog.Logger) (storage *Storage, err error) {
 	db, err := sqlx.Open("sqlite3", path)
 	if err != nil {
-		return nil, e.Wrap("[ERROR] can't open db (probably wrong path): ", err)
+		return nil, e.Wrap("can't open db (probably wrong path): ", err)
 	}
 
-	if err := db.Ping(); err != nil {
-		return nil, e.Wrap("[ERROR] can't ping db: ", err)
+	if err = db.Ping(); err != nil {
+		return nil, e.Wrap("can't ping db: ", err)
 	}
-	return &Storage{db: db}, nil
+	return &Storage{db: db, logger: looger}, nil
 }
 
 // CreateUser создаёт нового пользователя из телеграмма в базе данных.
@@ -40,7 +41,9 @@ func (s *Storage) CreateUser(ctx context.Context, u *storage.DBUser) error {
 		u.UserStatId, u.HealthPoints, u.HpTakedAt, u.IsGay, u.GayAt, u.Points, u.CurDickChangeCount, u.MaxDickChangeCount); err != nil {
 		return e.Wrap(fmt.Sprintf("can't create user %d %s: ", u.TgID, u.Username), err)
 	}
-	log.Printf("[INFO] create user #%d '%s' '%s' '%s', chat_id = %d, dick size = %d", u.TgID, u.Username, u.FirstName, u.LastName, u.ChatID, u.DickSize)
+
+	s.logger.Info("create user", slog.Int("tg id", u.TgID),
+		slog.String("username", u.Username), slog.String("first name", u.FirstName), slog.Int("chat id", u.ChatID), slog.Int("dick size", u.DickSize))
 	return nil
 }
 
@@ -91,10 +94,8 @@ func (s *Storage) UserByUsername(ctx context.Context, username string, chatID in
 	}
 
 	if err != nil {
-		return nil, e.Wrap(fmt.Sprintf("[ERROR] can't get user from storage username: %s, chat id: %d", username, chatID), err)
+		return nil, e.Wrap(fmt.Sprintf("can't get user from storage username: %s, chat id: %d", username, chatID), err)
 	}
-
-	// log.Printf("from storage get user: tg id = %d, chat id = %d, dick size = %d", user.TgID, user.ChatID, user.DickSize)
 
 	return &user, nil
 }
@@ -126,7 +127,7 @@ func (s *Storage) GetGayOfDay(ctx context.Context, chatID int) (*storage.DBGay, 
 	}
 
 	if err != nil {
-		return nil, e.Wrap(fmt.Sprintf("[ERROR] can't get gay from table gays chat id: %d", chatID), err)
+		return nil, e.Wrap(fmt.Sprintf("can't get gay from table gays chat id: %d", chatID), err)
 	}
 
 	return gay, nil
@@ -137,7 +138,8 @@ func (s *Storage) CreateGayOfDay(ctx context.Context, gay *storage.DBGay) error 
 	q := `INSERT INTO gays (chat_id, tg_id, username, created_at) 
 							VALUES ($1, $2, $3, $4)`
 
-	log.Printf("[INFO] create gay of day #%d '%s', chat_id = %d", gay.TgID, gay.Username, gay.ChatID)
+	s.logger.Info("create gay of day", slog.Int("chat id", gay.ChatID),
+		slog.Int("tg id", gay.TgID), slog.String("username", gay.Username))
 
 	if _, err := s.db.ExecContext(ctx, q, gay.ChatID, gay.TgID, gay.Username, gay.CreatedAt); err != nil {
 		return e.Wrap(fmt.Sprintf("can't create gay %d %s: ", gay.TgID, gay.Username), err)
@@ -167,7 +169,7 @@ func (s *Storage) GetCalendarID(ctx context.Context, chatID int) (string, error)
 	}
 
 	if err != nil {
-		return "", e.Wrap(fmt.Sprintf("[ERROR] can't get calendar_id from table calendars chat id: %d", chatID), err)
+		return "", e.Wrap(fmt.Sprintf("can't get calendar_id from table calendars chat id: %d", chatID), err)
 	}
 	return calendarID, nil
 }

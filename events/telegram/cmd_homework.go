@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"strconv"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
@@ -34,7 +34,7 @@ type addHomeworkExec string
 
 func (a addHomeworkExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
-	
+
 	message := p.addHomeworkCmd(inMessage, UserWithChat{ChatID: chat.ID, UserID: user.ID})
 	mthd := sendMessageWithButtonsMethod
 	replyMessageId := messageID
@@ -54,7 +54,7 @@ func (p *Processor) addHomeworkCmd(text string, userWithChat UserWithChat) strin
 		err := p.storage.AddHomework(context.Background(), userWithChat.ChatID, hm.subject, hm.Task)
 		if err != nil {
 			message = msgErrorAddHomework
-			log.Printf("can't add homework: %v", err)
+			p.logger.Error("can't add homework", slog.Any("error", err))
 		}
 		delete(stateHomework, userWithChat)
 		return message
@@ -94,7 +94,7 @@ func (p *Processor) getHomework(text string, chatID int) string {
 	if num, err := strconv.Atoi(val); err == nil {
 		homeworks, err = p.storage.GetHomeworkByChatID(context.Background(), chatID, num)
 		if err != nil {
-			log.Print(err)
+			p.logger.Error("can't get homework by chat id", slog.Any("error", err))
 			return ""
 		}
 		message += fmt.Sprintf("Последние %d домашних задания:\n", num)
@@ -102,14 +102,14 @@ func (p *Processor) getHomework(text string, chatID int) string {
 		val = val[:len(val)-1]
 		homeworks, err = p.storage.GetHomeworkBySubject(context.Background(), chatID, val)
 		if err != nil {
-			log.Print(err)
+			p.logger.Error("can't get homework by subject", slog.Any("error", err))
 			return ""
 		}
 		message += fmt.Sprintf("Всё домашнее задание по предмету %s:\n", val)
 	} else {
 		homeworks, err = p.storage.GetHomeworkByChatID(context.Background(), chatID, maxRows)
 		if err != nil {
-			log.Print(err)
+			p.logger.Error("can't get homework by chat id", slog.Any("error", err))
 			return ""
 		}
 		message += fmt.Sprintf("Последние %d добавленных домашних задания:\n", maxRows)
@@ -150,7 +150,7 @@ func (p *Processor) deleteHomework(rowID int) string {
 	err := p.storage.DeleteHomework(context.Background(), rowID)
 	message := fmt.Sprintf(msgSuccessDelete, rowID)
 	if err != nil {
-		log.Print(err)
+		p.logger.Error("can't delete homework", slog.Any("error", err))
 		message = fmt.Sprintf(msgErrorDelete, rowID)
 	}
 	return message

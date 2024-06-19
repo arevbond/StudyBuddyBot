@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"sort"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
@@ -83,13 +83,13 @@ func (s startQuizExec) awarding(chatID int, level quiz.Level, players map[int]in
 	for _, player := range sortedPlayers {
 		dbUser, err := p.storage.GetUser(context.Background(), player, chatID)
 		if err != nil {
-			log.Println("can't get db user", err)
+			p.logger.Error("can't get db user", slog.String("func", "startQuizExec.awarding"))
 			continue
 		}
 		dbUser.DickSize += p.quiz.currentPlayers[player] * award
 		err = p.storage.UpdateUser(context.Background(), dbUser)
 		if err != nil {
-			log.Println("can't update points in db user", err)
+			p.logger.Error("can't update points in db use", slog.String("func", "startQuizExec.awarding"))
 			continue
 		}
 		result += fmt.Sprintf(" • %d ✔  %s          ➕ %d см\n", p.quiz.currentPlayers[player], dbUser.FirstName+" "+dbUser.LastName,

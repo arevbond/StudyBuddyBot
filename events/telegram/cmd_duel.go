@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"math/rand"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
@@ -77,7 +77,9 @@ func (a duelExec) Exec(p *Processor, inMessage string, user *telegram.User, chat
 	if utils.StringContains("@", inMessage) {
 		textSplited := strings.Split(inMessage, "@")
 		target := textSplited[len(textSplited)-1]
-		log.Printf("[INFO] @%s вызывает на дуель @%s", user.Username, target)
+
+		p.logger.Info("creation duel", slog.String("creator", user.Username), slog.String("target", target))
+
 		message, err = a.gameDuel(chat, user, target, p)
 		if err != nil {
 			return nil, e.Wrap("can't do gameDuel: ", err)
@@ -130,7 +132,7 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 		stats1.DuelsCount++
 		stats2.DuelsCount++
 
-		isUser1Win, ch1, ch2 := a.duel(u1.DickSize, u2.DickSize)
+		isUser1Win, ch1, ch2 := a.duel(u1.DickSize, u2.DickSize, p.logger)
 		if isUser1Win {
 			stats1.DuelsWinCount++
 			stats2.DuelsLoseCount++
@@ -163,7 +165,7 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 			err1 := p.storage.UpdateUserStats(context.Background(), stats1)
 			err2 := p.storage.UpdateUserStats(context.Background(), stats2)
 			if err1 != nil || err2 != nil {
-				log.Println("[ERROR] can't update user stats in 'gameDuel'")
+				p.logger.Error("can't update user stats", slog.Any("error", err))
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +
@@ -200,7 +202,7 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 			err1 := p.storage.UpdateUserStats(context.Background(), stats1)
 			err2 := p.storage.UpdateUserStats(context.Background(), stats2)
 			if err1 != nil || err2 != nil {
-				log.Println("[ERROR] can't update user stats in 'gameDuel'")
+				p.logger.Error("can't update user stats in game duel")
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +
@@ -271,13 +273,13 @@ func canGetHp(user *storage.DBUser) bool {
 }
 
 // duel return true if dick1 wins.
-func (a duelExec) duel(dick1 int, dick2 int) (bool, float64, float64) {
+func (a duelExec) duel(dick1 int, dick2 int, logger *slog.Logger) (bool, float64, float64) {
 	allChance := dick1 + dick2
 	chance1 := float64(dick1) / float64(allChance) * 100
 	chance2 := float64(dick2) / float64(allChance) * 100
 
 	result := float64(rand.Intn(100))
-	log.Printf("[INFO] duel between dick1 = %d and dick2 = %d. chance1 = %.2f and chance2 = %.2f", dick1, dick2, chance1, chance2)
+	logger.Info("done duel", slog.Int("dick1", dick1), slog.Int("dick2", dick2), slog.Float64("chance1", chance1), slog.Float64("chance2", chance2))
 	return result <= chance1, chance1, chance2
 }
 

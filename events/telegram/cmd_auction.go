@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -42,7 +42,7 @@ func (a startAuctionExec) Exec(p *Processor, inMessage string, user *telegram.Us
 		time.Sleep(time.Duration(timeout) * time.Second)
 		msg, err := a.finishAuction(chat.ID, p)
 		if err != nil {
-			log.Println("[ERROR] in goroutine /start_auction", err)
+			p.logger.Error("can't finish auction", slog.Any("error", err))
 		}
 		if msg != "" {
 			_ = p.tg.SendMessage(chat.ID, msg, "", -1)

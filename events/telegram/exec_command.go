@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
@@ -57,7 +57,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 	userStats.MessageCount++
 	err = p.storage.UpdateUserStats(context.Background(), userStats)
 	if err != nil {
-		log.Println("[ERROR] can't update user stats:", err)
+		p.logger.Error("can't update user stats", slog.Any("error", err), slog.Int("tg id", user.ID))
 	}
 
 	text, parseMode := strings.TrimSpace(text), telegram.WithoutParseMode
@@ -68,7 +68,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		userStats.YesCount++
 		err = p.storage.UpdateUserStats(ctx, userStats)
 		if err != nil {
-			log.Print(err)
+			p.logger.Error("can't update user stats", slog.Any("error", err), slog.Int("tg id", user.ID))
 		}
 		return p.tg.SendMessage(chat.ID, answerOnYes, parseMode, messageID)
 	case utils.IsNoCommand:
@@ -76,7 +76,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		userStats.NoCount++
 		err = p.storage.UpdateUserStats(ctx, userStats)
 		if err != nil {
-			log.Print(err)
+			p.logger.Error("can't update user stats", slog.Any("error", err), slog.Int("tg id", user.ID))
 		}
 		return p.tg.SendMessage(chat.ID, answerOnNo, parseMode, messageID)
 	}
@@ -89,7 +89,7 @@ func (p *Processor) doCmd(text string, chat *telegram.Chat, user *telegram.User,
 		return p.tg.SendMessage(chat.ID, msg, parseMode, replyToMessageID)
 	}
 
-	if utils.IsCommand(text) {
+	if p.IsCommand(text) {
 		return p.handleCommand(text, chat, user, messageID, userStats)
 	}
 	return nil
@@ -108,7 +108,7 @@ func (p *Processor) getUser(ctx context.Context, user *telegram.User, chatID int
 			return nil, e.Wrap("unknown error in 'doCmd'", err)
 		}
 		p.userCache.AddUser(dbUser)
-		log.Printf("[INFO] Get user %d from storage\n", user.ID)
+		p.logger.Info("get user from storage", slog.Int("tg id", user.ID))
 	}
 
 	dbUser, err = p.userChangeInfo(user, dbUser)
@@ -119,7 +119,7 @@ func (p *Processor) getUser(ctx context.Context, user *telegram.User, chatID int
 }
 
 func (p *Processor) handleCommand(text string, chat *telegram.Chat, user *telegram.User, messageID int, userStats *storage.DBUserStat) error {
-	log.Printf("[INFO] got new command '%s' from '%s' in '%s'", text, user.Username, chat.Title)
+	p.logger.Info("got new command", slog.String("command", text), slog.String("from", user.Username), slog.String("chat", chat.Title))
 
 	strCmd := strings.Split(text, " ")[0]
 	cmd := p.getCmd(strCmd)
@@ -152,7 +152,7 @@ func (p *Processor) handleCommand(text string, chat *telegram.Chat, user *telegr
 	case sendPoll:
 		return p.tg.SendPoll(response.poll)
 	case doNothingMethod:
-		log.Printf("Message: \"%s\" - do nothing", text)
+		p.logger.Info("do nothing with message", slog.String("message", text))
 	}
 	return nil
 }
@@ -227,4 +227,8 @@ func (p *Processor) userChangeInfo(user *telegram.User, dbUser *storage.DBUser) 
 		p.userCache.AddUser(newDbUser)
 	}
 	return dbUser, nil
+}
+
+func (p *Processor) IsCommand(text string) bool {
+	return strings.HasPrefix(text, "/")
 }

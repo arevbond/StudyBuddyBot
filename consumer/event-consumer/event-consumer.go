@@ -1,19 +1,21 @@
 package event_consumer
 
 import (
-	"log"
+	"log/slog"
 	"tg_ics_useful_bot/events"
 	"time"
 )
 
 type Consumer struct {
+	logger    *slog.Logger
 	fetcher   events.Fetcher
 	processor events.Processor
 	batchSize int
 }
 
-func New(fetcher events.Fetcher, processor events.Processor, batchSize int) Consumer {
+func New(fetcher events.Fetcher, processor events.Processor, batchSize int, logger *slog.Logger) Consumer {
 	return Consumer{
+		logger:    logger,
 		fetcher:   fetcher,
 		processor: processor,
 		batchSize: batchSize,
@@ -24,7 +26,7 @@ func (c Consumer) Start() error {
 	for {
 		gotEvents, err := c.fetcher.Fetch(c.batchSize)
 		if err != nil {
-			log.Printf("[ERROR] consumer: %s", err.Error())
+			c.logger.Error("can't fetch events", slog.Any("error", err))
 
 			continue
 		}
@@ -36,7 +38,7 @@ func (c Consumer) Start() error {
 		}
 
 		if err = c.handleEvents(gotEvents); err != nil {
-			log.Printf("[ERROR] consumer: %s", err.Error())
+			c.logger.Error("consumer can't handle events", slog.Any("error", err))
 
 			continue
 		}
@@ -46,7 +48,7 @@ func (c Consumer) Start() error {
 func (c *Consumer) handleEvents(events []events.Event) error {
 	for _, event := range events {
 		if err := c.processor.Process(event); err != nil {
-			log.Printf("[ERROR] can't handle event: %s", err.Error())
+			c.logger.Error("can't handle events", slog.Any("error", err))
 			continue
 		}
 

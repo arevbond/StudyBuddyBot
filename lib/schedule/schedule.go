@@ -2,13 +2,14 @@ package schedule
 
 import (
 	"fmt"
+	"log/slog"
 	google_calendar "tg_ics_useful_bot/clients/google-calendar"
 	"time"
 )
 
-func ScheduleCmd(calendarID string) (string, error) {
+func ScheduleCmd(calendarID string, logger *slog.Logger) (string, error) {
 	result := ""
-	dayToLessons, err := google_calendar.Lessons(calendarID)
+	dayToLessons, err := google_calendar.Lessons(calendarID, logger)
 	if err != nil {
 		return "", err
 	}

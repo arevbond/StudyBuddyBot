@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/schedule"
@@ -31,7 +31,7 @@ func (a addCalendarExec) Exec(p *Processor, inMessage string, user *telegram.Use
 	var message string
 	if err != nil {
 		message = fmt.Sprintf(msgErrorUpdateCalendarID, calendarID)
-		log.Printf("can't update calender_id: %v", err)
+		p.logger.Error("can't update calendar id", slog.Any("error", err))
 	} else {
 		message = msgSuccessUpdateCalendarID
 	}
@@ -50,12 +50,12 @@ func (s scheduleExec) Exec(p *Processor, inMessage string, user *telegram.User, 
 	calendarID, err := p.storage.GetCalendarID(context.Background(), chat.ID)
 	if err != nil || calendarID == "" {
 		message = msgCalendarNotExists
-		log.Print("can't get calendarID: ", err)
+		p.logger.Error("can't get calendar id", slog.Any("error", err))
 	} else {
-		message, err = schedule.ScheduleCmd(calendarID)
+		message, err = schedule.ScheduleCmd(calendarID, p.logger)
 		parseMode = telegram.Markdown
 		if err != nil {
-			log.Printf("[ERROR] can't send schedule: %v", err)
+			p.logger.Error("can't send schedule", slog.Any("error", err))
 			message = fmt.Sprintf(msgErrorSendMessage, calendarID)
 			parseMode = ""
 		}

@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 	"errors"
-	"log"
+	"log/slog"
 	"strconv"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
@@ -27,11 +27,11 @@ func (a adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegra
 	chatIDStr, message := strs[1], strings.Join(strs[2:], " ")
 	chatID, err := strconv.Atoi(chatIDStr)
 	if err != nil {
-		log.Print(err)
+		p.logger.Error("invalid type chat id", slog.Any("error", err))
 	}
 	err = p.tg.SendMessage(chatID, message, "", -1)
 	if err != nil {
-		log.Println("can't send message by admin:", err)
+		p.logger.Error("can't send message by admin", slog.Any("error", err))
 	}
 
 	message = msgSuccess
@@ -83,8 +83,7 @@ func (a adminChangeDickExec) changeDickByAdmin(chatIDStr, userIDStr, valueStr st
 	dbUser.DickSize += value
 	err = db.UpdateUser(context.Background(), dbUser)
 	if err != nil {
-		log.Print(err)
-		return err
+		return e.Wrap("can't update user", err)
 	}
 	return nil
 }

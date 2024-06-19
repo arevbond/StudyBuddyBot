@@ -1,7 +1,7 @@
 package telegram
 
 import (
-	"log"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
@@ -27,7 +27,7 @@ func (l llamaExec) Exec(p *Processor, inMessage string, user *telegram.User, cha
 
 	output, err := cmd.Output()
 	if err != nil {
-		log.Printf("can't get output from python script: %v", err)
+		p.logger.Error("can't get output from python script", slog.Any("error", err))
 		return nil, e.Wrap("can't get output from python script", err)
 	}
 	return &Response{message: string(output), method: sendMessageMethod, replyMessageId: messageID}, nil

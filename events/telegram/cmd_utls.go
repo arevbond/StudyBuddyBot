@@ -1,7 +1,7 @@
 package telegram
 
 import (
-	"log"
+	"log/slog"
 	"strconv"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/storage"
@@ -38,16 +38,16 @@ type allUsernamesExec string
 func (a allUsernamesExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	message := a.allUsernames(chat.ID, p.tg)
+	message := a.allUsernames(chat.ID, p.tg, p.logger)
 	mthd := sendMessageMethod
 	return &Response{message: message, method: mthd, replyMessageId: -1}, nil
 }
 
 // allUsernames возвращает строку "@username1, @username2...".
-func (a allUsernamesExec) allUsernames(chatID int, tgClient *telegram.Client) string {
+func (a allUsernamesExec) allUsernames(chatID int, tgClient *telegram.Client, logger *slog.Logger) string {
 	admins, err := tgClient.ChatAdministrators(chatID)
 	if err != nil {
-		log.Printf("can't get admins in chat #%d: %v", chatID, err)
+		logger.Error("can't get admins", slog.Any("error", err), slog.Int("chat id", chatID))
 	}
 	result := ""
 	for _, a := range admins {

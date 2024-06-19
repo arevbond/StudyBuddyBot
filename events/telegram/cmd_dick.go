@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -39,7 +39,7 @@ func (d dickTopExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 func getTopDicks(chatID int, p *Processor) (msg string, err error) {
 	users, err := p.storage.UsersByChat(context.Background(), chatID)
 	if err != nil {
-		return "", e.Wrap("[ERROR] can't get users: ", err)
+		return "", e.Wrap("can't get users: ", err)
 	}
 
 	result := ""
@@ -62,7 +62,7 @@ type dickStartExec string
 func (d dickStartExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
-	message, err := d.gameDick(chat, user, userStats, p.storage)
+	message, err := d.gameDick(chat, user, userStats, p.storage, p.logger)
 	if err != nil {
 		return nil, e.Wrap("can't get message from gameDick: ", err)
 	}
@@ -73,7 +73,7 @@ func (d dickStartExec) Exec(p *Processor, inMessage string, user *telegram.User,
 // gameDick это функция изменяющая размер пениса на случайное число и время изменения пениса.
 // /dick - command
 // Возвращает сообщение, отправляемое в чат.
-func (d dickStartExec) gameDick(chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat, db storage.Storage) (msg string, err error) {
+func (d dickStartExec) gameDick(chat *telegram.Chat, user *telegram.User, userStats *storage.DBUserStat, db storage.Storage, logger *slog.Logger) (msg string, err error) {
 	defer func() { err = e.WrapIfErr("error in gameDick: ", err) }()
 
 	dbUser, err := db.GetUser(context.Background(), user.ID, chat.ID)
@@ -81,14 +81,14 @@ func (d dickStartExec) gameDick(chat *telegram.Chat, user *telegram.User, userSt
 		return "", err
 	}
 
-	message, err := d.proccessDickGame(dbUser, userStats, db)
+	message, err := d.proccessDickGame(dbUser, userStats, db, logger)
 	if err != nil {
 		return "", e.Wrap("can't work game dick cmd", err)
 	}
 	return message, nil
 }
 
-func (d dickStartExec) proccessDickGame(dbUser *storage.DBUser, userStats *storage.DBUserStat, db storage.Storage) (string, error) {
+func (d dickStartExec) proccessDickGame(dbUser *storage.DBUser, userStats *storage.DBUserStat, db storage.Storage, logger *slog.Logger) (string, error) {
 	canChange, err := d.canChangeDickSize(dbUser, db)
 	if err != nil {
 		return "", err
@@ -99,7 +99,7 @@ func (d dickStartExec) proccessDickGame(dbUser *storage.DBUser, userStats *stora
 	}
 
 	oldDickSize := dbUser.DickSize
-	err = d.updateRandomDickAndChangeTime(dbUser, userStats, db)
+	err = d.updateRandomDickAndChangeTime(dbUser, userStats, db, logger)
 	if err != nil {
 		return "", err
 	}
@@ -136,7 +136,7 @@ func (d dickStartExec) getName(dbUser *storage.DBUser) (string, bool) {
 }
 
 // updateRandomDickAndChangeTime изменяет значение пениса на слуайное число и время его изменения в базе данных.
-func (d dickStartExec) updateRandomDickAndChangeTime(user *storage.DBUser, userStats *storage.DBUserStat, db storage.Storage) error {
+func (d dickStartExec) updateRandomDickAndChangeTime(user *storage.DBUser, userStats *storage.DBUserStat, db storage.Storage, logger *slog.Logger) error {
 	reward := d.calculateReward(user)
 
 	if reward > 0 {
@@ -146,7 +146,7 @@ func (d dickStartExec) updateRandomDickAndChangeTime(user *storage.DBUser, userS
 	}
 	err := db.UpdateUserStats(context.Background(), userStats)
 	if err != nil {
-		log.Print(err)
+		logger.Error("can't update users stats", slog.Any("error", err))
 	}
 
 	user.DickSize += reward
@@ -221,7 +221,7 @@ func (f finishSeasonExec) Exec(p *Processor, inMessage string, user *telegram.Us
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	if !p.isAdmin(user.ID) {
-		return nil, e.Wrap("no admin can't do this cmd (/send_message)", errors.New("can't do this cmd"))
+		return nil, e.Wrap("no admin can't do this cmd (/send_message)", ErrNotAdmin)
 	}
 
 	strs := strings.Split(inMessage, " ")
@@ -231,7 +231,7 @@ func (f finishSeasonExec) Exec(p *Processor, inMessage string, user *telegram.Us
 	chatIDStr := strs[1]
 	chatID, err := strconv.Atoi(chatIDStr)
 	if err != nil {
-		log.Print(err)
+		p.logger.Error("invalid type of chat id", slog.Any("error", err))
 		return nil, e.Wrap("invalid chat ID", err)
 	}
 
@@ -262,7 +262,7 @@ func (f finishSeasonExec) Exec(p *Processor, inMessage string, user *telegram.Us
 
 	err = p.tg.SendMessage(chatID, resultMessage, telegram.Markdown, -1)
 	if err != nil {
-		log.Printf("can't send message in finish season command: %w", err)
+		p.logger.Error("can't send message in finish season command", slog.Any("error", err))
 		return &Response{message: msgError, method: sendMessageMethod, parseMode: telegram.Markdown, replyMessageId: messageID}, nil
 	}
 	return &Response{message: msgSuccess, method: sendMessageMethod, parseMode: telegram.Markdown, replyMessageId: messageID}, nil
