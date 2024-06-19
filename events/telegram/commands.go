@@ -54,11 +54,8 @@ const (
 	FlipCmd      = "/flip"
 	GetChatIDCmd = "/chat_id"
 
-	// other
 	// HOLIDAY
 	HolidayCmd = "/holiday"
-
-	AiCmd = "/bot"
 )
 
 func getAllCommands() map[string]CmdExecutor {
@@ -95,7 +92,5 @@ func getAllCommands() map[string]CmdExecutor {
 		StartQuizCmd + suffix: startQuizExec(StartQuizCmd + suffix),
 		StopQuizCmd + suffix:  stopQuizExec(StopQuizCmd + suffix),
 		FinishSeason + suffix: finishSeasonExec(FinishSeason + suffix),
-
-		AiCmd + suffix: llamaExec(AiCmd + suffix),
 	}
 }

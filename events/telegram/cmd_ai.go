@@ -4,22 +4,22 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/lib/e"
-	"tg_ics_useful_bot/storage"
 )
 
-type llamaExec string
+const (
+	defaultPrompt = "привет!"
 
-func (l llamaExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
-	userStats *storage.DBUserStat, messageID int) (*Response, error) {
+	scriptPath = "lib/groq/script.py"
+	venvPath   = "lib/groq/venv/bin/python3"
+)
 
-	prompt := l.parsePrompt(inMessage)
+func answerFromLlama3(p *Processor, chatID int, inMessage string, messageID int) error {
 
-	scriptPath := "lib/groq/script.py"
-
-	venvPath := "lib/groq/venv/bin/python3"
+	prompt := parsePrompt(inMessage)
 
 	cmd := exec.Command(venvPath, scriptPath, prompt)
 
@@ -28,15 +28,21 @@ func (l llamaExec) Exec(p *Processor, inMessage string, user *telegram.User, cha
 	output, err := cmd.Output()
 	if err != nil {
 		p.logger.Error("can't get output from python script", slog.Any("error", err))
-		return nil, e.Wrap("can't get output from python script", err)
+		return e.Wrap("can't get output from python script", err)
 	}
-	return &Response{message: string(output), method: sendMessageMethod, replyMessageId: messageID}, nil
+	return p.tg.SendMessage(chatID, string(output), telegram.WithoutParseMode, messageID)
 }
 
-func (l llamaExec) parsePrompt(inMessage string) string {
+func parsePrompt(inMessage string) string {
 	strs := strings.Fields(inMessage)
 	if len(strs) > 1 {
 		return strings.Join(strs[1:], " ")
 	}
-	return "Привет, Аркадий, можешь рассказать о себе?"
+	return defaultPrompt
+}
+
+func isAppeal(text string) bool {
+	words := strings.Fields(text)
+	var validAppeal = regexp.MustCompile(`(?i)^(аркадий|аркаш|бот)`)
+	return len(words) > 0 && validAppeal.MatchString(words[0])
 }

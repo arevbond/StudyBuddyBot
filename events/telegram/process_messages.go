@@ -154,6 +154,16 @@ func (p *Processor) processMessage(event events.Event) error {
 		return e.Wrap("can't process private not admin message", ErrNotAdmin)
 	}
 
+	if isAppeal(event.Text) {
+		p.logger.Info("process text via llama3 in groq", slog.String("text", event.Text))
+
+		err = answerFromLlama3(p, chat.ID, event.Text, messageID)
+		if err != nil {
+			p.logger.Error("can't get output from llama3 via groq", slog.Any("error", err))
+			return e.Wrap("can't get output from llama3", err)
+		}
+	}
+
 	if err = p.doCmd(event.Text, chat, user, messageID); err != nil {
 		return e.Wrap("can't process message", err)
 	}

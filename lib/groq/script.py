@@ -23,7 +23,7 @@ def main():
         messages=[
             {
                 "role": "user",
-                "content": "Your name is Arkadiy. Answer in Russian on this message: " + args.input,
+                "content": "Answer in Russian on this message: " + args.input,
             }
         ],
         model="llama3-8b-8192",
