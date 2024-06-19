@@ -8,3 +8,6 @@ config/config.yml
 lib/quiz/quizzes/
 venv/
 __pychache__/
+
+*.json
+*.log
