@@ -22,5 +22,6 @@ jobs:
             cd /root/StuddyBuddybot
             git pull origin main
             export PATH=$PATH:/usr/local/go/bin
+            go mod download 
             go build
             systemctl restart tg-ics-useful-bot.service
