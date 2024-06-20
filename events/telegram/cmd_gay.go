@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -30,7 +31,7 @@ func (a topGaysExec) topGays(chatID int, p *Processor) (message string, err erro
 	admins, err := p.tg.ChatAdministrators(chatID)
 
 	if err != nil {
-		return "", e.Wrap("[ERROR] can't get chat administrators: ", err)
+		return "", e.Wrap("can't get chat administrators: ", err)
 	}
 
 	type userWithCount struct {
@@ -151,6 +152,9 @@ func (g gayExec) getGayName(gay *storage.DBGay, db storage.Storage) (string, boo
 
 // createNewGayOfDay создаёт пидора дня.
 func (g gayExec) createNewGayOfDay(chatID int, admins []telegram.User, p *Processor) (*storage.DBGay, error) {
+	if len(admins) < 1 {
+		return nil, e.Wrap("can't create gay of day", errors.New("zero admins"))
+	}
 	var user *telegram.User
 	for {
 		n := rand.Intn(len(admins))
