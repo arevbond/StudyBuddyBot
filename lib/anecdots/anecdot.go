@@ -1,10 +1,11 @@
 package anecdots
 
 import (
-	"gopkg.in/yaml.v3"
 	"math/rand"
 	"os"
 	"tg_ics_useful_bot/lib/e"
+
+	"gopkg.in/yaml.v3"
 )
 
 var anecdotsFileName = "lib/anecdots/anecdots.yaml"

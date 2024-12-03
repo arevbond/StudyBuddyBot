@@ -1,16 +1,19 @@
 package main
 
 import (
-	"github.com/lmittmann/tint"
+	"io"
+	"log"
 	"log/slog"
 	"os"
 	tgClient "tg_ics_useful_bot/clients/telegram"
 	"tg_ics_useful_bot/config"
-	"tg_ics_useful_bot/consumer/event-consumer"
+	event_consumer "tg_ics_useful_bot/consumer/event-consumer"
 	"tg_ics_useful_bot/events/telegram"
 	"tg_ics_useful_bot/storage/cache"
-	"tg_ics_useful_bot/storage/sqlite"
+	"tg_ics_useful_bot/storage/postgres"
 	"time"
+
+	"github.com/lmittmann/tint"
 )
 
 const (
@@ -24,7 +27,7 @@ func main() {
 
 	logger := setupLogger(cfg)
 
-	s, err := sqlite.New(storageSQLitePath, logger)
+	s, err := postgres.New(cfg, logger)
 	if err != nil {
 		logger.Error("can't find storage", slog.Any("err", err))
 		os.Exit(1)
@@ -66,12 +69,20 @@ func setupLogger(cfg *config.Config) *slog.Logger {
 	var logger *slog.Logger
 	switch cfg.Env {
 	case "local":
-		logger = slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+		f, err := os.OpenFile("bot.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		logger = slog.New(tint.NewHandler(io.MultiWriter(f, os.Stdout), &tint.Options{
 			Level:      slog.LevelDebug,
 			TimeFormat: time.RFC822}))
 
 	case "prod":
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+		f, err := os.OpenFile("bot.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		logger = slog.New(slog.NewJSONHandler(f, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	}
 	return logger
 }

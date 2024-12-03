@@ -4,14 +4,15 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 	"log/slog"
 	"tg_ics_useful_bot/config"
 	"tg_ics_useful_bot/lib/e"
 	"tg_ics_useful_bot/storage"
 	"time"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 )
 
 type Storage struct {

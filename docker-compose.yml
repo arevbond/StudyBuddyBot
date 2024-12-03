@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:latest
@@ -9,21 +7,35 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - 5430:5430
+      - 5430:5432
     restart: unless-stopped
 
-  pgAdmin:
-    container_name: "tg-bot-pg-admin"
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-      PGADMIN_LISTEN_PORT: 8081
+  promtail:
+    image: grafana/promtail:2.9.2
+    volumes:
+      - ./bot.log:/var/log/bot.log
+      - ./config/promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:2.9.2
+    volumes:
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
     ports:
-      - 8082:8081
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
     restart: unless-stopped
 
-  app:
-    build: .
-    depends_on:
-      - db
+volumes:
+  loki-data:
+  grafana-data:
