@@ -20,6 +20,7 @@ type Config struct {
 }
 
 type PostgresSettings struct {
+	PostgresHost     string `env:"POSTGRES_HOST"`
 	PostgresDBName   string `env:"POSTGRES_DB"`
 	PostgresUser     string `env:"POSTGRES_USER"`
 	PostgresPassword string `env:"POSTGRES_PASSWORD"`
