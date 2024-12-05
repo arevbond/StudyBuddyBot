@@ -22,8 +22,8 @@ type Storage struct {
 
 // New создаёт подключение к PostgreSQL базе данных.
 func New(cfg *config.Config, logger *slog.Logger) (*Storage, error) {
-	dbSource := fmt.Sprintf("postgres://%s:%s@%s:5432/%s", cfg.PostgresUser, cfg.PostgresPassword,
-		cfg.PostgresHost, cfg.PostgresDBName)
+	dbSource := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", cfg.PostgresUser, cfg.PostgresPassword,
+		cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresDBName)
 	conn, err := sqlx.Connect("pgx", dbSource)
 	if err != nil {
 		return nil, e.Wrap("connect to pgx failed", err)
