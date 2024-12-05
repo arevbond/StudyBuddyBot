@@ -1,12 +1,13 @@
 package config
 
 import (
-	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -19,6 +20,7 @@ type Config struct {
 }
 
 type PostgresSettings struct {
+	PostgresHost     string `env:"POSTGRES_HOST"`
 	PostgresDBName   string `env:"POSTGRES_DB"`
 	PostgresUser     string `env:"POSTGRES_USER"`
 	PostgresPassword string `env:"POSTGRES_PASSWORD"`

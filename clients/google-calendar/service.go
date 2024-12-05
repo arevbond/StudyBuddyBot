@@ -3,13 +3,14 @@ package google_calendar
 import (
 	"context"
 	"fmt"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/calendar/v3"
-	"google.golang.org/api/option"
 	"log/slog"
 	"os"
 	"tg_ics_useful_bot/lib/e"
 	"time"
+
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/calendar/v3"
+	"google.golang.org/api/option"
 )
 
 const (

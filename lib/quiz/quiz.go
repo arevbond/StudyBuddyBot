@@ -3,10 +3,11 @@ package quiz
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
 	"tg_ics_useful_bot/lib/e"
+
+	"gopkg.in/yaml.v3"
 )
 
 const pathToFile = "lib/quiz/quizzes/"
