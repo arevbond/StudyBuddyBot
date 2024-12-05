@@ -1,27 +1,27 @@
 # This workflow will deploy a golang project to a remote server
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
-name: deploy
-
-on:
-  push:
-    branches: [ "main" ]
-
-jobs:
-
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to remote server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USERNAME }}
-          password: ${{ secrets.REMOTE_PASSWORD }}
-          script: |
-            cd /root/StuddyBuddybot
-            git pull origin main
-            export PATH=$PATH:/usr/local/go/bin
-            go mod download 
-            go build
-            systemctl restart tg-ics-useful-bot.service
+#name: deploy
+#
+#on:
+#  push:
+#    branches: [ "main" ]
+#
+#jobs:
+#
+#  deploy:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Deploy to remote server
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.REMOTE_HOST }}
+#          username: ${{ secrets.REMOTE_USERNAME }}
+#          password: ${{ secrets.REMOTE_PASSWORD }}
+#          script: |
+#            cd /root/StuddyBuddybot
+#            git pull origin main
+#            export PATH=$PATH:/usr/local/go/bin
+#            go mod download
+#            go build
+#            systemctl restart tg-ics-useful-bot.service
