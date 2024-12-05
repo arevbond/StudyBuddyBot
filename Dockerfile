@@ -1,19 +1,21 @@
-FROM golang:latest
+FROM golang:1.23 AS build-stage
 
-WORKDIR /tg_ics_useful_bot
+WORKDIR /app
 
-COPY go.mod .
+COPY go.mod go.sum ./
 
 RUN go mod download
 
 COPY . .
 
-RUN curl -fsSL https://raw.githubusercontent.com/pressly/goose/master/install.sh | sh
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tg-bot
 
-WORKDIR /tg_ics_useful_bot
+FROM alpine
 
-RUN go build -o /tg_ics_useful_bot
+COPY --from=build-stage /tg-bot /tg-bot
 
-EXPOSE 8080
+COPY ./.env ./.env
 
-CMD [ "./tg_ics_useful_bot" ]
+COPY ./config ./config/
+
+ENTRYPOINT ["/tg-bot"]
