@@ -7,6 +7,8 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+    volumes:
+      - ./bot.log:/bot.log
     restart: unless-stopped
 
   promtail:
@@ -21,6 +23,8 @@ services:
     image: grafana/loki:2.9.2
     volumes:
       - loki-data:/loki
+    ports:
+      - 3100:3100
     command: -config.file=/etc/loki/local-config.yaml
     restart: unless-stopped
 
@@ -38,6 +42,31 @@ services:
   db:
     restart: always
 
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    ports:
+      - 9100:9100
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+
 volumes:
   loki-data:
   grafana-data:
+  prometheus-data:
