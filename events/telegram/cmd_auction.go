@@ -167,7 +167,7 @@ func (a startAuctionExec) finishAuction(chatID int, p *Processor) (string, error
 	delete(p.auctions, chatID)
 
 	for i := 3; i > 0; i-- {
-		p.tg.SendMessage(chatID, fmt.Sprintf("До результата аукциона: %d!", i), "", -1)
+		_ = p.tg.SendMessage(chatID, fmt.Sprintf("До результата аукциона: %d!", i), "", -1)
 		time.Sleep(1 * time.Second)
 	}
 

@@ -31,7 +31,7 @@ func (h holidayExec) Exec(p *Processor, inMessage string, user *telegram.User, c
 	holidays[user.ID] = struct{}{}
 
 	for i := 3; i > 0; i-- {
-		p.tg.SendMessage(chat.ID, fmt.Sprintf("До результата Новогоднего Розыгрыша: %d", i), "", -1)
+		_ = p.tg.SendMessage(chat.ID, fmt.Sprintf("До результата Новогоднего Розыгрыша: %d", i), "", -1)
 		time.Sleep(1 * time.Second)
 	}
 

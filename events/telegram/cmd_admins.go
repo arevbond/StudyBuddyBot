@@ -15,12 +15,12 @@ import (
 // Только для админов бота.
 type adminSendMessageExec string
 
-// Exec: /send_message {chat_id} {message}
+// Exec: /send_message {chat_id} {message}.
 func (a adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 
 	if !p.isAdmin(user.ID) {
-		return nil, e.Wrap("no admin can't do this cmd (/send_message)", errors.New("can't do this cmd"))
+		return nil, e.Wrap("not admin can't do this cmd (/send_message)", errors.New("can't do this cmd"))
 	}
 
 	strs := strings.Split(inMessage, " ")
@@ -43,7 +43,7 @@ func (a adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegra
 // Только для админов бота.
 type adminChangeDickExec string
 
-// Exec: /change_dick {chat_id} {user_id} {value}
+// Exec: /change_dick {chat_id} {user_id} {value}.
 func (a adminChangeDickExec) Exec(p *Processor, inMessage string, user *telegram.User, chat *telegram.Chat,
 	userStats *storage.DBUserStat, messageID int) (*Response, error) {
 

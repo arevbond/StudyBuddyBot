@@ -32,7 +32,7 @@ type PgAdminSettings struct {
 	PgAdminPassword string `env:"PGADMIN_DEFAULT_PASSWORD"`
 }
 
-// New returns a new Config struct
+// New returns a new Config struct.
 func New() *Config {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("No .env file found")
@@ -64,7 +64,7 @@ func New() *Config {
 	return &cfg
 }
 
-// Simple helper function to read an environment or return a default value
+// Simple helper function to read an environment or return a default value.
 func getEnv(key string, defaultVal string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
