@@ -169,7 +169,7 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +
-				fmt.Sprintf(finishMessage, u1.Username, hpString(u1), u1.DickSize, reward, u2.Username, hpString(u2)), nil
+				fmt.Sprintf(finishMessage, u1.Username, hpString(u1), u1.DickSize, reward, u2.Username, hpString(u2), u2.DickSize), nil
 		} else {
 			stats2.DuelsWinCount++
 			stats1.DuelsLoseCount++
@@ -205,7 +205,7 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +
-				fmt.Sprintf(finishMessage, u2.Username, hpString(u2), u2.DickSize, reward, u1.Username, hpString(u1)), nil
+				fmt.Sprintf(finishMessage, u2.Username, hpString(u2), u2.DickSize, reward, u1.Username, hpString(u1), u1.DickSize), nil
 		}
 	} else {
 		duels[targetUsername] = u1
