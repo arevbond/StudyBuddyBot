@@ -157,10 +157,10 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 			if err != nil {
 				return "", err
 			}
-			err = p.changeDickSize(u2, -1*reward)
-			if err != nil {
-				return "", err
-			}
+			// err = p.changeDickSize(u2, -1*reward)
+			// if err != nil {
+			// 	return "", err
+			// }
 
 			err1 := p.storage.UpdateUserStats(context.Background(), stats1)
 			err2 := p.storage.UpdateUserStats(context.Background(), stats2)
@@ -169,8 +169,7 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +
-				fmt.Sprintf(finishMessage, u1.Username, hpString(u1), u1.DickSize, reward, u2.Username, hpString(u2),
-					u2.DickSize, reward), nil
+				fmt.Sprintf(finishMessage, u1.Username, hpString(u1), u1.DickSize, reward, u2.Username, hpString(u2)), nil
 		} else {
 			stats2.DuelsWinCount++
 			stats1.DuelsLoseCount++
@@ -190,10 +189,10 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 				finishMessage = msgPlayerDie
 			}
 
-			err = p.changeDickSize(u1, -1*reward)
-			if err != nil {
-				return "", err
-			}
+			// err = p.changeDickSize(u1, -1*reward)
+			// if err != nil {
+			// 	return "", err
+			// }
 			err = p.changeDickSize(u2, reward)
 			if err != nil {
 				return "", err
@@ -206,8 +205,7 @@ func (a duelExec) gameDuel(chat *telegram.Chat, user *telegram.User, targetUsern
 			}
 
 			return fmt.Sprintf(msgAcceptDuel, u1.Username, oldHP1, oldDickSize1, ch1, u2.Username, oldHP2, oldDickSize2, ch2) +
-				fmt.Sprintf(finishMessage, u2.Username, hpString(u2), u2.DickSize, reward, u1.Username, hpString(u1),
-					u1.DickSize, reward), nil
+				fmt.Sprintf(finishMessage, u2.Username, hpString(u2), u2.DickSize, reward, u1.Username, hpString(u1)), nil
 		}
 	} else {
 		duels[targetUsername] = u1

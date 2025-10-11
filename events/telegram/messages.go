@@ -84,9 +84,11 @@ const (
 
 	msgAcceptDuel = "@%s %s %d см 🍌 %.2f%%\n⚔️\n@%s %s %d см 🍌 %.2f%%\n"
 
-	msgFinishDuel = "\n\n🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️\n\n🏆 @%s %s %d см ➕ %d \n🤕@%s %s %d см ➖ %d"
+	// msgFinishDuel = "\n\n🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️\n\n🏆 @%s %s %d см ➕ %d \n🤕@%s %s %d см ➖ %d"
+	msgFinishDuel = "\n\n🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️🤼‍♂️\n\n🏆 @%s %s %d см ➕ %d \n🤕@%s %s"
 
-	msgPlayerDie = "\n\nεつ▄█▀█ ●\n\n🏆 @%s %s %d см ➕ %d \n🤕@%s %s %d см ➖ %d"
+	// msgPlayerDie = "\n\nεつ▄█▀█ ●\n\n🏆 @%s %s %d см ➕ %d \n🤕@%s %s %d см ➖ %d"
+	msgPlayerDie = "\n\nεつ▄█▀█ ●\n\n🏆 @%s %s %d см ➕ %d \n🤕@%s %s"
 
 	msgCantCreateDuel = "Невозможно создать дуель\n@%s - %s \n@%s - %s"
 
