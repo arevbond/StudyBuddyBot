@@ -11,3 +11,4 @@ __pychache__/
 
 *.json
 *.log
+.history/
