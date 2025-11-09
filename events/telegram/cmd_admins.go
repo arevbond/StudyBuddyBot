@@ -24,6 +24,10 @@ func (a adminSendMessageExec) Exec(p *Processor, inMessage string, user *telegra
 	}
 
 	strs := strings.Split(inMessage, " ")
+	if len(strs) < 3 {
+		return &Response{message: "invalid command, please send - \"/send_message {chat_id} {message}\"", 
+			method: sendMessageMethod, replyMessageId: messageID}, nil
+	}
 	chatIDStr, message := strs[1], strings.Join(strs[2:], " ")
 	chatID, err := strconv.Atoi(chatIDStr)
 	if err != nil {
